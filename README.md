@@ -188,25 +188,3 @@ npm run verify:map
 *(Lưu ý: Không commit file thực thi `aseprite.exe` vào repository).*
 
 ---
-
-## 🚀 Hướng Dẫn Đẩy Mã Nguồn Lên Git (Manual Push)
-
-Thư mục đã được thiết lập sẵn file `.gitignore` tiêu chuẩn (loại bỏ `node_modules/`, `dist/`, các file dữ liệu nhạy cảm và file tạm). Bạn có thể thực hiện kiểm tra và đẩy mã nguồn lên remote repository bằng các lệnh sau:
-
-```bash
-# 1. Kiểm tra trạng thái các file đã sẵn sàng
-git status
-
-# 2. Thêm toàn bộ mã nguồn hợp lệ vào Staging
-git add .
-
-# 3. Tạo commit đầu tiên
-git commit -m "feat: init equiflow simulator web with hay day pixel ui, full test suite and showcase docs"
-
-# 4. Gắn remote repository (nếu chưa gắn)
-git remote add origin <URL_REPOSITORY_CUA_BAN>
-
-# 5. Đẩy nhánh chính lên Git
-git branch -M main
-git push -u origin main
-```
