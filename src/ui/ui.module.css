@@ -1,0 +1,401 @@
+/* Bộ thành phần pixel dùng chung: panel giấy da viền mực, nút nổi khối, nhóm chọn, ô chỉ số, huy hiệu. */
+
+.card {
+  position: relative;
+  background: var(--surface);
+  border: var(--px) solid var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--wood-700);
+  color: var(--cream);
+  border-bottom: var(--px) solid var(--ink);
+  box-shadow: inset 0 var(--px) 0 var(--wood-300);
+}
+
+.cardTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.cardHead .hint {
+  color: var(--parchment-3);
+}
+
+.cardBody {
+  padding: var(--sp-3) var(--sp-4);
+}
+
+.hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* ---- Nút khối nổi: bóng cứng, nhấn thì lún xuống ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 38px;
+  padding: 0 var(--sp-4);
+  border: var(--px) solid var(--ink);
+  background: var(--parchment-2);
+  color: var(--ink);
+  font-size: var(--fs-md);
+  line-height: 1;
+  box-shadow: inset -3px -3px 0 var(--parchment-3), inset 3px 3px 0 var(--cream), 3px 3px 0 var(--ink);
+  transition: none;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--cream);
+}
+
+.btn:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: inset 3px 3px 0 var(--parchment-3);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+}
+
+.primary {
+  composes: btn;
+  background: var(--grass);
+  color: var(--cream);
+  text-shadow: 2px 2px 0 var(--grass-dark);
+  box-shadow: inset -3px -3px 0 var(--grass-dark), inset 3px 3px 0 var(--grass-light), 3px 3px 0 var(--ink);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--grass-hover);
+}
+
+.primary:active:not(:disabled) {
+  box-shadow: inset 3px 3px 0 var(--grass-dark);
+}
+
+.danger {
+  composes: btn;
+  background: var(--red);
+  color: var(--cream);
+  text-shadow: 2px 2px 0 var(--red-dark);
+  box-shadow: inset -3px -3px 0 var(--red-dark), inset 3px 3px 0 var(--red-light), 3px 3px 0 var(--ink);
+}
+
+.danger:hover:not(:disabled) {
+  background: var(--red-hover);
+}
+
+.danger:active:not(:disabled) {
+  box-shadow: inset 3px 3px 0 var(--red-dark);
+}
+
+.small {
+  min-height: 30px;
+  padding: 0 var(--sp-3);
+  font-size: var(--fs-sm);
+}
+
+/* ---- Nhóm chọn: khay gỗ, mục đang chọn là phím vàng lún xuống ---- */
+.segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  background: var(--wood-700);
+  border: var(--px) solid var(--ink);
+}
+
+.segment {
+  min-height: 32px;
+  padding: 0 var(--sp-3);
+  border: 2px solid var(--ink);
+  background: var(--parchment-2);
+  font-size: var(--fs-md);
+  line-height: 1;
+  color: var(--ink);
+  box-shadow: inset -2px -2px 0 var(--parchment-3), inset 2px 2px 0 var(--cream);
+}
+
+.segment:hover:not(:disabled) {
+  background: var(--cream);
+}
+
+.segment[aria-pressed="true"] {
+  background: var(--gold);
+  box-shadow: inset 2px 2px 0 var(--gold-dark);
+}
+
+.segment:disabled {
+  opacity: 0.45;
+}
+
+.field {
+  display: grid;
+  gap: var(--sp-1);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ---- Huy hiệu: nhãn vuông viền mực ---- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 1px 8px;
+  border: 2px solid var(--ink);
+  background: var(--parchment-2);
+  color: var(--ink);
+  font-size: var(--fs-sm);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+}
+
+.FIT {
+  composes: badge;
+  color: var(--ok);
+  background: var(--ok-bg);
+}
+
+.WATCH {
+  composes: badge;
+  color: var(--warn);
+  background: var(--warn-bg);
+}
+
+.INJURED {
+  composes: badge;
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.ISOLATED {
+  composes: badge;
+  color: var(--violet);
+  background: var(--violet-bg);
+}
+
+.lock {
+  composes: badge;
+  color: var(--cream);
+  background: var(--red);
+}
+
+/* ---- Thông báo: tấm giấy dán ---- */
+.notice {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: flex-start;
+  margin-top: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border: 2px solid var(--ink);
+  font-size: var(--fs-md);
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
+.notice::before {
+  content: "!";
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  background: var(--ink);
+  color: var(--gold);
+  font-family: var(--font-pixel);
+  font-size: 14px;
+}
+
+.noticeDanger {
+  composes: notice;
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.noticeOk {
+  composes: notice;
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+.noticeOk::before {
+  content: "+";
+  color: var(--grass);
+}
+
+/* ---- Ô chỉ số HUD: màn LCD lõm ---- */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-2);
+}
+
+.metric {
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--console);
+  border: var(--px) solid var(--ink);
+  box-shadow: inset 3px 3px 0 var(--lcd-inset);
+  color: var(--console-text);
+}
+
+.metricAlert {
+  composes: metric;
+  background: var(--lcd-alert);
+  animation: blink 0.6s steps(2, jump-none) infinite;
+}
+
+@keyframes blink {
+  50% {
+    background: var(--lcd-alert-2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .metricAlert {
+    animation: none;
+  }
+}
+
+.metricLabel {
+  font-size: var(--fs-sm);
+  color: var(--console-muted);
+  text-transform: uppercase;
+}
+
+.metricValue {
+  font-family: var(--font-pixel);
+  font-size: var(--fs-lg);
+  line-height: 1.2;
+  color: var(--console-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.metricAlert .metricValue {
+  color: var(--console-danger);
+}
+
+.metricUnit {
+  margin-left: 6px;
+  font-family: var(--font);
+  font-size: var(--fs-sm);
+  color: var(--console-muted);
+}
+
+.metricSub {
+  font-size: var(--fs-xs);
+  color: var(--console-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sp-3);
+}
+
+.spacer {
+  flex: 1;
+}
+
+/* ---- Bảng: sổ cái kẻ ô ---- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-md);
+  font-variant-numeric: tabular-nums;
+  border: 2px solid var(--ink);
+}
+
+.table th {
+  text-align: left;
+  font-weight: 400;
+  font-size: var(--fs-sm);
+  color: var(--cream);
+  background: var(--wood-500);
+  padding: 4px var(--sp-2);
+  border: 2px solid var(--ink);
+}
+
+.table td {
+  padding: 4px var(--sp-2);
+  border: 2px solid var(--parchment-3);
+}
+
+.table tbody tr:nth-child(even) td {
+  background: var(--parchment-2);
+}
+
+.num {
+  text-align: right;
+}
+
+.pixel {
+  font-family: var(--font-pixel);
+}
+
+/* ---- Khung cảnh canvas: viền gỗ dày ---- */
+.sceneFrame {
+  overflow: hidden;
+  border-top: var(--px) solid var(--ink);
+  border-bottom: var(--px) solid var(--ink);
+  background: var(--console);
+}
+
+/* Nút "phồng" kiểu Hay Day — ghép cùng .btn / .primary / .danger: bo tròn, nhấc lên khi rê, lún xuống khi nhấn */
+.puffy {
+  min-height: 44px;
+  padding: 0 var(--sp-5);
+  border-width: 3px;
+  border-radius: var(--hud-pill-radius);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-lg);
+  box-shadow: var(--hud-shadow-small);
+  transition: transform 0.12s var(--ease-pop), box-shadow 0.12s;
+}
+
+.puffy:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.puffy:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: var(--hud-press);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .puffy {
+    transition: none;
+  }
+}

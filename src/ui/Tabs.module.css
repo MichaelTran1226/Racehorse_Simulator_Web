@@ -1,0 +1,110 @@
+.stack {
+  display: grid;
+  gap: var(--sp-4);
+  align-content: start;
+}
+
+.horseName {
+  color: var(--gold);
+}
+
+.pillGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.incidentBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  border-top: var(--px) solid var(--ink);
+  background: var(--parchment-2);
+}
+
+.incidentBar > span {
+  flex: 1 1 260px;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: var(--sp-4);
+}
+
+@media (max-width: 1100px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pickList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.pick {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--sp-2);
+  align-items: center;
+  padding: 6px var(--sp-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+
+.pick:hover {
+  background: var(--surface-2);
+}
+
+.pickDisabled {
+  composes: pick;
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.pickReason {
+  font-size: var(--fs-xs);
+  color: var(--danger);
+}
+
+.laneDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--ink);
+  margin-right: 6px;
+  vertical-align: -1px;
+}
+
+.leader td {
+  background: var(--warn-bg);
+}
+
+.dnf td {
+  color: var(--danger);
+}
+
+.vitals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-2);
+}
+
+.stallInfo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}

@@ -1,0 +1,66 @@
+/* Dải chân dung ngựa cuộn ngang */
+.strip {
+  display: flex;
+  gap: var(--sp-2);
+  overflow-x: auto;
+  padding: var(--sp-1) var(--sp-1) var(--sp-3);
+  scroll-snap-type: x proximity;
+}
+
+.pick {
+  position: relative;
+  flex: 0 0 auto;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  width: 96px;
+  padding: 6px 4px;
+  background: var(--parchment-2);
+  border: 3px solid var(--ink);
+  border-radius: var(--hud-pill-radius);
+  box-shadow: var(--hud-shadow-small);
+  scroll-snap-align: start;
+  transition: transform 0.12s var(--ease-pop), box-shadow 0.12s, background-color 0.2s;
+}
+
+.pick:hover {
+  transform: translateY(-2px);
+}
+
+.pick:active {
+  transform: translateY(3px);
+  box-shadow: var(--hud-press);
+}
+
+.pick[aria-checked="true"] {
+  background: var(--gold);
+  transform: translateY(-4px);
+}
+
+.pick[data-locked="true"] {
+  background: var(--danger-bg);
+}
+
+.pick[data-locked="true"][aria-checked="true"] {
+  background: var(--gold);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  line-height: 1.1;
+  text-align: center;
+}
+
+.lock {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pick {
+    transition: none;
+  }
+}

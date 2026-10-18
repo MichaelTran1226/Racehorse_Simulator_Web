@@ -1,0 +1,358 @@
+.shell {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Bảng hiệu gỗ trên cùng ---- */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  padding: var(--sp-2) var(--sp-5);
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--wood-700) 0 10px,
+    var(--wood-500) 10px 12px
+  );
+  color: var(--cream);
+  border-bottom: var(--px) solid var(--ink);
+  box-shadow: 0 4px 0 var(--header-shadow);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+}
+
+.brand:hover .logo {
+  background: var(--cream);
+}
+
+.logo {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  background: var(--gold);
+  color: var(--ink);
+  border: var(--px) solid var(--ink);
+  box-shadow: inset -3px -3px 0 var(--gold-dark), inset 3px 3px 0 var(--cream);
+  font-family: var(--font-pixel);
+  font-size: 16px;
+}
+
+.product {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-xl);
+  line-height: 1;
+  text-shadow: 2px 2px 0 var(--ink);
+}
+
+.tagline {
+  display: block;
+  font-size: var(--fs-sm);
+  color: var(--parchment-3);
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.device {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 10px;
+  background: var(--console);
+  color: var(--console-accent);
+  border: 2px solid var(--ink);
+  font-size: var(--fs-sm);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: var(--console-accent);
+  animation: pulse 1s steps(2, jump-none) infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    animation: none;
+  }
+}
+
+/* Khay phím: tốc độ & chế độ */
+.speed,
+.views {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--wood-900);
+  border: var(--px) solid var(--ink);
+}
+
+.speedBtn,
+.viewBtn {
+  min-height: 32px;
+  padding: 0 var(--sp-3);
+  border: 2px solid var(--ink);
+  background: var(--parchment-2);
+  color: var(--ink);
+  font-size: var(--fs-md);
+  line-height: 1;
+  box-shadow: inset -2px -2px 0 var(--parchment-3), inset 2px 2px 0 var(--cream);
+}
+
+.speedBtn {
+  min-width: 48px;
+  font-family: var(--font-pixel);
+  font-size: 14px;
+}
+
+.speedBtn:hover,
+.viewBtn:hover {
+  background: var(--cream);
+}
+
+.speedBtn[aria-pressed="true"],
+.viewBtn[aria-current="true"] {
+  background: var(--gold);
+  box-shadow: inset 2px 2px 0 var(--gold-dark);
+}
+
+/* Trang trại kiểu Hay Day: bản đồ phủ kín, không có bảng hiệu */
+.shell[data-screen="HUB"] .header {
+  display: none;
+}
+
+.headerRight[hidden],
+.layout[hidden] {
+  display: none;
+}
+
+.layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5) var(--sp-5);
+  align-items: start;
+}
+
+.main {
+  display: grid;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+
+/* ---- Tab: thẻ hồ sơ gỗ ---- */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding: 6px var(--sp-4);
+  border: var(--px) solid var(--ink);
+  border-radius: var(--hud-pill-radius);
+  transition: transform 0.12s var(--ease-pop);
+  background: var(--wood-500);
+  color: var(--parchment);
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: inset 3px 3px 0 var(--wood-300), 3px 3px 0 var(--ink);
+}
+
+.tab:hover {
+  background: var(--wood-300);
+  transform: translateY(-2px);
+}
+
+.tab:active {
+  transform: translateY(3px);
+}
+
+.tab[aria-current="true"] {
+  background: var(--parchment);
+  color: var(--ink);
+  box-shadow: inset 3px 3px 0 var(--cream), inset -3px -3px 0 var(--parchment-3), 3px 3px 0 var(--ink);
+}
+
+.tabCode {
+  font-family: var(--font);
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding: var(--sp-3) var(--sp-4);
+  }
+  .header {
+    padding: var(--sp-2) var(--sp-4);
+  }
+}
+
+.loading {
+  margin: var(--sp-5);
+  color: var(--parchment);
+  font-size: var(--fs-lg);
+}
+
+/* ---- Thanh tiêu đề khu ---- */
+.zoneBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.zoneTitle {
+  margin: 0;
+  color: var(--cream);
+  font-size: 34px;
+  line-height: 1;
+  text-shadow: 3px 3px 0 var(--ink);
+}
+
+.zoneBar .tabs {
+  margin-left: auto;
+}
+
+/* ---- Màn chuyển cảnh: mờ dần toàn bộ → thẻ tên khu → hiện dần ---- */
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background-color: var(--ink);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 2px, var(--curtain-scan) 2px 4px);
+  pointer-events: all;
+}
+
+.curtain[data-phase="out"] {
+  animation: curtainOut 0.45s var(--ease-scene) forwards;
+}
+
+.curtain[data-phase="in"] {
+  animation: curtainIn 0.6s var(--ease-scene) forwards;
+}
+
+@keyframes curtainOut {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes curtainIn {
+  0%,
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.curtainCard {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--parchment);
+  border: var(--px) solid var(--ink);
+  box-shadow: inset -3px -3px 0 var(--parchment-3), inset 3px 3px 0 var(--cream), 6px 6px 0 var(--wood-900);
+  animation: cardDrop 0.3s steps(4);
+}
+
+@keyframes cardDrop {
+  from {
+    transform: translateY(-16px);
+  }
+}
+
+.curtainKicker {
+  font-size: var(--fs-md);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.curtainTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 44px;
+  line-height: 1;
+}
+
+.curtainDots {
+  display: flex;
+  gap: 6px;
+}
+
+.curtainDots i {
+  width: 8px;
+  height: 8px;
+  background: var(--grass);
+  animation: dot 0.6s steps(2, jump-none) infinite;
+}
+
+.curtainDots i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.curtainDots i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dot {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .curtainCard,
+  .curtainDots i {
+    animation: none;
+  }
+}

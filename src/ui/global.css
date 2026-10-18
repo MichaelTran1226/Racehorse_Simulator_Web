@@ -1,0 +1,82 @@
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  /* nền cỏ đêm có dither 2×2 kiểu pixel */
+  background-color: var(--page);
+  background-image: linear-gradient(45deg, var(--pine-2) 25%, transparent 25%, transparent 75%, var(--pine-2) 75%),
+    linear-gradient(45deg, var(--pine-2) 25%, transparent 25%, transparent 75%, var(--pine-2) 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 4px 4px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--fs-md);
+  line-height: 1.2;
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+button,
+select,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+canvas,
+img {
+  image-rendering: pixelated;
+}
+
+canvas {
+  display: block;
+}
+
+code {
+  font-family: var(--font-mono);
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+/* thanh cuộn pixel */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--wood-500) var(--parchment-2);
+}

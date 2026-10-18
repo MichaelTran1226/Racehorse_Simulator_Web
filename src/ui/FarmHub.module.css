@@ -1,0 +1,259 @@
+/* Bản đồ phủ kín cửa sổ, HUD nổi kiểu Hay Day ở 4 góc */
+.page {
+  position: fixed;
+  inset: 0;
+  background: var(--map-edge);
+  overflow: hidden;
+}
+
+.mapCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+  image-rendering: pixelated;
+  outline: none;
+}
+
+.mapCanvas[data-hover="true"] {
+  cursor: pointer;
+}
+
+.mapCanvas:active {
+  cursor: grabbing;
+}
+
+.mapCanvas[data-locked="true"] {
+  cursor: wait;
+}
+
+.mapCanvas:focus-visible {
+  box-shadow: inset 0 0 0 var(--sp-1) var(--map-outline);
+}
+
+.hud {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  animation: hudIn 0.5s var(--ease-pop) both;
+}
+
+.topLeft {
+  top: var(--sp-4);
+  left: var(--sp-4);
+}
+
+.topRight {
+  top: var(--sp-4);
+  right: var(--sp-4);
+  animation-delay: 0.08s;
+}
+
+.bottomRight {
+  right: var(--sp-4);
+  bottom: var(--sp-4);
+  gap: var(--sp-3);
+  animation-delay: 0.16s;
+}
+
+@keyframes hudIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.9);
+  }
+}
+
+/* Viên thông tin bo tròn */
+.pill {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 4px var(--sp-3) 6px;
+  background: var(--hud-panel-strong);
+  border: 3px solid var(--ink);
+  border-radius: var(--hud-pill-radius);
+  box-shadow: var(--hud-shadow-small);
+  color: var(--ink);
+  transition: background-color 0.3s;
+}
+
+.pill[data-alert="true"] {
+  background: var(--warn-bg);
+}
+
+.pill[data-alert="true"] .count {
+  color: var(--red);
+}
+
+.pillLabel {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.clock,
+.count {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-xl);
+  line-height: 1;
+}
+
+/* Nút tròn phồng — lún xuống khi nhấn */
+.round,
+.bigRound {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 3px solid var(--ink);
+  border-radius: var(--hud-round);
+  background: var(--gold);
+  color: var(--ink);
+  box-shadow: var(--hud-shadow-small);
+  transition: transform 0.12s var(--ease-pop), box-shadow 0.12s;
+}
+
+.round {
+  width: 44px;
+  height: 44px;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.round[data-tone="moon"] {
+  background: var(--sky-dark);
+  color: var(--cream);
+}
+
+.bigRound {
+  width: 76px;
+  height: 76px;
+  align-content: center;
+  gap: 0;
+  background: var(--grass);
+  color: var(--cream);
+  box-shadow: var(--hud-shadow);
+}
+
+.bigRound[data-tone="pause"] {
+  background: var(--red);
+}
+
+.round:hover,
+.bigRound:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+
+.round:active,
+.bigRound:active {
+  transform: translateY(4px) scale(0.96);
+  box-shadow: var(--hud-press);
+}
+
+.bigIcon {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1;
+  text-shadow: 2px 2px 0 var(--ink);
+}
+
+.bigLabel {
+  font-size: var(--fs-sm);
+  line-height: 1;
+  text-shadow: 1px 1px 0 var(--ink);
+}
+
+/* Bong bóng hướng dẫn, mờ đi sau vài giây */
+.hint {
+  left: var(--sp-4);
+  bottom: var(--sp-4);
+  max-width: min(420px, calc(100vw - 220px));
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--hud-panel);
+  border: 3px solid var(--ink);
+  border-radius: var(--hud-pill-radius);
+  box-shadow: var(--hud-shadow-small);
+  font-size: var(--fs-md);
+  transition: opacity 0.6s, transform 0.6s;
+}
+
+.hint[data-show="false"] {
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+}
+
+/* Đường tắt bàn phím: ẩn tới khi được focus */
+.skip {
+  position: absolute;
+  z-index: 3;
+  top: var(--sp-4);
+  left: 50%;
+  display: flex;
+  gap: var(--sp-2);
+  transform: translateX(-50%);
+}
+
+.skip button {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip button:focus-visible {
+  position: static;
+  width: auto;
+  height: auto;
+  clip-path: none;
+  padding: 6px var(--sp-3);
+  border: 3px solid var(--ink);
+  border-radius: var(--hud-pill-radius);
+  background: var(--gold);
+}
+
+.count[data-bump] {
+  animation: bump 0.35s var(--ease-pop);
+}
+
+@keyframes bump {
+  40% {
+    transform: scale(1.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .count[data-bump] {
+    animation: none;
+  }
+  .hud {
+    animation: none;
+  }
+  .round,
+  .bigRound,
+  .hint {
+    transition: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .topRight {
+    top: auto;
+    bottom: calc(var(--sp-4) + 90px);
+    flex-direction: column;
+    align-items: flex-end;
+  }
+}
+
+.bigRound[data-tone="supply"] {
+  background: var(--wood-500);
+}
+

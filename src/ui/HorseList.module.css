@@ -1,0 +1,99 @@
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--sp-3);
+}
+
+.grid li {
+  animation: tileIn 0.35s var(--ease-pop) both;
+}
+
+@keyframes tileIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+}
+
+.tile {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: var(--sp-2);
+  background: var(--parchment-2);
+  border: 3px solid var(--ink);
+  border-radius: var(--hud-pill-radius);
+  box-shadow: var(--hud-shadow-small);
+  transition: transform 0.12s var(--ease-pop), box-shadow 0.12s;
+}
+
+.tile:hover {
+  transform: translateY(-3px);
+  background: var(--cream);
+}
+
+.tile:active {
+  transform: translateY(3px);
+  box-shadow: var(--hud-press);
+}
+
+.tile[data-health="INJURED"],
+.tile[data-health="ISOLATED"] {
+  background: var(--danger-bg);
+}
+
+.thumb {
+  width: 64px;
+  height: 64px;
+  image-rendering: pixelated;
+  background: var(--grass-light);
+  border: 2px solid var(--ink);
+  border-radius: var(--hud-round);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-md);
+  line-height: 1.1;
+  text-align: center;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.alert {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--ink);
+  border-radius: var(--hud-round);
+  background: var(--red);
+  color: var(--cream);
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--sp-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid li {
+    animation: none;
+  }
+  .tile {
+    transition: none;
+  }
+}

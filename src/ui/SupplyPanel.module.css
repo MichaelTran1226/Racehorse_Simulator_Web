@@ -1,0 +1,116 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--parchment-2);
+  border: 3px solid var(--ink);
+  border-radius: var(--hud-pill-radius);
+  box-shadow: var(--hud-shadow-small);
+  transition: background-color 0.3s;
+}
+
+.row[data-level="LOW"] {
+  background: var(--warn-bg);
+}
+
+.row[data-level="OUT"] {
+  background: var(--danger-bg);
+}
+
+/* Ô 32 px của sheet, phóng ×1.5, nét pixel */
+.icon {
+  width: 48px;
+  height: 48px;
+  background-color: var(--cream);
+  background-image: var(--sheet);
+  background-size: 288px 288px;
+  background-position: calc(var(--c) * -48px) calc(var(--r) * -48px);
+  image-rendering: pixelated;
+  border: 3px solid var(--ink);
+  border-radius: var(--hud-round);
+}
+
+.info {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-md);
+}
+
+.amount {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.track {
+  height: 16px;
+  background: var(--parchment-3);
+  border: 3px solid var(--ink);
+  border-radius: var(--hud-round);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  background: var(--grass);
+  border-radius: var(--hud-round);
+  box-shadow: inset 0 3px 0 var(--meter-glint);
+  transition: width 0.5s ease, background-color 0.3s;
+}
+
+.row[data-level="LOW"] .fill {
+  background: var(--gold);
+}
+
+.row[data-level="OUT"] .fill {
+  background: var(--red);
+}
+
+.level {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.row[data-level="OUT"] .level {
+  color: var(--red);
+  font-weight: 700;
+}
+
+@media (max-width: 520px) {
+  .row {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+  .row button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row,
+  .fill {
+    transition: none;
+  }
+}

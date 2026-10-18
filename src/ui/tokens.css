@@ -1,0 +1,126 @@
+/* Token giao diện Simulator — phong cách pixel game "trang trại ngựa đua" (độc lập với Main Web).
+   Khung gỗ · nền giấy da · viền mực 3 px · bóng đổ cứng · không bo góc. Trong component chỉ dùng var(--…). */
+:root {
+  /* ---- Bảng màu gốc (trùng tông với tranh pixel S07/S08/S09) ---- */
+  --ink: #2b1d14; /* viền & chữ chính */
+  --wood-900: #3a2416;
+  --wood-700: #5a3820;
+  --wood-500: #7a4e2d;
+  --wood-300: #9c6a3f;
+  --parchment: #f3e6c4;
+  --parchment-2: #ead8ac;
+  --parchment-3: #d9c08a;
+  --cream: #fff8e6;
+  --pine: #1d2b23;
+  --pine-2: #24372b;
+  --grass: #4e9a3a;
+  --grass-dark: #2f6236;
+  --gold: #e9c21a;
+  --gold-dark: #b8901a;
+  --red: #d93838;
+  --red-dark: #8f1f1f;
+  --sky: #6fb7d8;
+  --grass-light: #8ccf6a;
+  --grass-hover: #5cad46;
+  --red-light: #f07a6a;
+  --red-hover: #e84a4a;
+  --lcd-inset: #000000;
+  --lcd-alert: #2a0d0d;
+  --lcd-alert-2: #4a1010;
+  --curtain-scan: rgba(0, 0, 0, 0.35);
+  --map-dim: rgba(16, 22, 15, 0.45);
+  --gold-wash: rgba(233, 194, 26, 0.12);
+  --hard-shadow: rgba(0, 0, 0, 0.5);
+  --header-shadow: rgba(0, 0, 0, 0.45);
+  --hud-panel: rgba(255, 248, 230, 0.92);
+  --hud-panel-strong: rgba(255, 248, 230, 0.97);
+  --hud-border: rgba(43, 29, 20, 0.82);
+  --hud-glint: rgba(255, 255, 255, 0.08);
+  --hud-vignette: rgba(20, 12, 7, 0.22);
+  --hud-inner-shadow: rgba(25, 16, 8, 0.28);
+  --sky-dark: #2d6e92;
+  --map-outline: #fff3a1;
+  --map-edge: #1d2b23;
+
+  /* ---- Vai trò ngữ nghĩa (giữ tên cũ để mọi module dùng chung) ---- */
+  --page: var(--pine);
+  --surface: var(--parchment);
+  --surface-2: var(--parchment-2);
+  --surface-3: var(--parchment-3);
+  --border: var(--ink);
+  --border-strong: var(--ink);
+
+  --text: var(--ink);
+  --text-2: #4a3423;
+  --muted: #7a5f45; /* 4.6:1 trên --parchment */
+  --text-on-brand: var(--cream);
+
+  --brand: var(--grass-dark);
+  --brand-600: #24502a;
+  --brand-700: var(--wood-900);
+  --brand-100: var(--parchment-2);
+  --brand-50: #e4efc9;
+
+  --ok: #2b6e22;
+  --ok-bg: #cfe8b0;
+  --warn: #7a5600;
+  --warn-bg: #f6dd84;
+  --danger: #a01f1f;
+  --danger-bg: #f5c0b0;
+  --info: #24587a;
+  --violet: #5e2a8c;
+  --violet-bg: #dcc6ee;
+
+  --chart-speed: #1f7fb0;
+  --chart-hr: #c8283f;
+  --chart-grid: var(--parchment-3);
+
+  --console: #10160f;
+  --console-2: #1a2418;
+  --console-text: #b8f5a0;
+  --console-muted: #6f8f68;
+  --console-accent: #8dff6a;
+  --console-in: #8fd4ff;
+  --console-danger: #ff8a7a;
+  --grid-overlay: rgba(255, 0, 120, 0.75); /* lưới soát ô sprite: tương phản mạnh với mọi asset */
+
+  /* ---- Chữ pixel: VT323 (đủ dấu tiếng Việt) · Handjet cho tiêu đề · Silkscreen cho số/mã ---- */
+  --font: "VT323", ui-monospace, monospace;
+  --font-display: "Handjet", "VT323", monospace;
+  --font-pixel: "Silkscreen", "VT323", monospace;
+  --font-mono: "VT323", ui-monospace, monospace;
+
+  --fs-xs: 16px;
+  --fs-sm: 18px;
+  --fs-md: 20px;
+  --fs-lg: 24px;
+  --fs-xl: 30px;
+
+  --tracking-wide: 0.08em;
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+
+  --radius-sm: 0;
+  --radius: 0;
+
+  /* ---- Viền & bóng kiểu pixel ---- */
+  --px: 3px; /* độ dày viền mực */
+  --bevel-light: inset var(--px) var(--px) 0 var(--cream);
+  --bevel-dark: inset calc(var(--px) * -1) calc(var(--px) * -1) 0 var(--parchment-3);
+  --drop: 4px 4px 0 rgba(0, 0, 0, 0.45);
+  --shadow: var(--bevel-light), var(--bevel-dark), var(--drop);
+  --ring: 0 0 0 3px var(--gold), 0 0 0 6px var(--ink);
+  --hud-shadow: 0 8px 0 var(--hard-shadow), inset 0 0 0 2px var(--cream);
+  --hud-shadow-small: 0 4px 0 var(--hard-shadow), inset 0 0 0 2px var(--cream);
+  /* Hay Day HUD: nút/viên bo tròn, phồng */
+  --hud-round: 999px;
+  --hud-pill-radius: 18px;
+  --hud-press: 0 2px 0 var(--hard-shadow), inset 0 0 0 2px var(--cream);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --meter-glint: rgba(255, 255, 255, 0.35);
+  --ease-scene: cubic-bezier(0.22, 1, 0.36, 1);
+}

@@ -1,0 +1,134 @@
+.setup {
+  display: grid;
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+  padding-top: var(--sp-3);
+  border-top: 2px dashed var(--parchment-3);
+}
+
+.stripWrap {
+  display: grid;
+  gap: var(--sp-1);
+}
+
+/* Dải sân thu nhỏ: toàn bộ cự ly, bấm để đặt chướng ngại */
+.strip {
+  position: relative;
+  height: 48px;
+  border: var(--px) solid var(--ink);
+  background: repeating-linear-gradient(to right, var(--grass) 0 16px, var(--grass-hover) 16px 32px);
+  box-shadow: inset 0 4px 0 var(--cream), inset 0 -4px 0 var(--cream);
+  cursor: crosshair;
+}
+
+.strip[data-condition="WET"] {
+  filter: saturate(0.75) brightness(0.9);
+}
+
+.strip[data-condition="HEAVY"] {
+  filter: saturate(0.55) brightness(0.78) sepia(0.25);
+}
+
+.strip[data-disabled="true"] {
+  cursor: not-allowed;
+}
+
+.tick {
+  position: absolute;
+  bottom: 2px;
+  transform: translateX(-50%);
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--cream);
+  text-shadow: 1px 1px 0 var(--ink);
+  pointer-events: none;
+}
+
+.gate,
+.finish {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  pointer-events: none;
+}
+
+.gate {
+  left: 0;
+  background: var(--grass-dark);
+  border-right: 2px solid var(--ink);
+}
+
+.finish {
+  right: 0;
+  background: repeating-linear-gradient(to bottom, var(--ink) 0 6px, var(--cream) 6px 12px);
+}
+
+.marker {
+  position: absolute;
+  top: 8px;
+  height: 24px;
+  width: 14px;
+  transform: translateX(-50%);
+  padding: 0;
+  border: 2px solid var(--ink);
+  cursor: pointer;
+  animation: drop 0.2s steps(3);
+}
+
+.marker[data-kind="MUD"] {
+  transform: none;
+  top: 18px;
+  height: 14px;
+  min-width: 10px;
+  background: var(--wood-700);
+}
+
+.marker[data-kind="RAIL"] {
+  background: repeating-linear-gradient(to bottom, var(--red) 0 4px, var(--cream) 4px 8px);
+}
+
+.marker[data-kind="HAY"] {
+  background: var(--gold);
+  box-shadow: inset 0 0 0 2px var(--gold-dark);
+}
+
+.marker:hover:not(:disabled) {
+  outline: 3px solid var(--cream);
+}
+
+@keyframes drop {
+  from {
+    margin-top: -10px;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marker {
+    animation: none;
+  }
+}
+
+.icon {
+  display: inline-block;
+  width: 10px;
+  height: 12px;
+  margin-right: 2px;
+  border: 2px solid var(--ink);
+  vertical-align: -1px;
+}
+
+.icon[data-kind="RAIL"] {
+  background: repeating-linear-gradient(to bottom, var(--red) 0 3px, var(--cream) 3px 6px);
+}
+
+.icon[data-kind="HAY"] {
+  background: var(--gold);
+}
+
+.icon[data-kind="MUD"] {
+  width: 16px;
+  height: 8px;
+  background: var(--wood-700);
+}
