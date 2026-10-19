@@ -2,7 +2,7 @@
 import type { CSSProperties } from "react";
 import { drawFrame, ROW, tinted, type Sprites } from "../render/sprites";
 import { useLog } from "../sim/bus";
-import type { HorseProfile, StallHealth } from "../sim/engine";
+import { formatMicrochip, type HorseProfile, type StallHealth } from "../sim/engine";
 import { COAT_LABEL, HEALTH_LABEL, LIFECYCLE_LABEL, STRATEGY_LABEL } from "../sim/horses";
 import c from "./HorseCard.module.css";
 import { PixelCanvas } from "./PixelCanvas";
@@ -104,6 +104,10 @@ export function HorseCard({ horse: h, sprites, reported, onToggleLock, onClose }
             <div>
               <dt>Lối đua</dt>
               <dd>{STRATEGY_LABEL[h.strategy]}</dd>
+            </div>
+            <div className={c.wide}>
+              <dt>Mã chip</dt>
+              <dd>{formatMicrochip(h.microchip)}</dd>
             </div>
           </dl>
         </div>

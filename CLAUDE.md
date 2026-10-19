@@ -9,7 +9,7 @@
 |---|---|---|
 | `Racehorse_Training_Management_System_MT_BE/` | Backend NestJS 11 + Prisma 6 + PostgreSQL (Docker) | **repo riêng** |
 | `Racehorse_Training_Management_System_MT_FE/` | Main Web: React 19 + Vite 8 + React Router 7 | **repo riêng** |
-| `Racehorse_Simulator_Web/` | Simulator Web (Digital Twin / IoT ảo), pixel art Canvas 2D, giao diện kiểu Hay Day | **chưa có git** |
+| `Racehorse_Simulator_Web/` | Simulator Web (Digital Twin / IoT ảo), pixel art Canvas 2D, giao diện kiểu Hay Day | **repo riêng** (`main`; nhánh làm đẹp bản đồ `feature/farm-map-life-and-ambient-content`, kế hoạch ở `docs/superpowers/plans/2026-10-19-farm-map-life-and-ambient-content.md`) |
 | `horse simulation model/` | SRS & Design Handoff v2.0 của Simulator (PDF) + bản chat concept (ảnh tham khảo) | — |
 | `Tai_Lieu/`, `docs/`, `srsv4.txt` | Đặc tả nghiệp vụ. `docs/EquiFlow_TaiLieu_BanGiao_MoHinhGiaLap_3GiaiDoan.md` đã **OUTDATED** (thay bằng SRS v2.0) | — |
 | `start.bat` / `stop.bat` / `setup-db.bat` | Chạy/dừng BE + FE, dựng DB (không chạy Simulator) | — |
@@ -89,7 +89,7 @@ Trên Windows, gọi Aseprite bằng `Start-Process -NoNewWindow -Wait` (gọi b
 - Sprite: ô 32×32, sheet 6×6 = 192×192, nền trong suốt, chân y = 30, đúng bảng màu SRS §12; đổi màu bằng `src/render/palette.ts`.
 - Mọi hiệu ứng có nhánh `prefers-reduced-motion` (chỉ còn mờ dần).
 - Font: chữ có dấu tiếng Việt dùng VT323; Silkscreen không có dấu, chỉ dùng cho chữ ASCII.
-- **Mã chip ngựa:** `microchip` là 15 chữ số (ISO 11784/11785), khớp ràng buộc BE `/^\d{15}$/`; Simulator tự sinh `985141` + 9 số trong `src/sim/horses.ts` và gửi đi dưới tên `microchip_id` (`horseRef` trong `packets.ts`). Không hiện mã chip trên UI. Khóa nội bộ luôn là `horse_id`, không phải mã chip. Simulator chưa có `rfid`; khi nối API phải tôn trọng việc BE che mã chip với GROOM (chỉ 4 số cuối). Chi tiết: `HANDOVER.md` mục "Mã chip ngựa".
+- **Mã chip ngựa:** `microchip` là 15 chữ số (ISO 11784/11785), khớp ràng buộc BE `/^\d{15}$/`; Simulator tự sinh `985141` + 9 số trong `src/sim/horses.ts` và gửi đi dưới tên `microchip_id` (`horseRef` trong `packets.ts`). **Mã chip được hiện cho mọi người xem, kể cả người dùng phổ thông** (ngoại lệ của quy tắc "không hiện chữ kỹ thuật"): đủ 15 số, không che, chỉ trong `HorseCard`, chia nhóm 3 số qua `formatMicrochip` (`src/sim/engine.ts`). Khóa nội bộ luôn là `horse_id`, không phải mã chip. Simulator chưa có `rfid`; khi nối API phải tôn trọng việc BE che mã chip với GROOM (chỉ 4 số cuối). Chi tiết: `HANDOVER.md` mục "Mã chip ngựa".
 - Không thêm dependency khi chưa hỏi.
 
 ## 5. Cấu trúc Simulator (`Racehorse_Simulator_Web/`)

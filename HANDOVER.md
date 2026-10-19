@@ -6,7 +6,8 @@
 ## 0. Việc phải làm NGAY trước khi chia sẻ thư mục
 
 1. **`Racehorse_Simulator_Web/claude_data/` chứa bản xuất lịch sử chat cá nhân** (`conversations.json`, nhiều file `.zip`). Xóa hoặc chuyển ra ngoài trước khi gửi thư mục cho người khác hay đưa lên git.
-2. **Simulator chưa có git.** Toàn bộ công việc của phiên chỉ nằm trên ổ đĩa. Cần `git init` (hoặc đưa vào repo nhóm) với `.gitignore` gồm `node_modules/`, `dist/`, `claude_data/`, `*.zip`. Không commit `aseprite.exe`.
+2. **Simulator đã có git** (remote `origin` = `github.com/MichaelTran1226/Racehorse_Simulator_Web`, nhánh `main`). `.gitignore` đã chặn `claude_data/`. Không commit `aseprite.exe`.
+   - Nhánh đang làm: `feature/farm-map-life-and-ambient-content`, chỉ làm đẹp lại bản đồ (ngựa thật trong chuồng, chi tiết môi trường, chuyển động nhẹ; không thêm gameplay). Kế hoạch: `docs/superpowers/plans/2026-10-19-farm-map-life-and-ambient-content.md`. Việc hiện mã chip trong thẻ ngựa cũng được làm trên nhánh này.
 3. Các file rác trong `Racehorse_Simulator_Web/`: `dashboard-preview.png`, `manifest-…-2026-10-18-19-18-01.json` (sinh ra khi thử ChatGPT). Xóa được sau khi người phụ trách xác nhận.
 
 ## 1. Current State & Completed
@@ -40,9 +41,9 @@ Kiểm tra lần cuối (19/10/2026): `npm run typecheck` sạch · `npm test` *
 | Trùng mã | Không kiểm (dữ liệu mẫu, seed cố định) | 409 `DUPLICATE_MICROCHIP`; nếu trùng hồ sơ đã xóa thì yêu cầu khôi phục thay vì tạo mới |
 | Phân quyền | Không có | GROOM chỉ thấy 4 số cuối (`maskMicrochip`), áp cho cả `microchipRfid` |
 | Trong gói tin | `horse.microchip_id` của mọi gói có `horseRef` (`src/sim/packets.ts:14`), theo SRS §9 | — |
-| Hiển thị | **Không hiện trên UI** (chữ kỹ thuật, theo ADR-7). Icon "chip RFID" có trong S11 (`art/gen/fx-icons.ts:352`) nhưng chưa dùng | Main Web hiện ở danh sách/chi tiết/form ngựa, hồ sơ y tế |
+| Hiển thị | **Hiện đủ 15 số, không che, cho mọi người xem (kể cả người dùng phổ thông)** — chỉ trong thẻ ngựa (`HorseCard`), dòng "Mã chip", chia nhóm 3 số bằng `formatMicrochip` (`src/sim/engine.ts`). Không hiện ở Đàn ngựa, ô chuồng, khung chọn ngựa, nhãn trên bản đồ. Icon "chip RFID" trong S11 (`art/gen/fx-icons.ts:352`) chưa dùng | Main Web hiện ở danh sách/chi tiết/form ngựa, hồ sơ y tế |
 
-Khi nối dữ liệu (mục 6, bước 6): lấy `microchip` từ API thay vì tự sinh, giữ nguyên chuỗi đã bị che với GROOM (không cố "giải mã"), và không dùng `microchip_id` làm khóa nội bộ — khóa vẫn là `horse_id`.
+Khi nối dữ liệu (mục 6, bước 6): lấy `microchip` từ API thay vì tự sinh, giữ nguyên chuỗi đã bị che với GROOM (không cố "giải mã"; `formatMicrochip` chỉ nhóm chữ số liền nhau, với chuỗi `***********1234` sẽ ra `***********123 4`, nên sửa lại hàm khi nối API), và không dùng `microchip_id` làm khóa nội bộ — khóa vẫn là `horse_id`.
 
 ## 2. In-Progress & Uncommitted
 
@@ -120,7 +121,7 @@ Khi nối dữ liệu (mục 6, bước 6): lấy `microchip` từ API thay vì 
 
 ## 6. Next Steps / Action Items (theo thứ tự)
 
-1. Xử lý mục 0: xóa `claude_data/`, `git init` Simulator với `.gitignore`, rồi commit đầu tiên.
+1. Xử lý mục 0: xóa `claude_data/` trước khi chia sẻ thư mục (git đã có và đã chặn thư mục này).
 2. Sửa 4 lỗi "Quan trọng" của review (mục 2) trước khi người dùng duyệt bản cuối. Hai lỗi đầu là yêu cầu của T10 đã bị tích nhầm.
 3. Người dùng duyệt bản cuối giao diện Hay Day (ô cuối `tasks/todo-hayday.md`). Lưu trữ `tasks/plan.md`, `tasks/todo.md` và `SPEC-sprite-farm-map.md` cũ khi được đồng ý.
 4. Chốt mâu thuẫn RULE-MED-02 trong `CONSTRAINTS.md` với ADR-3, có xác nhận của người duyệt.

@@ -48,6 +48,9 @@ export interface HorseProfile {
   strategy: Strategy;
 }
 
+/** "985141000000001" → "985 141 000 000 001": người xem phổ thông đọc/đối chiếu theo nhóm 3 số. */
+export const formatMicrochip = (chip: string) => chip.replace(/(\d{3})(?=\d)/g, "$1 ");
+
 // Hệ số mặt sân K (SRS M1). Cỏ nhanh & ít hao, cát chậm & hao nhiều, hỗn hợp trung tính.
 export const SURFACE: Record<Surface, { speed: number; drain: number }> = {
   GRASS: { speed: 1.05, drain: 0.9 },

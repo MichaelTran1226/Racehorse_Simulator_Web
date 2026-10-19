@@ -5,6 +5,7 @@ import {
   createRace,
   jumpLift,
   createRun,
+  formatMicrochip,
   INTENSITY_PACE,
   standings,
   stepRace,
@@ -110,4 +111,9 @@ test("chướng ngại & sân lầy làm chậm, đếm đủ số lần vượt
   assert.ok(s.durationS > summarize(plain).durationS, "phải chậm hơn khi có chướng ngại + sân lầy");
   assert.equal(s.obstaclesCleared, 3);
   assert.ok(maxLift > 0.9, `nhảy cao ${maxLift}`);
+});
+
+test("mã chip 15 số được chia nhóm 3 số cho dễ đọc", () => {
+  assert.equal(formatMicrochip("985141000000001"), "985 141 000 000 001");
+  assert.equal(formatMicrochip("9851"), "985 1");
 });

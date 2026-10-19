@@ -159,6 +159,11 @@
   text-align: right;
 }
 
+/* Mã chip 15 số không vừa nửa cột. */
+.facts .wide {
+  grid-column: 1 / -1;
+}
+
 .section {
   margin-top: var(--sp-4);
   padding-top: var(--sp-3);
