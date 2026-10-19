@@ -91,6 +91,8 @@ export function FarmHub({ sprites, horses, reported, speed, speeds, onSpeed, onE
         onHorse={openCard}
         arriveFrom={arriveFrom}
         trip={trip}
+        simulationRunning={speed > 0}
+        hasHay={inventory.stock.HAY > 0}
       />
 
       {/* Trên-trái: đồng hồ + ngày/đêm */}
