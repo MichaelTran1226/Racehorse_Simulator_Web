@@ -17,7 +17,9 @@ Kiểm tra lần cuối (19/10/2026): `npm run typecheck` sạch · `npm test` *
 | Phần | Trạng thái | File chính |
 |---|---|---|
 | Bộ sprite chính thức (S01 ngựa, S14 nài, S07/S08/S10 bản đồ, S06 người, S15 xe, S13 hiệu ứng, S11 biểu tượng) vẽ bằng code → `.aseprite` | Xong, người dùng đã duyệt 4 đợt | `art/gen/*.ts`, `art/aseprite/*.lua`, `public/assets/sprites/` |
-| Đề xuất S16 sinh vật môi trường (Chim, Mèo, Bướm, Cờ gió), ô 32×32, sheet 192×192, baseline y=30 | **Chưa duyệt**; chỉ giữ preview, không có trong runtime | `art/gen/ambient-life.ts`, `art/preview/s16-ambient-life-*.png` |
+| S16 sinh vật môi trường (Chim sẻ, Mèo, Bướm, Túi gió), ô 32×32, sheet 192×192, baseline y=30 | **Đã duyệt nguyên bản preview (20/10/2026)**, chạy trên bản đồ | `art/gen/ambient-life.ts`, `public/assets/sprites/s16-ambient-life.png`, `src/hub/ambientScene.ts` |
+| Hoạt động tự chạy: nài cưỡi ngựa nước kiệu vòng ô đất mép trái + HLV bấm giờ; khu kho–phòng khám có xe điện, xe kéo cỏ (ẩn khi hết cỏ), groom chải ngựa, bác sĩ dừng khám, hai người trò chuyện. Xe không còn ghép cứng trong ảnh nền | Xong (20/10), có test; mọi nhân vật đứng yên khi giảm chuyển động | `src/hub/ambientScene.ts` (`walkPause`), `src/hub/ambient.ts`, `art/map/gen-layout.ts` |
+| Thẻ ngựa: thanh nhịp tim 3 vùng có tên (Nghỉ / Vận động / Quá sức) + câu giải thích; mã chip 15 số | Xong (20/10), có test | `src/ui/heartZones.ts`, `src/ui/HorseCard.tsx` |
 | Bản đồ trang trại 1280×768 theo bố cục M1, ghép từ sprite đã duyệt + 14 vật phẩm tĩnh không lấn hành lang | Đã rebuild; manifest SHA-256 ràng buộc layout, `.aseprite` và toàn bộ PNG để phát hiện output cũ | `art/map/gen-layout.ts`, `art/map/farm-build-manifest.json`, `public/assets/maps/` |
 | Màn chính kiểu Hay Day: bản đồ phủ kín, HUD 4 góc (giờ, ngày/đêm, bộ đếm ngựa/sự cố/khóa y tế/kho sắp hết, nút Ngựa/Kho/Tốc độ) | Xong (T1) | `src/ui/FarmHub.tsx` |
 | Camera: kéo + quán tính, lăn chuột phóng quanh con trỏ, lướt tới công trình, phóng sát vào Đường đua và lùi ra khi quay về | Xong (T1, T7, T11) | `src/hub/camera.ts`, `useFarmCamera.ts`, `src/ui/FarmMapCanvas.tsx` |
@@ -48,7 +50,7 @@ Khi nối dữ liệu (mục 6, bước 6): lấy `microchip` từ API thay vì 
 ## 2. In-Progress & Uncommitted
 
 - **Uncommitted:** toàn bộ `Racehorse_Simulator_Web/` (trên nhánh `feature/farm-map-life-and-ambient-content`).
-- **Chờ duyệt:** Chọn một hướng trong `art/preview/map-style-directions.png`. S16 cũ vẫn chỉ là preview và chưa được phép vào runtime.
+- **Chờ duyệt:** Chọn một hướng trong `art/preview/map-style-directions.png` (người dùng có nghiêng về vùng đồng bằng, chưa chốt).
 - **Kế hoạch cũ chưa đóng:** `tasks/plan.md` (42 ô chưa tích) và `tasks/todo.md` (9 ô) là kế hoạch bản đồ 2048×1536, bỏ ban đêm, do ChatGPT viết. Kế hoạch này **đã bị thay** bằng bản đồ M1 1280×768 có ngày/đêm, nhưng chưa được lưu trữ vì cần người dùng đồng ý. Đừng làm theo nó. `SPEC-sprite-farm-map.md` cũng thuộc hướng cũ đó (yêu cầu "chỉ crop/copy" vẫn còn đúng).
 - **Giới hạn đã ghi trong code (`shortcut:`):**
   - `src/sim/inventory.ts:15`: tốc độ tiêu hao được tăng tốc cho demo (cỏ khô cạn sau khoảng 5 phút ở 1×). Khi nối kho thật thì thay bằng định mức/ngày.

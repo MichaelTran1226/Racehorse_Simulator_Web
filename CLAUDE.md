@@ -86,6 +86,7 @@ Trên Windows, gọi Aseprite bằng `Start-Process -NoNewWindow -Wait` (gọi b
 - **Logic thuần tách khỏi DOM** (`src/hub/camera.ts`, `paths.ts`, `farmLayout.ts`, `src/sim/*`, `src/render/farmScene.ts`): không import module chạm DOM/canvas. Test import kèm đuôi `.ts`, vì Node không tự tìm file `.ts` khi import không có đuôi.
 - **Logic mới không tầm thường phải có test** `*.test.ts` đặt cạnh file.
 - **Bản đồ chỉ crop/copy/place sprite đã duyệt** (không vẽ primitive, scale, rotate, chèn chữ, không dùng ảnh concept). `verify:map` kiểm điều này.
+- Sheet đã duyệt: S01, S06, S07, S08, S10, S11, S13, S14, S15, S16 (S16 duyệt 20/10/2026). Sprite mới phải qua preview và duyệt trước khi vào `public/assets/`.
 - Sprite: ô 32×32, sheet 6×6 = 192×192, nền trong suốt, chân y = 30, đúng bảng màu SRS §12; đổi màu bằng `src/render/palette.ts`.
 - Mọi hiệu ứng có nhánh `prefers-reduced-motion` (chỉ còn mờ dần).
 - Font: chữ có dấu tiếng Việt dùng VT323; Silkscreen không có dấu, chỉ dùng cho chữ ASCII.
@@ -97,7 +98,7 @@ Trên Windows, gọi Aseprite bằng `Start-Process -NoNewWindow -Wait` (gọi b
 | Đường dẫn | Nội dung |
 |---|---|
 | `src/sim/` | `engine.ts` (telemetry), `packets.ts` (gói SRS §9), `bus.ts` (bus cục bộ), `horses.ts`, `inventory.ts` (kho) |
-| `src/hub/` | `farmLayout.ts` (đọc layout sinh sẵn), `camera.ts` (clamp/zoom/quán tính), `paths.ts` (đường đi ngựa/xe tải, thuần), `ambient.ts` (vẽ nhân vật + đêm), `useFarmCamera.ts`, `pixelHitTest.ts` |
+| `src/hub/` | `farmLayout.ts` (đọc layout sinh sẵn), `camera.ts` (clamp/zoom/quán tính), `paths.ts` (đường đi ngựa/xe tải, thuần), `ambientScene.ts` (tư thế mọi nhân vật nền, thuần, có nhánh giảm chuyển động), `ambient.ts` (vẽ nhân vật + đêm), `useFarmCamera.ts`, `pixelHitTest.ts` |
 | `src/render/` | Nạp sprite, đổi màu, `farmScene.ts`, `scenes.ts` (chuồng/đua), `silhouette.ts` |
 | `src/ui/` | `App`, `FarmHub` (HUD), `FarmMapCanvas`, `Popup`, `HorseCard`, `HorseList`, `HorsePicker`, `StallTab`, `VetZone`, `SupplyPanel`, `TrialTab`, `RaceTab`, `AssetOverview` (`/?dev`) |
 | `art/gen/` | Script vẽ sprite bằng code → `art/png`, `public/assets/sprites` |

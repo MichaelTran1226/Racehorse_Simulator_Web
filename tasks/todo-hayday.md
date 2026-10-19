@@ -154,8 +154,8 @@ Kế hoạch: `docs/superpowers/plans/2026-10-19-farm-map-life-and-ambient-conte
 
 ### T16: Bộ sprite S16 sinh vật môi trường (Chim, Mèo, Bướm, Cờ gió)
 - [x] Sinh sprite chuẩn 32×32, 192×192, baseline y=30
-- [ ] Người dùng duyệt từng hàng qua checkpoint
-- [ ] Tích hợp runtime Canvas cho riêng các hàng đã duyệt
+- [x] Người dùng duyệt từng hàng qua checkpoint (duyệt cả 4 hàng, 20/10/2026)
+- [x] Tích hợp runtime Canvas cho riêng các hàng đã duyệt
 
 ## Checkpoint cuối
 - [x] typecheck · test (46/46) · build · verify:map · trình duyệt đạt
