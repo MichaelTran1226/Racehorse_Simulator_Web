@@ -94,6 +94,12 @@ export function drawFarmActors(
   drawFrame(ctx, sprites.horse, tinted(sprites.horse, "CHESTNUT"), 0, ROW.IDLE, grooming.x + 28, grooming.y, CELL);
   drawFrame(ctx, sprites.people, sprites.people.canvas, grooming.frame, grooming.row ?? 3, grooming.x, grooming.y, CELL, grooming.flip);
 
+  // 7. Sinh vật S16 đã duyệt: chim sẻ, mèo, bướm, túi gió
+  for (const id of ["S16_BIRD", "S16_CAT", "S16_BUTTERFLY", "S16_WINDSOCK"] as const) {
+    const p = ambientActorPose(id, time, ambientState);
+    drawFrame(ctx, sprites.ambientLife, sprites.ambientLife.canvas, p.frame, p.row ?? 0, p.x, p.y, CELL, p.flip);
+  }
+
 }
 
 /** Ban đêm: phủ tối + quầng đèn ở cửa sổ, chuồng, đường đua; đom đóm. Chỉ là lớp phủ lúc chạy, bố cục không đổi. */

@@ -10,6 +10,7 @@ export const FARM_ASSET_URLS = {
     fx: "/assets/sprites/s13-fx.png",
     rider: "/assets/sprites/s14-rider.png",
     vehicles: "/assets/sprites/s15-vehicles.png",
+    ambientLife: "/assets/sprites/s16-ambient-life.png",
   },
 } as const;
 

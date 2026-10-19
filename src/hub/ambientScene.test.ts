@@ -73,7 +73,7 @@ test("reduced motion returns a stable pose for every ambient actor", () => {
 });
 
 test("ambient actor ids contain only approved existing actors", () => {
-  assert.equal(AMBIENT_ACTOR_IDS.length, 15);
+  assert.equal(AMBIENT_ACTOR_IDS.length, 19);
   const expected = new Set([
     "TRACK_RIDER_1",
     "TRACK_RIDER_2",
@@ -90,16 +90,14 @@ test("ambient actor ids contain only approved existing actors", () => {
     "BARN_GROOMING",
     "CHAT_A",
     "CHAT_B",
+    "S16_BIRD",
+    "S16_CAT",
+    "S16_BUTTERFLY",
+    "S16_WINDSOCK",
   ]);
   assert.deepEqual(new Set(AMBIENT_ACTOR_IDS), expected);
 });
 
-test("unapproved S16 row ids never appear in AMBIENT_ACTOR_IDS", () => {
-  const ids = AMBIENT_ACTOR_IDS as readonly string[];
-  for (const id of ["S16_BIRD", "S16_CAT", "S16_BUTTERFLY", "S16_WINDSOCK"]) {
-    assert.equal(ids.includes(id), false);
-  }
-});
 
 test("walkPause đi rồi dừng theo chu kỳ, không lùi quãng đường", () => {
   assert.deepEqual(walkPause(0, 10, 3), { walkedS: 0, paused: false });
@@ -145,4 +143,12 @@ test("xe điện chạy trên đường chính", () => {
   const p = ambientActorPose("ROAD_CART", 1e6, runningState);
   assert.equal(p.y, 596);
   assert.ok(p.x >= 40 && p.x <= 1240);
+});
+
+test("túi gió đứng yên một chỗ và chỉ phất khi đang chạy", () => {
+  const a = ambientActorPose("S16_WINDSOCK", 1, runningState);
+  const b = ambientActorPose("S16_WINDSOCK", 9, runningState);
+  assert.deepEqual({ x: a.x, y: a.y }, { x: b.x, y: b.y });
+  assert.ok(a.frame >= 2 && a.frame <= 5);
+  assert.equal(ambientActorPose("S16_WINDSOCK", 9, { ...runningState, simulationRunning: false }).frame, 0);
 });

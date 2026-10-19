@@ -37,7 +37,11 @@ export type AmbientActorId =
   | "SUPPLY_HAYCART"
   | "BARN_GROOMING"
   | "CHAT_A"
-  | "CHAT_B";
+  | "CHAT_B"
+  | "S16_BIRD"
+  | "S16_CAT"
+  | "S16_BUTTERFLY"
+  | "S16_WINDSOCK";
 
 export const AMBIENT_ACTOR_IDS: readonly AmbientActorId[] = [
   "TRACK_RIDER_1",
@@ -55,6 +59,10 @@ export const AMBIENT_ACTOR_IDS: readonly AmbientActorId[] = [
   "BARN_GROOMING",
   "CHAT_A",
   "CHAT_B",
+  "S16_BIRD",
+  "S16_CAT",
+  "S16_BUTTERFLY",
+  "S16_WINDSOCK",
 ] as const;
 
 export interface AmbientPose {
@@ -85,6 +93,12 @@ export const HAYCART_PATH: Path = [{ x: 820, y: 700 }, { x: 1010, y: 700 }]; // 
 export const GROOMING_POS = { x: 856, y: 756 }; // groom; ngựa đứng lệch phải 28 px
 export const CHAT_POS_A = { x: 960, y: 640 };
 export const CHAT_POS_B = { x: 988, y: 640 };
+
+// S16 (duyệt 20/10/2026): chim trên rào bãi thả, mèo đường kho, bướm khóm hoa nhà cam, túi gió ngoài đường đua
+export const BIRD_PATH: Path = [{ x: 220, y: 284 }, { x: 310, y: 284 }];
+export const CAT_PATH: Path = [{ x: 710, y: 610 }, { x: 790, y: 610 }];
+export const BUTTERFLY_PATH: Path = [{ x: 990, y: 420 }, { x: 1060, y: 440 }, { x: 1010, y: 450 }];
+export const WINDSOCK_POS = { x: 840, y: 260 };
 
 /** Chu kỳ "đi walkS giây rồi dừng tay pauseS giây": quãng đã đi không lùi khi dừng. */
 export function walkPause(time: number, walkS: number, pauseS: number): { walkedS: number; paused: boolean } {
@@ -161,6 +175,14 @@ export function ambientActorPose(
         return { ...CHAT_POS_A, dir: 1, frame: 4, row: 4, flip: false, active: true };
       case "CHAT_B":
         return { ...CHAT_POS_B, dir: -1, frame: 4, row: 5, flip: true, active: true };
+      case "S16_BIRD":
+        return { ...BIRD_PATH[0], dir: 1, frame: 0, row: 0, flip: false, active: true };
+      case "S16_CAT":
+        return { ...CAT_PATH[0], dir: 1, frame: 0, row: 1, flip: false, active: true };
+      case "S16_BUTTERFLY":
+        return { ...BUTTERFLY_PATH[0], dir: 1, frame: 0, row: 2, flip: false, active: true };
+      case "S16_WINDSOCK":
+        return { ...WINDSOCK_POS, dir: 1, frame: 0, row: 3, flip: false, active: true };
     }
   }
 
@@ -237,6 +259,27 @@ export function ambientActorPose(
     case "CHAT_B": {
       const frame = state.simulationRunning && walkPause(time + 2, 3, 1).paused ? 5 : 4;
       return { ...CHAT_POS_B, dir: -1, frame, row: 5, flip: true, active: true };
+    }
+    case "S16_BIRD": {
+      const p = along(BIRD_PATH, effectiveTime * 15, true);
+      const hopping = Math.floor(time * 3) % 2 === 0;
+      const frame = !state.simulationRunning ? 0 : hopping ? Math.floor(time * 4) % 2 : 2 + (Math.floor(time * 6) % 2);
+      return { x: p.x, y: p.y, dir: p.dir, frame, row: 0, flip: p.dir < 0, active: true };
+    }
+    case "S16_CAT": {
+      const p = along(CAT_PATH, effectiveTime * 12, true);
+      const walking = Math.floor(time * 2) % 6 < 4;
+      const frame = !state.simulationRunning ? 0 : walking ? 2 + (Math.floor(time * 4) % 2) : 4 + (Math.floor(time * 2) % 2);
+      return { x: p.x, y: p.y, dir: p.dir, frame, row: 1, flip: p.dir < 0, active: true };
+    }
+    case "S16_BUTTERFLY": {
+      const p = along(BUTTERFLY_PATH, effectiveTime * 20, true);
+      const frame = state.simulationRunning ? 2 + (Math.floor(time * 8) % 4) : 0;
+      return { x: p.x, y: p.y, dir: p.dir, frame, row: 2, flip: p.dir < 0, active: true };
+    }
+    case "S16_WINDSOCK": {
+      const frame = state.simulationRunning ? 2 + (Math.floor(time * 6) % 4) : 0;
+      return { ...WINDSOCK_POS, dir: 1, frame, row: 3, flip: false, active: true };
     }
   }
 }

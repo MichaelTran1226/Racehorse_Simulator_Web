@@ -9,8 +9,8 @@
 import { readFileSync } from "node:fs";
 import { hex, Img, preview, savePng, sheet, type RGBA } from "./pixel.ts";
 
-/** Approval manifest. Keep empty until the user explicitly approves rows from the previews. */
-export const APPROVED_S16_ROWS: readonly string[] = [];
+export const APPROVED_S16_ROWS = ["BIRD", "CAT", "BUTTERFLY", "WINDSOCK"] as const;
+export type ApprovedS16Row = (typeof APPROVED_S16_ROWS)[number];
 
 export const S16_PALETTE_HEX: readonly string[] = [
   "#1D130E", // Viền mực sẫm (INK)
@@ -526,11 +526,14 @@ export function generateContextPreview(): Img {
   return board;
 }
 
-// Chạy trực tiếp chỉ sinh ảnh đề xuất. Không xuất bản vào runtime trước khi được duyệt.
+// Chạy trực tiếp sinh ảnh preview và xuất bản sheet S16 đã duyệt
 if (import.meta.url === `file:///${process.argv[1]?.replace(/\\/g, "/")}`) {
   const sheetImg = generateAmbientLifeSheet();
+  savePng("art/png/s16-ambient-life.png", sheetImg);
+  savePng("public/assets/sprites/s16-ambient-life.png", sheetImg);
+  savePng("art/preview/provenance/s16-ambient-life.png", sheetImg);
   savePng("art/preview/s16-ambient-life-x4.png", preview(sheetImg, 4));
   savePng("art/preview/s16-ambient-life-context.png", preview(generateContextPreview(), 2));
-  console.log("Generated preview-only S16 proposals; nothing was published to runtime.");
+  console.log("Published S16 ambient life sprites and generated previews successfully!");
 }
 

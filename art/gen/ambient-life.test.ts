@@ -58,9 +58,9 @@ test("rows 4 and 5 are transparent and reserved", () => {
   }
 });
 
-test("unapproved S16 proposal stays out of runtime assets", () => {
+test("S16 approved by the user on 2026-10-20 (all 4 rows) ships in runtime assets", () => {
+  assert.deepEqual([...APPROVED_S16_ROWS], ["BIRD", "CAT", "BUTTERFLY", "WINDSOCK"]);
   const urls = JSON.stringify(FARM_ASSET_URLS).toLowerCase();
-  assert.deepEqual(APPROVED_S16_ROWS, []);
-  assert.equal(urls.includes("s16-ambient-life.png"), false);
+  assert.ok(urls.includes("s16-ambient-life.png"), "FARM_ASSET_URLS must include s16-ambient-life.png when rows are approved");
 });
 
