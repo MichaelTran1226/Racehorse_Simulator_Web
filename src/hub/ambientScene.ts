@@ -30,7 +30,9 @@ export type AmbientActorId =
   | "HOUSE_MANAGER"
   | "HOUSE_OWNER"
   | "SUPPLY_BARROW"
-  | "HOUSE_CART";
+  | "HOUSE_CART"
+  | "LEFT_RIDER"
+  | "LEFT_COACH";
 
 export const AMBIENT_ACTOR_IDS: readonly AmbientActorId[] = [
   "TRACK_RIDER_1",
@@ -41,6 +43,8 @@ export const AMBIENT_ACTOR_IDS: readonly AmbientActorId[] = [
   "HOUSE_OWNER",
   "SUPPLY_BARROW",
   "HOUSE_CART",
+  "LEFT_RIDER",
+  "LEFT_COACH",
 ] as const;
 
 export interface AmbientPose {
@@ -62,6 +66,16 @@ export const MANAGER_PATH: Path = [{ x: 900, y: 474 }, { x: 1150, y: 474 }]; // 
 export const OWNER_PATH: Path = [{ x: 920, y: 474 }, { x: 1140, y: 474 }]; // đi dạo vườn nhà cam
 export const BARROW_PATH: Path = [{ x: 620, y: 620 }, { x: 240, y: 620 }, { x: 240, y: 284 }, { x: 140, y: 284 }]; // kho → dãy chuồng
 export const CART_PATH: Path = [{ x: 870, y: 346 }, { x: 1240, y: 346 }]; // xe điện nhánh tới văn phòng
+
+export const LEFT_RIDE_PATH: Path = [{ x: 32, y: 316 }, { x: 200, y: 316 }, { x: 200, y: 372 }, { x: 32, y: 372 }, { x: 32, y: 316 }]; // vòng cưỡi ô đất mép trái
+export const LEFT_COACH_POS = { x: 216, y: 412 }; // HLV đứng cạnh cổng ô đất trái
+
+/** Chu kỳ "đi walkS giây rồi dừng tay pauseS giây": quãng đã đi không lùi khi dừng. */
+export function walkPause(time: number, walkS: number, pauseS: number): { walkedS: number; paused: boolean } {
+  const cycle = walkS + pauseS;
+  const rest = time % cycle;
+  return { walkedS: Math.floor(time / cycle) * walkS + Math.min(rest, walkS), paused: rest >= walkS };
+}
 
 /** Xe cút kít còn hiện khi kho có cỏ; đồng hồ ambient quyết định chạy hay đứng yên khi Pause. */
 export function barrowActive(state: AmbientSceneState): boolean {
@@ -111,6 +125,12 @@ export function ambientActorPose(
         const p = along(CART_PATH, 0, true);
         return { x: p.x, y: p.y, dir: 1, frame: 0, flip: false, active: true };
       }
+      case "LEFT_RIDER": {
+        const p = along(LEFT_RIDE_PATH, 0, false);
+        return { x: p.x, y: p.y, dir: 1, frame: 0, row: 2, flip: false, active: true };
+      }
+      case "LEFT_COACH":
+        return { ...LEFT_COACH_POS, dir: -1, frame: 4, row: 1, flip: true, active: true };
     }
   }
 
@@ -156,6 +176,15 @@ export function ambientActorPose(
     case "HOUSE_CART": {
       const p = along(CART_PATH, effectiveTime * 40, true);
       return { x: p.x, y: p.y, dir: p.dir, frame: 0, flip: p.dir < 0, active: true };
+    }
+    case "LEFT_RIDER": {
+      const p = along(LEFT_RIDE_PATH, effectiveTime * 30, false);
+      const frame = state.simulationRunning ? Math.floor(time * 8) % 6 : 0;
+      return { x: p.x, y: p.y, dir: p.dir, frame, row: 2, flip: p.dir < 0, active: true };
+    }
+    case "LEFT_COACH": {
+      const frame = state.simulationRunning && walkPause(time, 6, 2).paused ? 5 : 4;
+      return { ...LEFT_COACH_POS, dir: -1, frame, row: 1, flip: true, active: true };
     }
   }
 }

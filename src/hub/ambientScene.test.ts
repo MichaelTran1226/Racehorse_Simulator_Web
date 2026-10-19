@@ -5,8 +5,11 @@ import {
   advanceAmbientClock,
   ambientActorPose,
   barrowActive,
+  walkPause,
   type AmbientSceneState,
 } from "./ambientScene.ts";
+
+const runningState: AmbientSceneState = { reducedMotion: false, simulationRunning: true, hasHay: true };
 
 const reducedState: AmbientSceneState = {
   reducedMotion: true,
@@ -70,7 +73,7 @@ test("reduced motion returns a stable pose for every ambient actor", () => {
 });
 
 test("ambient actor ids contain only approved existing actors", () => {
-  assert.equal(AMBIENT_ACTOR_IDS.length, 8);
+  assert.equal(AMBIENT_ACTOR_IDS.length, 10);
   const expected = new Set([
     "TRACK_RIDER_1",
     "TRACK_RIDER_2",
@@ -80,6 +83,8 @@ test("ambient actor ids contain only approved existing actors", () => {
     "HOUSE_OWNER",
     "SUPPLY_BARROW",
     "HOUSE_CART",
+    "LEFT_RIDER",
+    "LEFT_COACH",
   ]);
   assert.deepEqual(new Set(AMBIENT_ACTOR_IDS), expected);
 });
@@ -89,4 +94,24 @@ test("unapproved S16 row ids never appear in AMBIENT_ACTOR_IDS", () => {
   for (const id of ["S16_BIRD", "S16_CAT", "S16_BUTTERFLY", "S16_WINDSOCK"]) {
     assert.equal(ids.includes(id), false);
   }
+});
+
+test("walkPause đi rồi dừng theo chu kỳ, không lùi quãng đường", () => {
+  assert.deepEqual(walkPause(0, 10, 3), { walkedS: 0, paused: false });
+  assert.deepEqual(walkPause(11, 10, 3), { walkedS: 10, paused: true });
+  assert.deepEqual(walkPause(14, 10, 3), { walkedS: 11, paused: false });
+  const far = walkPause(1e6, 10, 3);
+  assert.ok(far.walkedS > 0 && Number.isFinite(far.walkedS));
+});
+
+test("nài trên ô đất trái luôn nằm trong khung vòng cưỡi, kể cả thời gian rất lớn", () => {
+  for (const t of [0, 7.3, 1e6]) {
+    const p = ambientActorPose("LEFT_RIDER", t, runningState);
+    assert.ok(p.x >= 32 && p.x <= 200 && p.y >= 316 && p.y <= 372, `${t}: ${p.x},${p.y}`);
+  }
+});
+
+test("HLV giơ đồng hồ khi đang chạy, đứng yên khi tạm dừng", () => {
+  assert.equal(ambientActorPose("LEFT_COACH", 7, runningState).frame, 5);
+  assert.equal(ambientActorPose("LEFT_COACH", 7, { ...runningState, simulationRunning: false }).frame, 4);
 });

@@ -1,4 +1,4 @@
-import { drawFrame, drawRect, tinted, VEHICLE_RECT, type Sprites } from "../render/sprites.ts";
+import { drawFrame, drawRect, ROW, tinted, VEHICLE_RECT, type Sprites } from "../render/sprites.ts";
 import type { Coat } from "../sim/engine.ts";
 import type { Point } from "./farmLayout.ts";
 import { PADDOCK_SLOTS, paddockHorse } from "./paths.ts";
@@ -67,6 +67,13 @@ export function drawFarmActors(
 
   const cart = ambientActorPose("HOUSE_CART", time, ambientState);
   drawRect(ctx, sprites.vehicles, VEHICLE_RECT.cartDriver, cart.x, cart.y, 1, cart.flip);
+
+  // 5. Ô đất mép trái: nài cưỡi ngựa chạy nước kiệu vòng quanh, HLV đứng cạnh cổng bấm giờ
+  const ride = ambientActorPose("LEFT_RIDER", time, ambientState);
+  drawFrame(ctx, sprites.horse, tinted(sprites.horse, "BAY"), ride.frame, ROW.TROT, ride.x, ride.y, CELL, ride.flip);
+  drawFrame(ctx, sprites.rider, sprites.rider.canvas, ride.frame, 1, ride.x, ride.y, CELL, ride.flip);
+  const coach = ambientActorPose("LEFT_COACH", time, ambientState);
+  drawFrame(ctx, sprites.people, sprites.people.canvas, coach.frame, coach.row ?? 1, coach.x, coach.y, CELL, coach.flip);
 
 }
 
