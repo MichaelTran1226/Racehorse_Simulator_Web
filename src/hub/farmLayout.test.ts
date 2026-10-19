@@ -6,6 +6,8 @@ import {
   FARM_OBJECTS,
   FARM_PLACEMENTS,
   FARM_WORLD,
+  RESERVED_CORRIDORS,
+  validateDecorCorridors,
   validateFarmLayout,
 } from "./farmLayout.ts";
 
@@ -56,3 +58,14 @@ test("Aseprite map builder only copies from the approved sheet allowlist", () =>
   }
   assert.match(script, /Image\(source, Rectangle\(/);
 });
+
+test("loose decor placements do not overlap reserved corridors or building bounds", () => {
+  assert.equal(validateDecorCorridors(), true);
+  assert.ok(RESERVED_CORRIDORS.length >= 5);
+  const objectIds = new Set(FARM_OBJECTS.map((o) => o.id));
+  assert.deepEqual(objectIds, new Set(["stable", "track", "barn", "vet"]));
+  for (const placement of FARM_PLACEMENTS) {
+    assert.ok(ALLOWED_MAP_SHEETS.has(placement.sheet));
+  }
+});
+

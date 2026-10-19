@@ -26,7 +26,7 @@ export function along(path: Path, distance: number, pingPong: boolean): Point & 
 }
 
 const HORSE_PATH: Path = [{ x: 420, y: 420 }, { x: 700, y: 420 }]; // bãi thả
-const HORSE2_PATH: Path = [{ x: 440, y: 300 }, { x: 590, y: 300 }];
+const HORSE2_PATH: Path = [{ x: 440, y: 300 }, { x: 530, y: 300 }];
 
 const PADDOCK_PATHS = [HORSE_PATH, HORSE2_PATH] as const;
 const PADDOCK_PHASE = [0, 5] as const;

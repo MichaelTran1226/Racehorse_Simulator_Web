@@ -129,8 +129,11 @@ building("stable", "Khu chuồng", "STALL", 60, (put) => {
 });
 place(placements, SAND_LIGHT, 0, 2, "paths", 12, 9, 1); // lối đi rơm trước dãy 1
 place(placements, SAND_LIGHT, 1, 5, "paths", 12, 11, 1); // lối đi trước dãy 2
-decor(S07(4, 2), 9, 1, 41); // máng nước đầu dãy 1
-decor(S07(4, 3), 10, 0, 41);
+decor(S07(4, 2), 12, 1, 41); // máng nước đầu dãy 1
+decor(S07(4, 3), 12, 0, 41);
+decor(S07(0, 2), 12, 2, 41); // máng ăn bên hông dãy chuồng
+decor(S07(4, 2), 12, 3, 41); // máng nước bên hông dãy chuồng
+decor(WEEDS, 14, 5, 41);
 decor(S07(5, 3), 12, 4, 41);
 decor(S07(2, 2), 12, 5, 41);
 tree(13, 1);
@@ -149,7 +152,10 @@ decor(ROCKS, 9, 12, 42);
 decor(HAY_STACK, 20, 9, 42);
 decor(S07(4, 3), 22, 10, 42); // kiện rơm
 decor(S07(4, 3), 19, 12, 42);
-decor(HAY_STACK, 13, 13, 42);
+decor(HAY_STACK, 12, 13, 42);
+decor(S07(4, 2), 23, 9, 41); // máng nước mép bãi thả
+decor(ROCKS, 23, 14, 42);
+decor(WEEDS, 10, 14, 42);
 tree(16, 5);
 
 // ---- Đường đua vòng (trên-phải): rào ngoài, làn nhiều mặt sân ở cạnh dưới (cỏ · cát · đất như M1), sân trong cỏ
@@ -174,6 +180,8 @@ building("track", "Đường đua", "TRACK", 58, (put) => {
 });
 tree(17, 9);
 tree(39, 9);
+decor(FLOWER_BUSH, 25, 9, 42);
+decor(BUSH, 38, 9, 42);
 
 // ---- Nhà cam (nhà ở, chỉ trang trí — Văn phòng CLB đã bỏ khỏi giao diện người dùng)
 place(placements, ROOF_RED, 29, 11, "decor", 50, 6, 2);
@@ -182,6 +190,8 @@ place(placements, CLINIC_DOOR, 31, 13, "decor", 50);
 place(placements, OFFICE_WINDOW, 32, 13, "decor", 50, 3, 1);
 tree(36, 11);
 decor(FLOWER_BUSH, 35, 13, 42);
+decor(FLOWER_BUSH, 28, 14, 42);
+decor(BUSH, 36, 14, 42);
 
 // ---- Kho vật tư (nhà kho xám, giữa-dưới) + bao cám, kiện rơm, xe kéo cỏ trước cửa
 building("barn", "Kho vật tư", "SUPPLY", 60, (put) => {
@@ -193,6 +203,8 @@ building("barn", "Kho vật tư", "SUPPLY", 60, (put) => {
 });
 decor(SACKS, 18, 21, 51);
 decor(HAY_STACK, 18, 20, 51);
+decor(SACKS, 17, 20, 51);
+decor(HAY_STACK, 25, 20, 51);
 decor({ sheet: "s15-vehicles", c: 0, r: 4, w: 2, h: 1 }, 26, 21, 55); // xe kéo cỏ
 
 // ---- Phòng khám thú y (góc dưới-phải)
@@ -206,6 +218,8 @@ building("vet", "Phòng khám thú y", "VET", 60, (put) => {
 });
 decor(CROSS_SIGN, 32, 21, 51);
 tree(39, 19);
+decor(FLOWER_BUSH, 32, 22, 42);
+decor(ROCKS, 38, 22, 42);
 
 // ---- Vườn hoa có rào (giữa-trái)
 place(placements, FENCE, 0, 12, "fences", 30, 5, 1);
