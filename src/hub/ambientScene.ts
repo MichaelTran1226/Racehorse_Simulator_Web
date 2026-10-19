@@ -16,7 +16,11 @@ export type AmbientActorId =
   | "HOUSE_MANAGER"
   | "HOUSE_OWNER"
   | "SUPPLY_BARROW"
-  | "HOUSE_CART";
+  | "HOUSE_CART"
+  | "S16_BIRD"
+  | "S16_CAT"
+  | "S16_BUTTERFLY"
+  | "S16_WINDSOCK";
 
 export const AMBIENT_ACTOR_IDS: readonly AmbientActorId[] = [
   "TRACK_RIDER_1",
@@ -27,6 +31,10 @@ export const AMBIENT_ACTOR_IDS: readonly AmbientActorId[] = [
   "HOUSE_OWNER",
   "SUPPLY_BARROW",
   "HOUSE_CART",
+  "S16_BIRD",
+  "S16_CAT",
+  "S16_BUTTERFLY",
+  "S16_WINDSOCK",
 ] as const;
 
 export interface AmbientPose {
@@ -49,6 +57,12 @@ export const OWNER_PATH: Path = [{ x: 920, y: 474 }, { x: 1140, y: 474 }]; // đ
 export const BARROW_PATH: Path = [{ x: 620, y: 620 }, { x: 240, y: 620 }, { x: 240, y: 284 }, { x: 140, y: 284 }]; // kho → dãy chuồng
 export const CART_PATH: Path = [{ x: 870, y: 346 }, { x: 1240, y: 346 }]; // xe điện nhánh tới văn phòng
 
+// S16 Ambient Life positions/paths:
+export const BIRD_PATH: Path = [{ x: 220, y: 284 }, { x: 310, y: 284 }]; // đậu nhảy trên hàng rào bãi thả
+export const CAT_PATH: Path = [{ x: 710, y: 610 }, { x: 790, y: 610 }]; // đi dạo đường nối kho - nhà
+export const BUTTERFLY_PATH: Path = [{ x: 990, y: 420 }, { x: 1060, y: 440 }, { x: 1010, y: 450 }]; // bay lượn khóm hoa nhà cam
+export const WINDSOCK_POS = { x: 840, y: 260 }; // cọc cờ gió bên ngoài hàng rào phía nam đường đua
+
 /** Xe cút kít chở cỏ chỉ chạy khi đang chạy mô phỏng và kho còn cỏ, và không bật chế độ giảm chuyển động. */
 export function barrowActive(state: AmbientSceneState): boolean {
   return !state.reducedMotion && state.simulationRunning && state.hasHay;
@@ -56,7 +70,7 @@ export function barrowActive(state: AmbientSceneState): boolean {
 
 /**
  * Tính toán tư thế (tọa độ, hướng nhìn, khung hình) cho từng nhân vật ambient.
- * Khi bật reducedMotion: giữ nguyên vị trí tĩnh và đứng yên (khung 4 cho người, khung 0 cho xe/ngựa).
+ * Khi bật reducedMotion: giữ nguyên vị trí tĩnh và đứng yên (khung 4 cho người, khung 0 cho xe/ngựa/sinh vật).
  */
 export function ambientActorPose(
   actor: AmbientActorId,
@@ -96,6 +110,18 @@ export function ambientActorPose(
       case "HOUSE_CART": {
         const p = along(CART_PATH, 0, true);
         return { x: p.x, y: p.y, dir: 1, frame: 0, flip: false, active: true };
+      }
+      case "S16_BIRD": {
+        return { x: BIRD_PATH[0].x, y: BIRD_PATH[0].y, dir: 1, frame: 0, row: 0, flip: false, active: true };
+      }
+      case "S16_CAT": {
+        return { x: CAT_PATH[0].x, y: CAT_PATH[0].y, dir: 1, frame: 0, row: 1, flip: false, active: true };
+      }
+      case "S16_BUTTERFLY": {
+        return { x: BUTTERFLY_PATH[0].x, y: BUTTERFLY_PATH[0].y, dir: 1, frame: 0, row: 2, flip: false, active: true };
+      }
+      case "S16_WINDSOCK": {
+        return { x: WINDSOCK_POS.x, y: WINDSOCK_POS.y, dir: 1, frame: 0, row: 3, flip: false, active: true };
       }
     }
   }
@@ -142,6 +168,30 @@ export function ambientActorPose(
     case "HOUSE_CART": {
       const p = along(CART_PATH, effectiveTime * 40, true);
       return { x: p.x, y: p.y, dir: p.dir, frame: 0, flip: p.dir < 0, active: true };
+    }
+    case "S16_BIRD": {
+      const p = along(BIRD_PATH, effectiveTime * 15, true);
+      const frame = state.simulationRunning
+        ? (Math.floor(time * 3) % 2 === 0 ? Math.floor(time * 4) % 2 : 2 + (Math.floor(time * 6) % 2))
+        : 0;
+      return { x: p.x, y: p.y, dir: p.dir, frame, row: 0, flip: p.dir < 0, active: true };
+    }
+    case "S16_CAT": {
+      const p = along(CAT_PATH, effectiveTime * 12, true);
+      const phase = Math.floor(time * 2) % 6;
+      const frame = state.simulationRunning
+        ? (phase < 4 ? 2 + (Math.floor(time * 4) % 2) : 4 + (Math.floor(time * 2) % 2))
+        : 0;
+      return { x: p.x, y: p.y, dir: p.dir, frame, row: 1, flip: p.dir < 0, active: true };
+    }
+    case "S16_BUTTERFLY": {
+      const p = along(BUTTERFLY_PATH, effectiveTime * 20, true);
+      const frame = state.simulationRunning ? 2 + (Math.floor(time * 8) % 4) : 0;
+      return { x: p.x, y: p.y, dir: p.dir, frame, row: 2, flip: p.dir < 0, active: true };
+    }
+    case "S16_WINDSOCK": {
+      const frame = state.simulationRunning ? 2 + (Math.floor(time * 6) % 4) : 0;
+      return { x: WINDSOCK_POS.x, y: WINDSOCK_POS.y, dir: 1, frame, row: 3, flip: false, active: true };
     }
   }
 }

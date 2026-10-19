@@ -5,10 +5,12 @@ export const FARM_ASSET_URLS = {
   objects: Object.fromEntries(FARM_OBJECTS.map((object) => [object.id, `/assets/maps/objects/${object.id}.png`])),
   sheets: {
     horse: "/assets/sprites/s01-horse.png",
+    stall: "/assets/sprites/s07-stall.png",
     people: "/assets/sprites/s06-people.png",
     fx: "/assets/sprites/s13-fx.png",
     rider: "/assets/sprites/s14-rider.png",
     vehicles: "/assets/sprites/s15-vehicles.png",
+    ambientLife: "/assets/sprites/s16-ambient-life.png",
   },
 } as const;
 

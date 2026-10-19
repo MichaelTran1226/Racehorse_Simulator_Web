@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  APPROVED_S16_ROWS,
   generateAmbientLifeSheet,
   S16_PALETTE_HEX,
 } from "./ambient-life.ts";
+import { FARM_ASSET_URLS } from "../../src/render/farmAssets.ts";
 
 test("generated S16 sheet is 192x192 and contains 6 rows of 6 cols", () => {
   const sheetImg = generateAmbientLifeSheet();
@@ -55,3 +57,13 @@ test("rows 4 and 5 are transparent and reserved", () => {
     }
   }
 });
+
+test("runtime URLs cannot contain s16-ambient-life.png unless approved-row manifest is nonempty", () => {
+  const urls = JSON.stringify(FARM_ASSET_URLS).toLowerCase();
+  if (APPROVED_S16_ROWS.length === 0) {
+    assert.equal(urls.includes("s16-ambient-life.png"), false);
+  } else {
+    assert.ok(urls.includes("s16-ambient-life.png"), "FARM_ASSET_URLS must include s16-ambient-life.png when rows are approved");
+  }
+});
+
