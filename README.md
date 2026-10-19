@@ -182,7 +182,8 @@ node art/map/gen-layout.ts
 # 3. Đóng gói bản đồ bằng Aseprite CLI (thay đường dẫn aseprite trên máy bạn)
 aseprite -b --script art/aseprite/build-farm-map.lua
 
-# 4. Xác minh màu sắc đạt chuẩn
+# 4. Ghi hash của layout và toàn bộ output, rồi xác minh màu/provenance
+npm run stamp:map
 npm run verify:map
 ```
 

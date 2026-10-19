@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "files": {
+    "art/map/farm-layout.json": "d474017118ad938f54607738c53dbb6a1dbd33c6eedf229f8f3058500f2ad5f1",
+    "art/aseprite/farm-day.aseprite": "26a4affc01e19c9ed45d405a345faab23ff8ba212ca5ce28dc38186d54fb2801",
+    "art/preview/farm-day-x1.png": "42711c6be19049d9d273239375343aa1955f162d491cdec942aed6d000964a50",
+    "public/assets/maps/farm-ground.png": "014dc3dbf1784f792ea902b0258bc811d085f42d3a526f9d6f1bffd5484318c8",
+    "public/assets/maps/objects/stable.png": "562933280c9147c17c2f12702a9ff43c0b9742feb36754c8a825f70fb411f04c",
+    "public/assets/maps/objects/barn.png": "518e059b12acac68dbb3af7d0b473c2fb436c7f26894c0af2748f5ba9a75a684",
+    "public/assets/maps/objects/vet.png": "5f3b98de94ad2fa2100c2cd6ac14ba571c96cb4d1e10322d3828c51a2ad77b70",
+    "public/assets/maps/objects/track.png": "d3e92ca9046a0821f6d112b28d3b472584fd8a33625311d1dff2506f8a212d70"
+  }
+}

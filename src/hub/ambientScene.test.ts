@@ -25,10 +25,11 @@ test("ambient clock freezes while paused and resumes without counting paused tim
   assert.deepEqual(resumed, { time: 6, lastNow: 21 });
 });
 
-test("loaded barrow moves only while simulation runs and hay remains", () => {
+test("loaded barrow stays visible while paused and disappears only without hay or in reduced motion", () => {
   assert.equal(barrowActive({ reducedMotion: false, simulationRunning: true, hasHay: true }), true);
-  assert.equal(barrowActive({ reducedMotion: false, simulationRunning: false, hasHay: true }), false);
+  assert.equal(barrowActive({ reducedMotion: false, simulationRunning: false, hasHay: true }), true);
   assert.equal(barrowActive({ reducedMotion: false, simulationRunning: true, hasHay: false }), false);
+  assert.equal(barrowActive({ reducedMotion: true, simulationRunning: true, hasHay: true }), false);
 });
 
 test("pausing keeps actors at the pose for the supplied simulation time", () => {
@@ -44,6 +45,22 @@ test("pausing keeps actors at the pose for the supplied simulation time", () => 
   });
   assert.deepEqual({ x: paused.x, y: paused.y, dir: paused.dir }, { x: running.x, y: running.y, dir: running.dir });
   assert.equal(paused.frame, 0);
+});
+
+test("pausing keeps the loaded barrow visible at the same coordinates", () => {
+  const running = ambientActorPose("SUPPLY_BARROW", 4, {
+    reducedMotion: false,
+    simulationRunning: true,
+    hasHay: true,
+  });
+  const paused = ambientActorPose("SUPPLY_BARROW", 4, {
+    reducedMotion: false,
+    simulationRunning: false,
+    hasHay: true,
+  });
+  assert.equal(running.active, true);
+  assert.equal(paused.active, true);
+  assert.deepEqual({ x: paused.x, y: paused.y }, { x: running.x, y: running.y });
 });
 
 test("reduced motion returns a stable pose for every ambient actor", () => {

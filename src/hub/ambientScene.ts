@@ -63,9 +63,9 @@ export const OWNER_PATH: Path = [{ x: 920, y: 474 }, { x: 1140, y: 474 }]; // đ
 export const BARROW_PATH: Path = [{ x: 620, y: 620 }, { x: 240, y: 620 }, { x: 240, y: 284 }, { x: 140, y: 284 }]; // kho → dãy chuồng
 export const CART_PATH: Path = [{ x: 870, y: 346 }, { x: 1240, y: 346 }]; // xe điện nhánh tới văn phòng
 
-/** Xe cút kít chở cỏ chỉ chạy khi đang chạy mô phỏng và kho còn cỏ, và không bật chế độ giảm chuyển động. */
+/** Xe cút kít còn hiện khi kho có cỏ; đồng hồ ambient quyết định chạy hay đứng yên khi Pause. */
 export function barrowActive(state: AmbientSceneState): boolean {
-  return !state.reducedMotion && state.simulationRunning && state.hasHay;
+  return !state.reducedMotion && state.hasHay;
 }
 
 /**

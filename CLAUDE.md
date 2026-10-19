@@ -57,6 +57,7 @@ Dựng lại bản đồ (khi sửa `art/map/gen-layout.ts`):
 ```bash
 node art/map/gen-layout.ts
 aseprite -b --script-param root=<đường dẫn Racehorse_Simulator_Web> --script art/aseprite/build-farm-map.lua
+npm run stamp:map
 npm run verify:map
 ```
 Trên Windows, gọi Aseprite bằng `Start-Process -NoNewWindow -Wait` (gọi bằng `&` trong PowerShell thì không ghi ra file).

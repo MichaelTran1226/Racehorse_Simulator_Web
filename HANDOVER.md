@@ -11,13 +11,13 @@
 
 ## 1. Current State & Completed
 
-Kiểm tra lần cuối (19/10/2026): `npm run typecheck` sạch · `npm test` **48/48 đạt** · `npm run build` đạt · `npm run verify:map` đạt · kiểm tra Chromium headless không có lỗi console hoặc request thất bại; hai ảnh Canvas cách nhau 1 giây khi Pause có cùng SHA-256.
+Kiểm tra lần cuối (19/10/2026): `npm run typecheck` sạch · `npm test` **51/51 đạt** · `npm run build` đạt · `npm run verify:map` đạt · kiểm tra Chromium headless không có lỗi console hoặc request thất bại; hai ảnh Canvas cách nhau 1 giây khi Pause có cùng SHA-256.
 
 | Phần | Trạng thái | File chính |
 |---|---|---|
 | Bộ sprite chính thức (S01 ngựa, S14 nài, S07/S08/S10 bản đồ, S06 người, S15 xe, S13 hiệu ứng, S11 biểu tượng) vẽ bằng code → `.aseprite` | Xong, người dùng đã duyệt 4 đợt | `art/gen/*.ts`, `art/aseprite/*.lua`, `public/assets/sprites/` |
 | Đề xuất S16 sinh vật môi trường (Chim, Mèo, Bướm, Cờ gió), ô 32×32, sheet 192×192, baseline y=30 | **Chưa duyệt**; chỉ giữ preview, không có trong runtime | `art/gen/ambient-life.ts`, `art/preview/s16-ambient-life-*.png` |
-| Bản đồ trang trại 1280×768 theo bố cục M1, ghép từ sprite đã duyệt + 14 vật phẩm tĩnh không lấn hành lang | Đã rebuild; hash layout bảo vệ khỏi PNG cũ | `art/map/gen-layout.ts`, `art/map/farm-layout.sha256`, `public/assets/maps/` |
+| Bản đồ trang trại 1280×768 theo bố cục M1, ghép từ sprite đã duyệt + 14 vật phẩm tĩnh không lấn hành lang | Đã rebuild; manifest SHA-256 ràng buộc layout, `.aseprite` và toàn bộ PNG để phát hiện output cũ | `art/map/gen-layout.ts`, `art/map/farm-build-manifest.json`, `public/assets/maps/` |
 | Màn chính kiểu Hay Day: bản đồ phủ kín, HUD 4 góc (giờ, ngày/đêm, bộ đếm ngựa/sự cố/khóa y tế/kho sắp hết, nút Ngựa/Kho/Tốc độ) | Xong (T1) | `src/ui/FarmHub.tsx` |
 | Camera: kéo + quán tính, lăn chuột phóng quanh con trỏ, lướt tới công trình, phóng sát vào Đường đua và lùi ra khi quay về | Xong (T1, T7, T11) | `src/hub/camera.ts`, `useFarmCamera.ts`, `src/ui/FarmMapCanvas.tsx` |
 | Bảng nổi dùng chung (nảy mở/thu đóng, Esc, giữ focus, trả focus) | Xong (T2) | `src/ui/Popup.tsx` |
