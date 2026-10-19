@@ -109,4 +109,12 @@ for _, object in ipairs(layout.objects) do
   image:saveAs(app.fs.joinPath(objectsDir, object.id .. ".png"))
 end
 
+-- Mark the exported PNG set with the exact layout revision that produced it.
+local stampInput = assert(io.open(app.fs.joinPath(root, "art/map/farm-layout.sha256"), "r"))
+local layoutHash = stampInput:read("*a")
+stampInput:close()
+local stampOutput = assert(io.open(app.fs.joinPath(mapsDir, "farm-layout.sha256"), "w"))
+stampOutput:write(layoutHash)
+stampOutput:close()
+
 print(string.format("saved sprite-only farm map %dx%d", worldWidth, worldHeight))

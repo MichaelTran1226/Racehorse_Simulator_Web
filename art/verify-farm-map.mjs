@@ -100,4 +100,7 @@ const outputs = [
 for (const path of outputs) {
   for (const color of colors(path)) assert.ok(allowed.has(color) || isProfileEquivalent(color) || isRoundingOfDerived(color), `${path} contains RGBA not derivable by source-over copy ${color}`);
 }
+const sourceLayoutHash = readFileSync("art/map/farm-layout.sha256", "utf8").trim();
+const renderedLayoutHash = readFileSync("public/assets/maps/farm-layout.sha256", "utf8").trim();
+assert.equal(renderedLayoutHash, sourceLayoutHash, "generated map PNGs are stale; rebuild them with Aseprite");
 console.log(`verified ${outputs.length} generated PNGs against ${sheets.length} approved sprite sheets and copy compositing`);

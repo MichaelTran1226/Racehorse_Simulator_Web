@@ -2,6 +2,7 @@
 // Chỉ đặt ô cắt nguyên từ các sheet đã duyệt (S07/S08/S10/S15); Aseprite (build-farm-map.lua) ghép thành PNG.
 // Chạy: node art/map/gen-layout.ts && aseprite -b --script art/aseprite/build-farm-map.lua
 import { writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 
 const T = 32;
 const W = 40;
@@ -251,5 +252,7 @@ decor(WEEDS, 31, 16, 42);
 decor(STRAW_PILE, 25, 13, 42);
 
 const layout = { version: 3, world: { width: W * T, height: H * T, tile: T }, fills, placements, objects };
-writeFileSync(new URL("./farm-layout.json", import.meta.url), JSON.stringify(layout, null, 1));
+const layoutJson = JSON.stringify(layout, null, 1);
+writeFileSync(new URL("./farm-layout.json", import.meta.url), layoutJson);
+writeFileSync(new URL("./farm-layout.sha256", import.meta.url), `${createHash("sha256").update(layoutJson).digest("hex")}\n`);
 console.log(`farm-layout.json: ${placements.length} placements, ${objects.length} objects, world ${W * T}×${H * T}`);
