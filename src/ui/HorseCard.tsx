@@ -72,7 +72,7 @@ export function HorseCard({ horse: h, sprites, reported, onToggleLock, onClose }
               {zones.map((z) => (
                 <li key={z.key}>
                   <span className={c.swatch} data-zone={z.key} aria-hidden />
-                  {z.label} {z.from}–{z.to}
+                  {z.label} {z.rangeText}
                 </li>
               ))}
             </ul>

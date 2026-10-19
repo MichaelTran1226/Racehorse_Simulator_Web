@@ -152,3 +152,15 @@ test("túi gió đứng yên một chỗ và chỉ phất khi đang chạy", () 
   assert.ok(a.frame >= 2 && a.frame <= 5);
   assert.equal(ambientActorPose("S16_WINDSOCK", 9, { ...runningState, simulationRunning: false }).frame, 0);
 });
+
+test("mèo và chim S16 đứng yên tại chỗ khi đang ở khung nghỉ/vươn vai", () => {
+  for (const [id, still] of [["S16_CAT", [0, 1, 4, 5]], ["S16_BIRD", [0, 1]]] as const) {
+    for (let t = 0; t < 12; t += 0.05) {
+      const a = ambientActorPose(id, t, runningState);
+      const b = ambientActorPose(id, t + 0.01, runningState);
+      if ((still as readonly number[]).includes(a.frame) && (still as readonly number[]).includes(b.frame)) {
+        assert.deepEqual({ x: a.x, y: a.y }, { x: b.x, y: b.y }, `${id} trượt ở t=${t}`);
+      }
+    }
+  }
+});

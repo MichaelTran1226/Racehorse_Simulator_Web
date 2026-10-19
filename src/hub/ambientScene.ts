@@ -261,15 +261,17 @@ export function ambientActorPose(
       return { ...CHAT_POS_B, dir: -1, frame, row: 5, flip: true, active: true };
     }
     case "S16_BIRD": {
-      const p = along(BIRD_PATH, effectiveTime * 15, true);
-      const hopping = Math.floor(time * 3) % 2 === 0;
-      const frame = !state.simulationRunning ? 0 : hopping ? Math.floor(time * 4) % 2 : 2 + (Math.floor(time * 6) % 2);
+      // nhảy 1 s (khung 2–3) rồi đứng 1 s (khung 0–1): chỉ dời chỗ khi đang nhảy
+      const w = walkPause(effectiveTime, 1, 1);
+      const p = along(BIRD_PATH, w.walkedS * 15, true);
+      const frame = !state.simulationRunning ? 0 : w.paused ? Math.floor(time * 4) % 2 : 2 + (Math.floor(time * 6) % 2);
       return { x: p.x, y: p.y, dir: p.dir, frame, row: 0, flip: p.dir < 0, active: true };
     }
     case "S16_CAT": {
-      const p = along(CAT_PATH, effectiveTime * 12, true);
-      const walking = Math.floor(time * 2) % 6 < 4;
-      const frame = !state.simulationRunning ? 0 : walking ? 2 + (Math.floor(time * 4) % 2) : 4 + (Math.floor(time * 2) % 2);
+      // đi 2 s (khung 2–3) rồi vươn vai 1 s (khung 4–5) tại chỗ
+      const w = walkPause(effectiveTime, 2, 1);
+      const p = along(CAT_PATH, w.walkedS * 12, true);
+      const frame = !state.simulationRunning ? 0 : w.paused ? 4 + (Math.floor(time * 2) % 2) : 2 + (Math.floor(time * 4) % 2);
       return { x: p.x, y: p.y, dir: p.dir, frame, row: 1, flip: p.dir < 0, active: true };
     }
     case "S16_BUTTERFLY": {

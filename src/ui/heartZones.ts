@@ -9,6 +9,8 @@ export interface HeartZone {
   from: number;
   to: number;
   widthPct: number;
+  /** Chữ chú giải cho người xem phổ thông: "dưới 38", "38–211", "trên 211". */
+  rangeText: string;
 }
 
 export function heartZones(h: HeartRange): readonly HeartZone[] {
@@ -18,6 +20,7 @@ export function heartZones(h: HeartRange): readonly HeartZone[] {
     from,
     to,
     widthPct: ((to - from) / h.hrMax) * 100,
+    rangeText: key === "REST" ? `dưới ${to}` : key === "OVER" ? `trên ${from}` : `${from}–${to}`,
   });
   return [zone("REST", "Nghỉ", 0, h.hrRest), zone("WORK", "Vận động", h.hrRest, h.hrAlert), zone("OVER", "Quá sức", h.hrAlert, h.hrMax)];
 }
