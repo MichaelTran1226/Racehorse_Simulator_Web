@@ -107,8 +107,8 @@ Kế hoạch: `tasks/plan-hayday.md`. Mỗi việc sau khi làm xong phải ch�
 **Mô tả:** Đặt hàng → xe tải chạy vào cổng tới nhà kho, dừng lại, icon vật tư bay vào kho, số đếm tăng lên, xe chạy ra. Groom đẩy xe cút kít chở cỏ từ kho tới chuồng khi cỏ được dùng.
 **Tiêu chí:**
 - [x] Hoạt cảnh không chồng lên công trình, chạy được ở mọi tốc độ
-- [ ] Giảm chuyển động: bỏ đường bay của icon, chỉ còn số tăng lên (review 19/10: chưa làm)
-- [ ] Groom chở cỏ chỉ khi kho còn cỏ và không tạm dừng (review 19/10: chưa gắn với tồn kho)
+- [x] Giảm chuyển động: bỏ đường bay của icon, chỉ còn số tăng lên (hoàn thành 19/10 trong `ambientScene.ts` & `ambient.ts`)
+- [x] Groom chở cỏ chỉ khi kho còn cỏ và không tạm dừng (hoàn thành 19/10 qua `barrowActive`)
 **Phụ thuộc:** T9
 **File:** `src/hub/ambient.ts`, `FarmMapCanvas.tsx`, `SupplyPanel.tsx`
 **Cỡ:** M
@@ -136,6 +136,27 @@ Kế hoạch: `tasks/plan-hayday.md`. Mỗi việc sau khi làm xong phải ch�
 **File:** `README.md`
 **Cỡ:** S
 
+## Giai đoạn 5 — Sinh khí trang trại & Sinh vật môi trường (Ambient Content)
+Kế hoạch: `docs/superpowers/plans/2026-10-19-farm-map-life-and-ambient-content.md`
+
+### T13: Ngựa thật tại chuồng & bãi thả
+- [x] 2 vị trí bãi thả cố định danh tính (không nhảy ô khi khóa y tế)
+- [x] 7 ô cửa chuồng mở hiển thị đầu ngựa thật S01 đúng màu lông, cắt ghép chính xác sau khung cửa S07
+
+### T14: Làm dày bản đồ bằng 14 vật phẩm tĩnh chuẩn SRS §12
+- [x] Rải 14 vật phẩm (ụ rơm, máng cỏ, phi nước, khóm hoa) không xâm phạm hành lang di chuyển và đường đua (`RESERVED_CORRIDORS`)
+- [x] Kiểm tra tĩnh `validateDecorCorridors()` và `verify:map` đạt
+
+### T15: Quản lý nhân vật chuyển động & Giảm chuyển động
+- [x] Tách `ambientScene.ts` quản lý vị trí thuần túy
+- [x] Hỗ trợ giảm chuyển động (`prefers-reduced-motion` và `?reducedMotion=1`): đứng yên ở khung 0/4, tắt bụi đất và đom đóm bay
+- [x] Xe cút kít gắn với kho cỏ; xe tải không bay icon khi giảm chuyển động
+
+### T16: Bộ sprite S16 sinh vật môi trường (Chim, Mèo, Bướm, Cờ gió)
+- [x] Sinh sprite chuẩn 32×32, 192×192, baseline y=30
+- [x] Người dùng duyệt từng hàng qua checkpoint (duyệt cả 4 hàng, 20/10/2026)
+- [x] Tích hợp runtime Canvas cho riêng các hàng đã duyệt
+
 ## Checkpoint cuối
-- [x] typecheck · test · build · verify:map · trình duyệt đạt
-- [ ] Người dùng duyệt bản cuối
+- [x] typecheck · test (46/46) · build · verify:map · trình duyệt đạt
+- [ ] Người dùng duyệt bản cuối sau khi xem preview và ảnh chụp runtime

@@ -117,3 +117,43 @@ export function validateFarmLayout(): true {
   }
   return true;
 }
+
+export const RESERVED_CORRIDORS: readonly Rect[] = [
+  // 1. Trục đường chính hàng 18
+  { x: 0, y: 18 * 32, w: 40 * 32, h: 32 },
+  // 2. Lối vào chuồng hàng 8 cột 0–7
+  { x: 0, y: 8 * 32, w: 8 * 32, h: 32 },
+  // 3. Đường đi của ngựa thả trong bãi (làn 1: y=420 x: 420..700; làn 2: y=300 x: 440..530)
+  { x: 420, y: 13 * 32, w: 280, h: 32 },
+  { x: 440, y: 9 * 32, w: 90, h: 32 },
+  // 4. Làn đường đua ngựa (track lanes)
+  { x: 18 * 32, y: 1 * 32, w: 22 * 32, h: 2 * 32 }, // làn trên
+  { x: 18 * 32, y: 6 * 32, w: 22 * 32, h: 2 * 32 }, // làn dưới
+  { x: 18 * 32, y: 3 * 32, w: 2 * 32, h: 3 * 32 }, // cua trái
+  { x: 38 * 32, y: 3 * 32, w: 2 * 32, h: 3 * 32 }, // cua phải
+  // 5. Cổng vào trang trại tại ô (5..7, 22)
+  { x: 5 * 32, y: 22 * 32, w: 3 * 32, h: 32 },
+] as const;
+
+function rectsOverlap(a: Rect, b: Rect): boolean {
+  return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+}
+
+export function validateDecorCorridors(): true {
+  const looseDecor = loosePlacements.filter((p) => p.layer === "decor");
+  for (const decor of looseDecor) {
+    const rect: Rect = { x: decor.dest.x, y: decor.dest.y, w: decor.src.w, h: decor.src.h };
+    for (const corridor of RESERVED_CORRIDORS) {
+      if (rectsOverlap(rect, corridor)) {
+        throw new Error(`Decor placement at (${decor.dest.x}, ${decor.dest.y}) overlaps reserved corridor`);
+      }
+    }
+    for (const object of FARM_OBJECTS) {
+      if (rectsOverlap(rect, object.bounds)) {
+        throw new Error(`Decor placement at (${decor.dest.x}, ${decor.dest.y}) overlaps building ${object.id}`);
+      }
+    }
+  }
+  return true;
+}
+

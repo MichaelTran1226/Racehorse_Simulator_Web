@@ -9,7 +9,7 @@
 |---|---|---|
 | `Racehorse_Training_Management_System_MT_BE/` | Backend NestJS 11 + Prisma 6 + PostgreSQL (Docker) | **repo riêng** |
 | `Racehorse_Training_Management_System_MT_FE/` | Main Web: React 19 + Vite 8 + React Router 7 | **repo riêng** |
-| `Racehorse_Simulator_Web/` | Simulator Web (Digital Twin / IoT ảo), pixel art Canvas 2D, giao diện kiểu Hay Day | **chưa có git** |
+| `Racehorse_Simulator_Web/` | Simulator Web (Digital Twin / IoT ảo), pixel art Canvas 2D, giao diện kiểu Hay Day | **repo riêng** (`main`; nhánh làm đẹp bản đồ `feature/farm-map-life-and-ambient-content`, kế hoạch ở `docs/superpowers/plans/2026-10-19-farm-map-life-and-ambient-content.md`) |
 | `horse simulation model/` | SRS & Design Handoff v2.0 của Simulator (PDF) + bản chat concept (ảnh tham khảo) | — |
 | `Tai_Lieu/`, `docs/`, `srsv4.txt` | Đặc tả nghiệp vụ. `docs/EquiFlow_TaiLieu_BanGiao_MoHinhGiaLap_3GiaiDoan.md` đã **OUTDATED** (thay bằng SRS v2.0) | — |
 | `start.bat` / `stop.bat` / `setup-db.bat` | Chạy/dừng BE + FE, dựng DB (không chạy Simulator) | — |
@@ -57,6 +57,7 @@ Dựng lại bản đồ (khi sửa `art/map/gen-layout.ts`):
 ```bash
 node art/map/gen-layout.ts
 aseprite -b --script-param root=<đường dẫn Racehorse_Simulator_Web> --script art/aseprite/build-farm-map.lua
+npm run stamp:map
 npm run verify:map
 ```
 Trên Windows, gọi Aseprite bằng `Start-Process -NoNewWindow -Wait` (gọi bằng `&` trong PowerShell thì không ghi ra file).
@@ -85,9 +86,11 @@ Trên Windows, gọi Aseprite bằng `Start-Process -NoNewWindow -Wait` (gọi b
 - **Logic thuần tách khỏi DOM** (`src/hub/camera.ts`, `paths.ts`, `farmLayout.ts`, `src/sim/*`, `src/render/farmScene.ts`): không import module chạm DOM/canvas. Test import kèm đuôi `.ts`, vì Node không tự tìm file `.ts` khi import không có đuôi.
 - **Logic mới không tầm thường phải có test** `*.test.ts` đặt cạnh file.
 - **Bản đồ chỉ crop/copy/place sprite đã duyệt** (không vẽ primitive, scale, rotate, chèn chữ, không dùng ảnh concept). `verify:map` kiểm điều này.
+- Sheet đã duyệt: S01, S06, S07, S08, S10, S11, S13, S14, S15, S16 (S16 duyệt 20/10/2026). Sprite mới phải qua preview và duyệt trước khi vào `public/assets/`.
 - Sprite: ô 32×32, sheet 6×6 = 192×192, nền trong suốt, chân y = 30, đúng bảng màu SRS §12; đổi màu bằng `src/render/palette.ts`.
 - Mọi hiệu ứng có nhánh `prefers-reduced-motion` (chỉ còn mờ dần).
 - Font: chữ có dấu tiếng Việt dùng VT323; Silkscreen không có dấu, chỉ dùng cho chữ ASCII.
+- **Mã chip ngựa:** `microchip` là 15 chữ số (ISO 11784/11785), khớp ràng buộc BE `/^\d{15}$/`; Simulator tự sinh `985141` + 9 số trong `src/sim/horses.ts` và gửi đi dưới tên `microchip_id` (`horseRef` trong `packets.ts`). **Mã chip được hiện cho mọi người xem, kể cả người dùng phổ thông** (ngoại lệ của quy tắc "không hiện chữ kỹ thuật"): đủ 15 số, không che, chỉ trong `HorseCard`, chia nhóm 3 số qua `formatMicrochip` (`src/sim/engine.ts`). Khóa nội bộ luôn là `horse_id`, không phải mã chip. Simulator chưa có `rfid`; khi nối API phải tôn trọng việc BE che mã chip với GROOM (chỉ 4 số cuối). Chi tiết: `HANDOVER.md` mục "Mã chip ngựa".
 - Không thêm dependency khi chưa hỏi.
 
 ## 5. Cấu trúc Simulator (`Racehorse_Simulator_Web/`)
@@ -95,7 +98,7 @@ Trên Windows, gọi Aseprite bằng `Start-Process -NoNewWindow -Wait` (gọi b
 | Đường dẫn | Nội dung |
 |---|---|
 | `src/sim/` | `engine.ts` (telemetry), `packets.ts` (gói SRS §9), `bus.ts` (bus cục bộ), `horses.ts`, `inventory.ts` (kho) |
-| `src/hub/` | `farmLayout.ts` (đọc layout sinh sẵn), `camera.ts` (clamp/zoom/quán tính), `paths.ts` (đường đi ngựa/xe tải, thuần), `ambient.ts` (vẽ nhân vật + đêm), `useFarmCamera.ts`, `pixelHitTest.ts` |
+| `src/hub/` | `farmLayout.ts` (đọc layout sinh sẵn), `camera.ts` (clamp/zoom/quán tính), `paths.ts` (đường đi ngựa/xe tải, thuần), `ambientScene.ts` (tư thế mọi nhân vật nền, thuần, có nhánh giảm chuyển động), `ambient.ts` (vẽ nhân vật + đêm), `useFarmCamera.ts`, `pixelHitTest.ts` |
 | `src/render/` | Nạp sprite, đổi màu, `farmScene.ts`, `scenes.ts` (chuồng/đua), `silhouette.ts` |
 | `src/ui/` | `App`, `FarmHub` (HUD), `FarmMapCanvas`, `Popup`, `HorseCard`, `HorseList`, `HorsePicker`, `StallTab`, `VetZone`, `SupplyPanel`, `TrialTab`, `RaceTab`, `AssetOverview` (`/?dev`) |
 | `art/gen/` | Script vẽ sprite bằng code → `art/png`, `public/assets/sprites` |

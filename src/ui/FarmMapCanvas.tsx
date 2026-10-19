@@ -2,11 +2,13 @@
 // lăn chuột → phóng xa/gần quanh con trỏ, bấm → camera lướt tới rồi gọi onEnter (App làm mờ dần sang trang làm việc).
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { drawFarmActors, drawNight } from "../hub/ambient";
+import { advanceAmbientClock } from "../hub/ambientScene";
 import { paddockHorse, paddockHorseAt, truckPose, TRUCK_STOP_X, TRUCK_UNLOAD_S } from "../hub/paths";
 import { DELIVERY_S, type SupplyId } from "../sim/inventory";
 import { drawRect, VEHICLE_RECT } from "../render/sprites";
 import { SUPPLY_ICON } from "./supplyIcons";
 import type { HorseProfile } from "../sim/engine";
+import type { StableHorseAssignment } from "../hub/farmPopulation";
 import { cameraAt, clampCamera, MAX_ZOOM, minZoom, viewCenter, zoomAt, type Size } from "../hub/camera";
 import type { Point } from "../hub/farmLayout";
 import { FARM_OBJECTS, FARM_WORLD, type FarmObject } from "../hub/farmLayout";
@@ -14,6 +16,7 @@ import { alphaMaskFromImage, hitTestObjects, type AlphaMask } from "../hub/pixel
 import { useFarmCamera } from "../hub/useFarmCamera";
 import { loadFarmAssets, type FarmAssets } from "../render/farmAssets";
 import { drawFarmScene, SQUASH_MS, squashScale } from "../render/farmScene";
+import { drawStableHorses } from "../render/stableHorses";
 import { createOutlineCanvas } from "../render/silhouette";
 import type { Sprites } from "../render/sprites";
 import c from "./FarmHub.module.css";
@@ -31,15 +34,18 @@ interface Props {
   /** Đặt id để yêu cầu lướt tới công trình (từ cột "Các khu vực"); đổi giá trị mới chạy lại. */
   goTo: { id: string; seq: number } | null;
   onEnter: (target: FarmObject["target"], label: string) => void;
-  /** Ngựa thật đang ở bãi thả, theo thứ tự ô; chạm vào sẽ gọi onHorse. */
-  paddock: HorseProfile[];
+  /** Ngựa thật đang ở bãi thả, theo thứ tự ô (có thể chứa null); chạm vào sẽ gọi onHorse. */
+  paddock: readonly (HorseProfile | null)[];
+  stableHorses?: readonly StableHorseAssignment[];
   onHorse: (id: string) => void;
   /** Vừa quay về từ màn riêng của công trình này (Đường đua) → mở bản đồ đang phóng sát rồi lùi ra. */
   arriveFrom: FarmObject["target"] | null;
   trip: { arriveAt: number; items: SupplyId[] } | null;
+  simulationRunning?: boolean;
+  hasHay?: boolean;
 }
 
-export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter, paddock, onHorse, arriveFrom, trip }: Props) {
+export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter, paddock, stableHorses, onHorse, arriveFrom, trip, simulationRunning = true, hasHay = true }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [screenSize, setScreenSize] = useState<Size>({ width: 1, height: 1 });
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
@@ -50,11 +56,12 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
   const [locked, setLocked] = useState(false);
   const [hoverHorse, setHoverHorse] = useState(-1);
   const pop = useRef<{ id: string; t0: number } | null>(null); // công trình vừa chạm (nhún)
+  const ambientClock = useRef({ time: 0, lastNow: performance.now() / 1000 });
   const { camera, setCamera, onPointerDown, onPointerMove, finishPointer, stopMomentum } = useFarmCamera(viewport, { x: 0, y: 0 }, zoom);
 
   // Vòng vẽ đọc trạng thái mới nhất qua ref → không phải khởi động lại rAF mỗi lần camera đổi
-  const live = useRef({ camera, hoveredId, tod, screenSize, zoom, locked, paddock, hoverHorse, trip });
-  live.current = { camera, hoveredId, tod, screenSize, zoom, locked, paddock, hoverHorse, trip };
+  const live = useRef({ camera, hoveredId, tod, screenSize, zoom, locked, paddock, stableHorses, hoverHorse, trip, simulationRunning, hasHay });
+  live.current = { camera, hoveredId, tod, screenSize, zoom, locked, paddock, stableHorses, hoverHorse, trip, simulationRunning, hasHay };
 
   useEffect(() => {
     let alive = true;
@@ -106,9 +113,15 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
     if (!canvas || !ctx) return;
     let frame = 0;
     const render = (now: number) => {
-      const { camera: cam, hoveredId: hid, tod: mode, screenSize: size, zoom: z, paddock: herd, hoverHorse: hh, trip: run } = live.current;
-      const t = now / 1000;
+      const { camera: cam, hoveredId: hid, tod: mode, screenSize: size, zoom: z, paddock: herd, stableHorses: assignedStalls, hoverHorse: hh, trip: run, simulationRunning: simRunning, hasHay: hayAvailable } = live.current;
+      const realTime = now / 1000;
+      ambientClock.current = advanceAmbientClock(ambientClock.current, realTime, simRunning);
+      const t = ambientClock.current.time;
       const dpr = window.devicePixelRatio || 1;
+      const reducedMotion =
+        typeof window !== "undefined" &&
+        (window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+          new URLSearchParams(window.location.search).get("reducedMotion") === "1");
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.imageSmoothingEnabled = false;
       ctx.clearRect(0, 0, size.width, size.height);
@@ -116,10 +129,14 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
       ctx.scale(z, z);
       ctx.translate(-Math.round(cam.x), -Math.round(cam.y));
       drawFarmScene(ctx, assets, t, (actorCtx, time) => {
-        drawFarmActors(actorCtx, sprites, time, herd.map((h) => h.coat));
-        if (run) drawDelivery(actorCtx, sprites.vehicles, run, now / 1000);
+        if (assignedStalls && assignedStalls.length > 0) {
+          drawStableHorses(actorCtx, sprites, assignedStalls, time, reducedMotion);
+        }
+        const ambientState = { reducedMotion, simulationRunning: simRunning, hasHay: hayAvailable };
+        drawFarmActors(actorCtx, sprites, time, herd.map((h) => h?.coat), ambientState);
+        if (run) drawDelivery(actorCtx, sprites.vehicles, run, realTime, reducedMotion);
       }, pop.current && now - pop.current.t0 < SQUASH_MS ? { id: pop.current.id, ...squashScale(now - pop.current.t0) } : null);
-      if (mode === "NIGHT") drawNight(ctx, FARM_WORLD.width, FARM_WORLD.height, t);
+      if (mode === "NIGHT") drawNight(ctx, FARM_WORLD.width, FARM_WORLD.height, realTime, reducedMotion);
       const hovered = FARM_OBJECTS.find((o) => o.id === hid);
       if (hovered) {
         const image = assets.objects.get(hovered.id);
@@ -138,7 +155,7 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
       }
       if (hh >= 0 && herd[hh]) {
         const p = paddockHorse(hh, t);
-        drawTag(ctx, herd[hh].name, p.x, p.y - 30);
+        drawTag(ctx, herd[hh]!.name, p.x, p.y - 30);
       }
       ctx.restore();
       frame = requestAnimationFrame(render);
@@ -156,7 +173,7 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
   function horseAt(event: ReactPointerEvent<HTMLCanvasElement>): number {
     const rect = event.currentTarget.getBoundingClientRect();
     const world = { x: camera.x + (event.clientX - rect.left) / zoom, y: camera.y + (event.clientY - rect.top) / zoom };
-    return paddockHorseAt(world, performance.now() / 1000, paddock.length);
+    return paddockHorseAt(world, ambientClock.current.time, paddock);
   }
 
   /** Lướt camera tới `center` đồng thời đổi mức phóng sang `toZoom`, ease-out; xong thì gọi done. */
@@ -305,10 +322,18 @@ function iconImage(url: string): HTMLImageElement {
 const BARN_DOOR = { x: TRUCK_STOP_X, y: 690 };
 
 /** Xe tải giao hàng + các thùng hàng bay từ đuôi xe vào cửa kho trong lúc dỡ (theo đồng hồ thật). */
-function drawDelivery(ctx: CanvasRenderingContext2D, vehicles: HTMLCanvasElement, trip: { arriveAt: number; items: SupplyId[] }, now: number) {
+/** Xe tải giao hàng + các thùng hàng bay từ đuôi xe vào cửa kho trong lúc dỡ (theo đồng hồ thật). */
+function drawDelivery(
+  ctx: CanvasRenderingContext2D,
+  vehicles: HTMLCanvasElement,
+  trip: { arriveAt: number; items: SupplyId[] },
+  now: number,
+  reducedMotion = false,
+) {
   const pose = truckPose(now, trip.arriveAt, DELIVERY_S);
   if (!pose) return;
   drawRect(ctx, vehicles, pose.open ? VEHICLE_RECT.truckOpen : VEHICLE_RECT.truck, pose.x, pose.y, 1);
+  if (reducedMotion) return;
   const unloadStart = trip.arriveAt - TRUCK_UNLOAD_S;
   trip.items.forEach((item, i) => {
     const t0 = unloadStart + (i * (TRUCK_UNLOAD_S - 0.6)) / Math.max(1, trip.items.length - 1);

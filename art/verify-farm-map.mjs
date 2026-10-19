@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { inflateSync } from "node:zlib";
+import { assertFarmBuildFresh, readFarmBuildManifest } from "./map/farm-build-manifest.mjs";
 
 function paeth(a, b, c) {
   const p = a + b - c;
@@ -100,4 +101,5 @@ const outputs = [
 for (const path of outputs) {
   for (const color of colors(path)) assert.ok(allowed.has(color) || isProfileEquivalent(color) || isRoundingOfDerived(color), `${path} contains RGBA not derivable by source-over copy ${color}`);
 }
+assertFarmBuildFresh(readFarmBuildManifest());
 console.log(`verified ${outputs.length} generated PNGs against ${sheets.length} approved sprite sheets and copy compositing`);

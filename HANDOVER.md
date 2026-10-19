@@ -6,43 +6,64 @@
 ## 0. Việc phải làm NGAY trước khi chia sẻ thư mục
 
 1. **`Racehorse_Simulator_Web/claude_data/` chứa bản xuất lịch sử chat cá nhân** (`conversations.json`, nhiều file `.zip`). Xóa hoặc chuyển ra ngoài trước khi gửi thư mục cho người khác hay đưa lên git.
-2. **Simulator chưa có git.** Toàn bộ công việc của phiên chỉ nằm trên ổ đĩa. Cần `git init` (hoặc đưa vào repo nhóm) với `.gitignore` gồm `node_modules/`, `dist/`, `claude_data/`, `*.zip`. Không commit `aseprite.exe`.
+2. **Simulator đã có git** (remote `origin` = `github.com/MichaelTran1226/Racehorse_Simulator_Web`, nhánh `main`). `.gitignore` đã chặn `claude_data/`. Không commit `aseprite.exe`.
+   - Nhánh đang làm: `feature/farm-map-life-and-ambient-content`, chỉ làm đẹp lại bản đồ (ngựa thật trong chuồng, chi tiết môi trường, chuyển động nhẹ; không thêm gameplay). Kế hoạch: `docs/superpowers/plans/2026-10-19-farm-map-life-and-ambient-content.md`. Việc hiện mã chip trong thẻ ngựa cũng được làm trên nhánh này.
 3. Các file rác trong `Racehorse_Simulator_Web/`: `dashboard-preview.png`, `manifest-…-2026-10-18-19-18-01.json` (sinh ra khi thử ChatGPT). Xóa được sau khi người phụ trách xác nhận.
 
 ## 1. Current State & Completed
 
-Kiểm tra lần cuối (19/10/2026): `npm run typecheck` sạch · `npm test` **29/29 đạt** · `npm run build` đạt · `npm run verify:map` đạt · đã thử trên trình duyệt: không lỗi console, đo được 60 fps ở 1920×1080 khi đang mở một bảng nổi.
+Kiểm tra lần cuối (19/10/2026): `npm run typecheck` sạch · `npm test` **51/51 đạt** · `npm run build` đạt · `npm run verify:map` đạt · kiểm tra Chromium headless không có lỗi console hoặc request thất bại; hai ảnh Canvas cách nhau 1 giây khi Pause có cùng SHA-256.
 
 | Phần | Trạng thái | File chính |
 |---|---|---|
 | Bộ sprite chính thức (S01 ngựa, S14 nài, S07/S08/S10 bản đồ, S06 người, S15 xe, S13 hiệu ứng, S11 biểu tượng) vẽ bằng code → `.aseprite` | Xong, người dùng đã duyệt 4 đợt | `art/gen/*.ts`, `art/aseprite/*.lua`, `public/assets/sprites/` |
-| Bản đồ trang trại 1280×768 theo bố cục M1, chỉ ghép từ sprite đã duyệt | Xong, đã duyệt bố cục | `art/map/gen-layout.ts`, `public/assets/maps/` |
+| S16 sinh vật môi trường (Chim sẻ, Mèo, Bướm, Túi gió), ô 32×32, sheet 192×192, baseline y=30 | **Đã duyệt nguyên bản preview (20/10/2026)**, chạy trên bản đồ | `art/gen/ambient-life.ts`, `public/assets/sprites/s16-ambient-life.png`, `src/hub/ambientScene.ts` |
+| Hoạt động tự chạy: nài cưỡi ngựa nước kiệu vòng ô đất mép trái + HLV bấm giờ; khu kho–phòng khám có xe điện, xe kéo cỏ (ẩn khi hết cỏ), groom chải ngựa, bác sĩ dừng khám, hai người trò chuyện. Xe không còn ghép cứng trong ảnh nền | Xong (20/10), có test; mọi nhân vật đứng yên khi giảm chuyển động | `src/hub/ambientScene.ts` (`walkPause`), `src/hub/ambient.ts`, `art/map/gen-layout.ts` |
+| Thẻ ngựa: thanh nhịp tim 3 vùng có tên (Nghỉ / Vận động / Quá sức) + câu giải thích; mã chip 15 số | Xong (20/10), có test | `src/ui/heartZones.ts`, `src/ui/HorseCard.tsx` |
+| Bản đồ trang trại 1280×768 theo bố cục M1, ghép từ sprite đã duyệt + 14 vật phẩm tĩnh không lấn hành lang | Đã rebuild; manifest SHA-256 ràng buộc layout, `.aseprite` và toàn bộ PNG để phát hiện output cũ | `art/map/gen-layout.ts`, `art/map/farm-build-manifest.json`, `public/assets/maps/` |
 | Màn chính kiểu Hay Day: bản đồ phủ kín, HUD 4 góc (giờ, ngày/đêm, bộ đếm ngựa/sự cố/khóa y tế/kho sắp hết, nút Ngựa/Kho/Tốc độ) | Xong (T1) | `src/ui/FarmHub.tsx` |
 | Camera: kéo + quán tính, lăn chuột phóng quanh con trỏ, lướt tới công trình, phóng sát vào Đường đua và lùi ra khi quay về | Xong (T1, T7, T11) | `src/hub/camera.ts`, `useFarmCamera.ts`, `src/ui/FarmMapCanvas.tsx` |
 | Bảng nổi dùng chung (nảy mở/thu đóng, Esc, giữ focus, trả focus) | Xong (T2) | `src/ui/Popup.tsx` |
 | Ẩn chữ kỹ thuật, gỡ bảng gói tin; bus vẫn publish gói SRS | Xong (T3) | `src/sim/bus.ts`, `packets.ts` |
-| Thẻ ngựa + Đàn ngựa; chạm ngựa thật ở bãi thả | Xong (T4) | `HorseCard.tsx`, `HorseList.tsx`, `src/hub/paths.ts` |
+| Thẻ ngựa + Đàn ngựa; gắn ngựa thật tại 2 ô bãi thả và 7 ô cửa chuồng mở (không đổi màu hay nhảy ô khi khóa y tế) | Xong (T4, T13); cửa chuồng đã mở rộng để đầu ngựa dễ đọc hơn | `HorseCard.tsx`, `HorseList.tsx`, `src/hub/farmPopulation.ts`, `src/render/stableHorses.ts` |
 | Khu chuồng, Phòng khám thành bảng nổi | Xong (T5, T6) | `StallTab.tsx`, `VetZone.tsx` |
 | Đường đua (Chạy thử 1 ngựa, Đua 6 làn), chọn ngựa bằng chân dung | Xong (T7) | `TrialTab.tsx`, `RaceTab.tsx`, `HorsePicker.tsx` |
-| Kho vật tư: mô hình tồn kho, bảng Kho, xe tải giao hàng, icon bay vào kho, số đếm | Xong T8–T9; T10 còn thiếu nhánh giảm chuyển động và chưa gắn xe cút kít với tồn kho (mục 2) | `src/sim/inventory.ts`, `SupplyPanel.tsx`, `paths.ts` (`truckPose`) |
+| Kho vật tư: mô hình tồn kho, bảng Kho, xe tải giao hàng, icon bay vào kho, số đếm | Xong (T8–T10) | `src/sim/inventory.ts`, `SupplyPanel.tsx`, `paths.ts` (`truckPose`) |
+| Hệ thống chuyển động nền & giảm chuyển động (`prefers-reduced-motion` & `?reducedMotion=1`): đứng yên ở khung chuẩn, tắt bụi, barrow dừng khi hết cỏ/tạm dừng | Xong; Pause giữ nguyên tọa độ bằng đồng hồ ambient tích lũy | `src/hub/ambientScene.ts`, `src/hub/ambient.ts`, `FarmMapCanvas.tsx` |
+| Bốn hướng phong cách map (cao nguyên Việt Nam, điền trang châu Âu, đồng quê truyện tranh, sinh thái hiện đại) | Preview-only, chờ người dùng chọn; không dùng làm nguồn sprite | `docs/design/map-style-proposals.md`, `art/preview/map-style-directions.png` |
 | Telemetry engine (gait, nhịp tim, thể lực, mặt sân, tình trạng sân, chướng ngại, đua nhiều ngựa) | Xong từ trước, có test | `src/sim/engine.ts` |
+
+### Mã chip ngựa (microchip / RFID)
+
+| | Simulator (hiện tại) | Backend (nguồn chuẩn khi nối dữ liệu) |
+|---|---|---|
+| Trường | `HorseProfile.microchip` (`src/sim/engine.ts:37`) | `Horse.microchip` (`String? @unique`), `Horse.rfid` (`String? @unique`), `Horse.microchipRfid` (`@unique`, cột cũ, BE gán bằng `microchip` khi tạo) — `prisma/schema.prisma:344-346` |
+| Định dạng microchip | 15 chữ số ISO 11784/11785: `985141` + 9 số ngẫu nhiên (`src/sim/horses.ts:69`) | Đúng 15 chữ số `/^\d{15}$/` (`create-horse.dto.ts`); không nhập thì tự sinh `985` + 12 số, kiểm tra trùng (`horses.service.ts` `generateMicrochip`) |
+| RFID | **Chưa có** | `RFID_RE = /^[A-Z0-9-]{4,32}$/`, tự viết hoa; không nhập thì tự sinh `RFID-XXXXXX####` |
+| Trùng mã | Không kiểm (dữ liệu mẫu, seed cố định) | 409 `DUPLICATE_MICROCHIP`; nếu trùng hồ sơ đã xóa thì yêu cầu khôi phục thay vì tạo mới |
+| Phân quyền | Không có | GROOM chỉ thấy 4 số cuối (`maskMicrochip`), áp cho cả `microchipRfid` |
+| Trong gói tin | `horse.microchip_id` của mọi gói có `horseRef` (`src/sim/packets.ts:14`), theo SRS §9 | — |
+| Hiển thị | **Hiện đủ 15 số, không che, cho mọi người xem (kể cả người dùng phổ thông)** — chỉ trong thẻ ngựa (`HorseCard`), dòng "Mã chip", chia nhóm 3 số bằng `formatMicrochip` (`src/sim/engine.ts`). Không hiện ở Đàn ngựa, ô chuồng, khung chọn ngựa, nhãn trên bản đồ. Icon "chip RFID" trong S11 (`art/gen/fx-icons.ts:352`) chưa dùng | Main Web hiện ở danh sách/chi tiết/form ngựa, hồ sơ y tế |
+
+Khi nối dữ liệu (mục 6, bước 6): lấy `microchip` từ API thay vì tự sinh, giữ nguyên chuỗi đã bị che với GROOM (không cố "giải mã"; `formatMicrochip` chỉ nhóm chữ số liền nhau, với chuỗi `***********1234` sẽ ra `***********123 4`, nên sửa lại hàm khi nối API), và không dùng `microchip_id` làm khóa nội bộ — khóa vẫn là `horse_id`.
 
 ## 2. In-Progress & Uncommitted
 
-- **Uncommitted:** toàn bộ `Racehorse_Simulator_Web/` (không có git). Hai file mới ở thư mục gốc: `CLAUDE.md`, `HANDOVER.md`.
-- **Chờ duyệt:** dòng cuối `tasks/todo-hayday.md` — "Người dùng duyệt bản cuối" vẫn mở.
+- **Uncommitted:** toàn bộ `Racehorse_Simulator_Web/` (trên nhánh `feature/farm-map-life-and-ambient-content`).
+- **Chờ duyệt:** Chọn một hướng trong `art/preview/map-style-directions.png` (người dùng có nghiêng về vùng đồng bằng, chưa chốt).
 - **Kế hoạch cũ chưa đóng:** `tasks/plan.md` (42 ô chưa tích) và `tasks/todo.md` (9 ô) là kế hoạch bản đồ 2048×1536, bỏ ban đêm, do ChatGPT viết. Kế hoạch này **đã bị thay** bằng bản đồ M1 1280×768 có ngày/đêm, nhưng chưa được lưu trữ vì cần người dùng đồng ý. Đừng làm theo nó. `SPEC-sprite-farm-map.md` cũng thuộc hướng cũ đó (yêu cầu "chỉ crop/copy" vẫn còn đúng).
 - **Giới hạn đã ghi trong code (`shortcut:`):**
   - `src/sim/inventory.ts:15`: tốc độ tiêu hao được tăng tốc cho demo (cỏ khô cạn sau khoảng 5 phút ở 1×). Khi nối kho thật thì thay bằng định mức/ngày.
   - `src/ui/FarmMapCanvas.tsx:22`: zoom không nguyên (×1.15, ×1.5) làm pixel không đều. Nếu nhìn thấy rõ thì đổi sang bước nguyên.
 - **Những gì chưa làm:** mức zoom không được nhớ khi quay lại trang trại. Nhãn tên ngựa chỉ có ở 2 con trong bãi thả, số còn lại xem qua Chuồng/Đàn ngựa. Kho không ảnh hưởng sức khỏe ngựa (cố ý, theo quyết định).
-- **Lỗi tìm thấy khi review cuối (19/10, chưa sửa):**
+- **Tình trạng các lỗi tìm thấy ở review trước (19/10):**
   - *Quan trọng:*
-    1. `src/ui/FarmMapCanvas.tsx` `drawDelivery`: không có nhánh giảm chuyển động (yêu cầu của T10: bỏ icon bay, chỉ để số tăng). Sửa bằng cách đọc `prefers-reduced-motion` trong `render`, khi bật thì bỏ vòng vẽ icon.
-    2. `src/hub/ambient.ts` (xe cút kít): groom chở cỏ liên tục kể cả khi kho cỏ = 0 hoặc đang tạm dừng, chưa gắn với tồn kho như T10 yêu cầu. Truyền cờ `speed > 0 && stock.HAY > 0` để bỏ vẽ khi không có cỏ.
-    3. `src/ui/FarmHub.tsx` (`paddock` lọc lại mỗi lần render) cùng `ambient.ts`: khi khóa y tế một ngựa ở bãi thả, ngựa kế tiếp nhảy vào ô của nó giữa chừng bước đi và đổi màu lông. Cần giữ ô cố định theo `horseId`.
+    1. `src/ui/FarmMapCanvas.tsx` `drawDelivery`: **ĐÃ SỬA** (hỗ trợ giảm chuyển động, bỏ icon bay, chỉ tăng số).
+    2. `src/hub/ambient.ts` (xe cút kít): **ĐÃ SỬA** (`barrowActive`: dừng khi kho hết cỏ hoặc tạm dừng hoặc giảm chuyển động).
+    3. `src/ui/FarmHub.tsx` & `farmPopulation.ts`: **ĐÃ SỬA** (ổn định danh tính ngựa bãi thả và chuồng theo `id`, không nhảy ô khi đổi trạng thái y tế).
     4. `src/ui/App.tsx` (interval kho): tính tiêu hao theo số lần tick, không theo thời gian thực đã trôi, nên tab bị ẩn thì kho ngừng vơi. Cần lưu mốc thời gian lần trước và dùng thời gian thực × tốc độ, có giới hạn trên.
-  - *Nhỏ:*
+  - *Nhỏ còn lại:*
+    - Khi bật `reducedMotion`, ngựa bãi thả được vẽ ở pose thời gian 0 nhưng hit-test vẫn dùng đồng hồ ambient hiện tại; hover/click có thể lệch khỏi hình. Đây là lỗi có sẵn ngoài phạm vi remediation hiện tại.
     - `Popup.tsx`: `onClose` truyền inline bị tạo lại mỗi 0,5 giây nên đếm giờ đóng bị khởi động lại; cần giữ `onClose` trong ref.
     - `Popup.tsx`: bôi đen chữ rồi thả chuột ra ngoài bảng sẽ đóng bảng.
     - `FarmMapCanvas.tsx`: canvas có `tabIndex=0` nhưng không xử lý phím nào.
@@ -102,7 +123,7 @@ Kiểm tra lần cuối (19/10/2026): `npm run typecheck` sạch · `npm test` *
 
 ## 6. Next Steps / Action Items (theo thứ tự)
 
-1. Xử lý mục 0: xóa `claude_data/`, `git init` Simulator với `.gitignore`, rồi commit đầu tiên.
+1. Xử lý mục 0: xóa `claude_data/` trước khi chia sẻ thư mục (git đã có và đã chặn thư mục này).
 2. Sửa 4 lỗi "Quan trọng" của review (mục 2) trước khi người dùng duyệt bản cuối. Hai lỗi đầu là yêu cầu của T10 đã bị tích nhầm.
 3. Người dùng duyệt bản cuối giao diện Hay Day (ô cuối `tasks/todo-hayday.md`). Lưu trữ `tasks/plan.md`, `tasks/todo.md` và `SPEC-sprite-farm-map.md` cũ khi được đồng ý.
 4. Chốt mâu thuẫn RULE-MED-02 trong `CONSTRAINTS.md` với ADR-3, có xác nhận của người duyệt.

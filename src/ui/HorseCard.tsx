@@ -1,9 +1,9 @@
 // Thẻ ngựa (trọng tâm của Simulator): chân dung đúng màu lông + chỉ số dạng thanh/đồng hồ, không chữ kỹ thuật.
-import type { CSSProperties } from "react";
 import { drawFrame, ROW, tinted, type Sprites } from "../render/sprites";
 import { useLog } from "../sim/bus";
-import type { HorseProfile, StallHealth } from "../sim/engine";
+import { formatMicrochip, type HorseProfile, type StallHealth } from "../sim/engine";
 import { COAT_LABEL, HEALTH_LABEL, LIFECYCLE_LABEL, STRATEGY_LABEL } from "../sim/horses";
+import { heartHint, heartZones } from "./heartZones";
 import c from "./HorseCard.module.css";
 import { PixelCanvas } from "./PixelCanvas";
 import { Popup } from "./Popup";
@@ -30,6 +30,7 @@ export function HorseCard({ horse: h, sprites, reported, onToggleLock, onClose }
   const incidents = useLog().filter((e) => e.event === "sim:incident_report" && (e.payload as IncidentPayload).horse?.horse_id === h.id);
   const kmh = h.topSpeedMps * 3.6;
   const fitnessPct = Math.round(((h.fitness - 0.85) / 0.3) * 100);
+  const zones = heartZones(h);
 
   return (
     <Popup title={h.name} onClose={onClose}>
@@ -58,15 +59,24 @@ export function HorseCard({ horse: h, sprites, reported, onToggleLock, onClose }
 
           <div className={c.heart}>
             <span className={c.meterLabel}>Nhịp tim (nhịp/phút)</span>
-            <div className={c.heartBar} style={{ "--rest": `${(h.hrRest / h.hrMax) * 100}%`, "--alert": `${(h.hrAlert / h.hrMax) * 100}%` } as CSSProperties}>
-              <span className={c.heartRest} />
-              <span className={c.heartAlert} />
+            <div
+              className={c.heartBar}
+              role="img"
+              aria-label={`Nhịp tim: nghỉ dưới ${h.hrRest}, vận động ${h.hrRest} đến ${h.hrAlert}, quá sức trên ${h.hrAlert} nhịp mỗi phút`}
+            >
+              {zones.map((z) => (
+                <span key={z.key} data-zone={z.key} style={{ width: `${z.widthPct}%` }} />
+              ))}
             </div>
-            <div className={c.heartScale}>
-              <span>Nghỉ {h.hrRest}</span>
-              <span>Báo động {h.hrAlert}</span>
-              <span>Tối đa {h.hrMax}</span>
-            </div>
+            <ul className={c.heartLegend}>
+              {zones.map((z) => (
+                <li key={z.key}>
+                  <span className={c.swatch} data-zone={z.key} aria-hidden />
+                  {z.label} {z.rangeText}
+                </li>
+              ))}
+            </ul>
+            <p className={s.hint}>{heartHint(h)}</p>
           </div>
 
           <dl className={c.facts}>
@@ -104,6 +114,10 @@ export function HorseCard({ horse: h, sprites, reported, onToggleLock, onClose }
             <div>
               <dt>Lối đua</dt>
               <dd>{STRATEGY_LABEL[h.strategy]}</dd>
+            </div>
+            <div className={c.wide}>
+              <dt>Mã chip</dt>
+              <dd>{formatMicrochip(h.microchip)}</dd>
             </div>
           </dl>
         </div>

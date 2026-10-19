@@ -26,7 +26,7 @@ export function along(path: Path, distance: number, pingPong: boolean): Point & 
 }
 
 const HORSE_PATH: Path = [{ x: 420, y: 420 }, { x: 700, y: 420 }]; // bãi thả
-const HORSE2_PATH: Path = [{ x: 440, y: 300 }, { x: 590, y: 300 }];
+const HORSE2_PATH: Path = [{ x: 440, y: 300 }, { x: 530, y: 300 }];
 
 const PADDOCK_PATHS = [HORSE_PATH, HORSE2_PATH] as const;
 const PADDOCK_PHASE = [0, 5] as const;
@@ -46,8 +46,17 @@ export function paddockHorse(slot: number, time: number) {
 }
 
 /** Ô bãi thả có con ngựa nằm dưới điểm thế giới `point` (khung 32×32, chân ở y), hoặc -1. */
-export function paddockHorseAt(point: Point, time: number, count: number): number {
-  for (let slot = Math.min(count, PADDOCK_SLOTS) - 1; slot >= 0; slot--) {
+export function paddockHorseAt(
+  point: Point,
+  time: number,
+  slotsOrCount: number | readonly (unknown | null | undefined)[],
+): number {
+  const isPresent = (slot: number) => {
+    if (typeof slotsOrCount === "number") return slot < slotsOrCount;
+    return Boolean(slotsOrCount[slot]);
+  };
+  for (let slot = PADDOCK_SLOTS - 1; slot >= 0; slot--) {
+    if (!isPresent(slot)) continue;
     const h = paddockHorse(slot, time);
     if (Math.abs(point.x - h.x) <= 15 && point.y >= h.y - 26 && point.y <= h.y + 2) return slot;
   }

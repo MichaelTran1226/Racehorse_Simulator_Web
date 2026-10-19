@@ -1,8 +1,7 @@
-// Trang chính kiểu Hay Day: bản đồ phủ kín màn hình, HUD nổi 4 góc. Chạm công trình → camera lướt tới → mờ dần.
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCountUp } from "./useCountUp";
 import { FARM_OBJECTS, type FarmTarget } from "../hub/farmLayout";
-import { PADDOCK_SLOTS } from "../hub/paths";
+import { assignPaddockHorses, assignStableHorses } from "../hub/farmPopulation";
 import { stockLevel, SUPPLY_IDS, type Inventory, type SupplyId } from "../sim/inventory";
 import { SupplyPanel } from "./SupplyPanel";
 import { StallTab } from "./StallTab";
@@ -36,6 +35,10 @@ interface Props {
 }
 
 const nowTod = (): TimeOfDay => {
+  if (typeof window !== "undefined") {
+    const p = new URLSearchParams(window.location.search).get("tod");
+    if (p === "DAY" || p === "NIGHT") return p;
+  }
   const h = new Date().getHours();
   return h >= 6 && h < 18 ? "DAY" : "NIGHT";
 };
@@ -54,8 +57,11 @@ export function FarmHub({ sprites, horses, reported, speed, speeds, onSpeed, onE
   const [stallSel, setStallSel] = useState<string | null>(null);
   const [vetOpen, setVetOpen] = useState(false);
   const card = horses.find((h) => h.id === cardId) ?? null;
-  // Ngựa khỏe được thả ra bãi (chạm vào được trên bản đồ); ngựa đang khóa y tế ở lại chuồng
-  const paddock = horses.filter((h) => !h.medicalLock && (h.health === "FIT" || h.health === "WATCH")).slice(0, PADDOCK_SLOTS);
+  // Ngựa bãi thả và ngựa chuồng được phân bổ ổn định danh tính
+  const paddock = useMemo(() => assignPaddockHorses(horses), [horses]);
+  const paddockIds = useMemo(() => new Set(paddock.flatMap((h) => (h ? [h.id] : []))), [paddock]);
+  const stableHorses = useMemo(() => assignStableHorses(horses, paddockIds), [horses, paddockIds]);
+
   const locked = horses.filter((h) => h.medicalLock).length;
   const lowSupplies = SUPPLY_IDS.filter((id) => stockLevel(inventory, id) !== "OK").length;
 
@@ -85,9 +91,12 @@ export function FarmHub({ sprites, horses, reported, speed, speeds, onSpeed, onE
         goTo={goTo}
         onEnter={(target) => (target === "TRACK" ? onEnterTrack() : target === "STALL" ? setStallOpen(true) : target === "VET" ? setVetOpen(true) : setSupplyOpen(true))}
         paddock={paddock}
+        stableHorses={stableHorses}
         onHorse={openCard}
         arriveFrom={arriveFrom}
         trip={trip}
+        simulationRunning={speed > 0}
+        hasHay={inventory.stock.HAY > 0}
       />
 
       {/* Trên-trái: đồng hồ + ngày/đêm */}

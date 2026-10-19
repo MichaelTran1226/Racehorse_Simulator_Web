@@ -10,6 +10,7 @@
     "preview": "vite preview --port 5174",
     "typecheck": "tsc --noEmit",
     "test": "node --test",
+    "stamp:map": "node art/map/farm-build-manifest.mjs",
     "verify:map": "node art/verify-farm-map.mjs"
   },
   "dependencies": {

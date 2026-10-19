@@ -101,36 +101,46 @@
 }
 
 .heartBar {
-  position: relative;
+  display: flex;
   height: 18px;
   border: 3px solid var(--ink);
   border-radius: var(--hud-round);
-  background: var(--red);
   overflow: hidden;
 }
 
-.heartRest,
-.heartAlert {
-  position: absolute;
-  inset: 0 auto 0 0;
-}
-
-.heartAlert {
-  width: var(--alert);
-  background: var(--gold);
-}
-
-.heartRest {
-  z-index: 1;
-  width: var(--rest);
+.heart [data-zone="REST"] {
   background: var(--grass);
 }
 
-.heartScale {
+.heart [data-zone="WORK"] {
+  background: var(--gold);
+}
+
+.heart [data-zone="OVER"] {
+  background: var(--red);
+}
+
+.heartLegend {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2px var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
   font-size: var(--fs-sm);
   color: var(--text-2);
+}
+
+.heartLegend li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--ink);
 }
 
 .facts {
@@ -157,6 +167,11 @@
   margin: 0;
   font-weight: 700;
   text-align: right;
+}
+
+/* Mã chip 15 số không vừa nửa cột. */
+.facts .wide {
+  grid-column: 1 / -1;
 }
 
 .section {
