@@ -69,3 +69,7 @@ test("loose decor placements do not overlap reserved corridors or building bound
   }
 });
 
+
+test("xe không còn bị ghép cứng vào bản đồ nền", () => {
+  assert.equal(FARM_PLACEMENTS.some((p) => p.sheet === "s15-vehicles"), false);
+});

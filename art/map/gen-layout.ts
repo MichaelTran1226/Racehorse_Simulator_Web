@@ -205,7 +205,6 @@ decor(SACKS, 18, 21, 51);
 decor(HAY_STACK, 18, 20, 51);
 decor(SACKS, 17, 20, 51);
 decor(HAY_STACK, 25, 20, 51);
-decor({ sheet: "s15-vehicles", c: 0, r: 4, w: 2, h: 1 }, 26, 21, 55); // xe kéo cỏ
 
 // ---- Phòng khám thú y (góc dưới-phải)
 building("vet", "Phòng khám thú y", "VET", 60, (put) => {
@@ -241,7 +240,6 @@ decor(FLOWER_BUSH, 10, 21, 42, 3, 1);
 decor(BUSH, 13, 21, 42);
 decor(FLOWER_BUSH, 14, 21, 42, 2, 1);
 decor(STUMP, 16, 21, 42);
-decor({ sheet: "s15-vehicles", c: 2, r: 5, w: 2, h: 1 }, 11, 16, 55); // xe điện đỗ bên đường
 tree(0, 22);
 tree(27, 22);
 tree(30, 22);
