@@ -68,20 +68,6 @@ export function drawFarmActors(
   const cart = ambientActorPose("HOUSE_CART", time, ambientState);
   drawRect(ctx, sprites.vehicles, VEHICLE_RECT.cartDriver, cart.x, cart.y, 1, cart.flip);
 
-  // 5. Sinh vật môi trường S16 đã duyệt (Chim trên hàng rào, Mèo nhà kho, Bướm vườn hoa, Cờ gió đường đua)
-  if (sprites.ambientLife) {
-    const bird = ambientActorPose("S16_BIRD", time, ambientState);
-    drawFrame(ctx, sprites.ambientLife, sprites.ambientLife.canvas, bird.frame, 0, bird.x, bird.y, CELL, bird.flip);
-
-    const cat = ambientActorPose("S16_CAT", time, ambientState);
-    drawFrame(ctx, sprites.ambientLife, sprites.ambientLife.canvas, cat.frame, 1, cat.x, cat.y, CELL, cat.flip);
-
-    const butterfly = ambientActorPose("S16_BUTTERFLY", time, ambientState);
-    drawFrame(ctx, sprites.ambientLife, sprites.ambientLife.canvas, butterfly.frame, 2, butterfly.x, butterfly.y, CELL, butterfly.flip);
-
-    const windsock = ambientActorPose("S16_WINDSOCK", time, ambientState);
-    drawFrame(ctx, sprites.ambientLife, sprites.ambientLife.canvas, windsock.frame, 3, windsock.x, windsock.y, CELL, false);
-  }
 }
 
 /** Ban đêm: phủ tối + quầng đèn ở cửa sổ, chuồng, đường đua; đom đóm. Chỉ là lớp phủ lúc chạy, bố cục không đổi. */

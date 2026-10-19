@@ -16,7 +16,7 @@ Kiểm tra lần cuối (19/10/2026): `npm run typecheck` sạch · `npm test` *
 | Phần | Trạng thái | File chính |
 |---|---|---|
 | Bộ sprite chính thức (S01 ngựa, S14 nài, S07/S08/S10 bản đồ, S06 người, S15 xe, S13 hiệu ứng, S11 biểu tượng) vẽ bằng code → `.aseprite` | Xong, người dùng đã duyệt 4 đợt | `art/gen/*.ts`, `art/aseprite/*.lua`, `public/assets/sprites/` |
-| Bộ sprite S16 sinh vật môi trường (Chim, Mèo, Bướm, Cờ gió) vẽ bằng code, ô 32×32, sheet 192×192, baseline y=30 | Xong, người dùng đã duyệt cả 4 hàng tại checkpoint Task 5 | `art/gen/ambient-life.ts`, `public/assets/sprites/s16-ambient-life.png` |
+| Đề xuất S16 sinh vật môi trường (Chim, Mèo, Bướm, Cờ gió), ô 32×32, sheet 192×192, baseline y=30 | **Chưa duyệt**; chỉ giữ preview, không có trong runtime | `art/gen/ambient-life.ts`, `art/preview/s16-ambient-life-*.png` |
 | Bản đồ trang trại 1280×768 theo bố cục M1, ghép từ sprite đã duyệt + 14 vật phẩm tĩnh không lấn hành lang | Xong, đã duyệt bố cục | `art/map/gen-layout.ts`, `src/hub/farmLayout.ts`, `public/assets/maps/` |
 | Màn chính kiểu Hay Day: bản đồ phủ kín, HUD 4 góc (giờ, ngày/đêm, bộ đếm ngựa/sự cố/khóa y tế/kho sắp hết, nút Ngựa/Kho/Tốc độ) | Xong (T1) | `src/ui/FarmHub.tsx` |
 | Camera: kéo + quán tính, lăn chuột phóng quanh con trỏ, lướt tới công trình, phóng sát vào Đường đua và lùi ra khi quay về | Xong (T1, T7, T11) | `src/hub/camera.ts`, `useFarmCamera.ts`, `src/ui/FarmMapCanvas.tsx` |

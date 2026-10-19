@@ -58,12 +58,9 @@ test("rows 4 and 5 are transparent and reserved", () => {
   }
 });
 
-test("runtime URLs cannot contain s16-ambient-life.png unless approved-row manifest is nonempty", () => {
+test("unapproved S16 proposal stays out of runtime assets", () => {
   const urls = JSON.stringify(FARM_ASSET_URLS).toLowerCase();
-  if (APPROVED_S16_ROWS.length === 0) {
-    assert.equal(urls.includes("s16-ambient-life.png"), false);
-  } else {
-    assert.ok(urls.includes("s16-ambient-life.png"), "FARM_ASSET_URLS must include s16-ambient-life.png when rows are approved");
-  }
+  assert.deepEqual(APPROVED_S16_ROWS, []);
+  assert.equal(urls.includes("s16-ambient-life.png"), false);
 });
 

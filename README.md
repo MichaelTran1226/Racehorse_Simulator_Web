@@ -117,7 +117,7 @@ npm run verify:map
 - `Camera & Physics`: Bán kính kẹp biên bản đồ, ngưỡng kích hoạt kéo chuột (6px drag threshold), làm mịn quán tính (inertia decay), phóng to/thu nhỏ giữ tâm con trỏ chuột (`zoomAt`).
 - `Hit-Testing & Layout`: Kiểm tra va chạm tọa độ pixel chính xác kể cả với ảnh có độ trong suốt (alpha), thứ tự z-index của công trình và ngựa, hành lang cách ly vật phẩm (`RESERVED_CORRIDORS`).
 - `Inventory & Logistics`: Định mức tiêu hao theo thời gian, phân loại trạng thái kho (`OK`, `LOW`, `OUT`), logic xe tải gom đơn đặt hàng.
-- `Ambient Life & Population`: Gán ngựa bãi thả & chuồng cố định danh tính (`farmPopulation`), cắt ghép đầu ngựa thật S01 trong ô cửa mở S07 (`stableHorses`), bộ sprite S16 sinh vật môi trường (Chim, Mèo, Bướm, Cờ gió), cùng cơ chế giảm chuyển động toàn diện (`ambientScene`).
+- `Ambient Life & Population`: Gán ngựa bãi thả & chuồng cố định danh tính (`farmPopulation`), cắt ghép đầu ngựa thật S01 trong ô cửa mở S07 (`stableHorses`), cùng cơ chế giảm chuyển động toàn diện (`ambientScene`). Các đề xuất S16 hiện chỉ là preview chưa duyệt và không được nạp vào runtime.
 
 ---
 
@@ -130,11 +130,10 @@ npm run verify:map
 | **TC-03** | **Tương tác Chiến Mã & Khóa Y Tế** | Chạm vào ngựa đang thong thả đi trên bãi cỏ (hoặc mở nút **Ngựa** → chọn 1 con). | Bảng **Thẻ ngựa** bật nảy lên. Xem được chỉ số nhịp tim, tốc độ, thể lực. Bấm **Khóa y tế**: nhãn trạng thái đổi thành "Khóa y tế", ngựa bị cách ly không được tham gia đua; danh tính 2 ô bãi thả giữ nguyên không bị nhảy vị trí. |
 | **TC-04** | **Quản Lý & Tiếp Tế Kho Vật Tư** | Bấm nút **Kho** (góc dưới bên phải). Quan sát các thanh tài nguyên vơi dần. Bấm **Đặt hàng** một mục sắp hết. | Bảng kho hiển thị thời gian xe tải đến. Khi đóng bảng, quan sát thấy xe tải màu trắng chạy từ cổng vào cửa kho, hạ cầu bốc hàng và số lượng tồn kho tự động nhảy tăng lên. |
 | **TC-05** | **Xem Khu Chuồng & Thú Y** | Bấm vào tòa nhà Chuồng trại hoặc Phòng khám trên bản đồ. | Camera tự động lướt đến công trình đó; công trình nhún nhẹ và bảng nổi tương ứng mở ra (hiển thị lưới chuồng với tình trạng ngựa, 7 ô cửa mở hiển thị đầu ngựa thật, hoặc danh sách sự cố tại trạm thú y). |
-| **TC-06** | **Chạy Thử Đường Đua (Trial)** | Bấm vào khu vực Đường đua (hoặc bấm tab "Đường đua" trên thanh điều hướng). Chọn ngựa, chọn cự ly (1200m), mặt sân Cát, đặt rào thấp. Bấm **Bắt đầu chạy thử**. | Chuyển cảnh mượt mà. Ngựa phi nước đại trên đường đua, thanh telemetry nhảy nhịp tim, tốc độ tức thời và hiển thị hoạt ảnh bật nhảy khi qua rào; cờ gió S16 phấp phới ngoài hàng rào. |
+| **TC-06** | **Chạy Thử Đường Đua (Trial)** | Bấm vào khu vực Đường đua (hoặc bấm tab "Đường đua" trên thanh điều hướng). Chọn ngựa, chọn cự ly (1200m), mặt sân Cát, đặt rào thấp. Bấm **Bắt đầu chạy thử**. | Chuyển cảnh mượt mà. Ngựa phi nước đại trên đường đua, thanh telemetry nhảy nhịp tim, tốc độ tức thời và hiển thị hoạt ảnh bật nhảy khi qua rào. |
 | **TC-07** | **Đua Ngựa 6 Làn (Race)** | Tại màn hình Đường đua, chuyển sang tab **Đua 6 làn**. Chọn cự ly và bấm **Mở cổng xuất phát**. | Cổng bật mở, 6 nài ngựa trong trang phục nhiều màu cùng phi nước đại. Bảng xếp hạng bên phải cập nhật vị trí và khoảng cách liên tục cho tới khi qua vạch đích. |
 | **TC-08** | **Điều Tốc Mô Phỏng** | Bấm nút tốc độ ở góc dưới phải (hoặc góc trên phải khi ở đường đua) để chuyển qua lại `1×` → `10×` → `60×` → `II` (Tạm dừng). | Tốc độ tiêu hao kho, nhịp di chuyển và thời gian mô phỏng tăng tốc hoặc đứng yên tương ứng; xe cút kít chở cỏ và sinh vật môi trường tạm dừng chuyển động khi ở trạng thái `II`. |
-| **TC-09** | **Hỗ Trợ Giảm Chuyển Động** | Bật tùy chọn `prefers-reduced-motion` trong cài đặt trợ năng của HĐH hoặc thêm `?reducedMotion=1` trên thanh địa chỉ. | Các hiệu ứng nảy/phóng camera tự động chuyển sang hiệu ứng mờ dần (fade); mọi nhân vật và động vật S16 đứng yên ở tư thế tĩnh chuẩn (frame 0/4); tắt bụi cát đường đua và bỏ hiệu ứng icon bay vào kho. |
-| **TC-10** | **Sinh Vật Môi Trường S16** | Quan sát các góc trang trại trên bản đồ chính. | Chim sẻ nhảy trên cọc rào bãi thả, mèo hoa đi dạo lối nhà kho, bướm lượn khóm hoa nhà cam, cờ gió phất phơ ngoài đường đua; phối màu SRS §12 hài hòa không rối mắt. |
+| **TC-09** | **Hỗ Trợ Giảm Chuyển Động** | Bật tùy chọn `prefers-reduced-motion` trong cài đặt trợ năng của HĐH hoặc thêm `?reducedMotion=1` trên thanh địa chỉ. | Các hiệu ứng nảy/phóng camera tự động chuyển sang hiệu ứng mờ dần (fade); mọi nhân vật đứng yên ở tư thế tĩnh chuẩn (frame 0/4); tắt bụi cát đường đua và bỏ hiệu ứng icon bay vào kho. |
 
 ---
 

@@ -22,7 +22,6 @@ export interface Sprites {
   fx: Sheet; // S13: H0 bụi · H2 chớp đỏ · H4 zzz / tim
   people: Sheet; // S06: H0 quản lý · H1 HLV · H2 VET · H3 groom · H4 chủ ngựa · H5 nài — cột 0–3 đi bộ, 4 đứng, 5 hành động
   vehicles: HTMLCanvasElement;
-  ambientLife: Sheet; // S16: Sinh vật & chi tiết sống động (chim, mèo, bướm, túi gió)
 }
 
 /** Khung xe trong S15 6×6 ô 32 px: [sx, sy, sw, sh]. */
@@ -227,8 +226,7 @@ export function useSprites(): { sprites: Sprites | null; error: string | null } 
       pixelSheet("/assets/sprites/s13-fx.png"),
       pixelSheet("/assets/sprites/s06-people.png"),
       pixelSheet("/assets/sprites/s15-vehicles.png"),
-      pixelSheet("/assets/sprites/s16-ambient-life.png"),
-    ]).then(([horse, stall, rider, fx, people, vehicles, ambientLife]) => ({ horse, stall, rider, fx, people, vehicles: vehicles.canvas, ambientLife }));
+    ]).then(([horse, stall, rider, fx, people, vehicles]) => ({ horse, stall, rider, fx, people, vehicles: vehicles.canvas }));
     let alive = true;
     promise.then(
       (s) => alive && setSprites(s),
