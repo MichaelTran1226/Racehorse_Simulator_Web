@@ -114,7 +114,10 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
       const { camera: cam, hoveredId: hid, tod: mode, screenSize: size, zoom: z, paddock: herd, stableHorses: assignedStalls, hoverHorse: hh, trip: run, simulationRunning: simRunning, hasHay: hayAvailable } = live.current;
       const t = now / 1000;
       const dpr = window.devicePixelRatio || 1;
-      const reducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const reducedMotion =
+        typeof window !== "undefined" &&
+        (window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+          new URLSearchParams(window.location.search).get("reducedMotion") === "1");
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.imageSmoothingEnabled = false;
       ctx.clearRect(0, 0, size.width, size.height);

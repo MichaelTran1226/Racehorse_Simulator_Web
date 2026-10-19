@@ -35,6 +35,10 @@ interface Props {
 }
 
 const nowTod = (): TimeOfDay => {
+  if (typeof window !== "undefined") {
+    const p = new URLSearchParams(window.location.search).get("tod");
+    if (p === "DAY" || p === "NIGHT") return p;
+  }
   const h = new Date().getHours();
   return h >= 6 && h < 18 ? "DAY" : "NIGHT";
 };

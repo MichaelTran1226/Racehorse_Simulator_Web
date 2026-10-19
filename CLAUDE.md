@@ -88,6 +88,7 @@ Trên Windows, gọi Aseprite bằng `Start-Process -NoNewWindow -Wait` (gọi b
 - Sprite: ô 32×32, sheet 6×6 = 192×192, nền trong suốt, chân y = 30, đúng bảng màu SRS §12; đổi màu bằng `src/render/palette.ts`.
 - Mọi hiệu ứng có nhánh `prefers-reduced-motion` (chỉ còn mờ dần).
 - Font: chữ có dấu tiếng Việt dùng VT323; Silkscreen không có dấu, chỉ dùng cho chữ ASCII.
+- **Mã chip ngựa:** `microchip` là 15 chữ số (ISO 11784/11785), khớp ràng buộc BE `/^\d{15}$/`; Simulator tự sinh `985141` + 9 số trong `src/sim/horses.ts` và gửi đi dưới tên `microchip_id` (`horseRef` trong `packets.ts`). Không hiện mã chip trên UI. Khóa nội bộ luôn là `horse_id`, không phải mã chip. Simulator chưa có `rfid`; khi nối API phải tôn trọng việc BE che mã chip với GROOM (chỉ 4 số cuối). Chi tiết: `HANDOVER.md` mục "Mã chip ngựa".
 - Không thêm dependency khi chưa hỏi.
 
 ## 5. Cấu trúc Simulator (`Racehorse_Simulator_Web/`)
