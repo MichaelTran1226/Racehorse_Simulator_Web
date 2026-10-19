@@ -1,7 +1,7 @@
 // Nạp duy nhất các sprite PNG đã duyệt và đổi màu lông / màu áo nài.
 import { useEffect, useState } from "react";
-import type { Coat } from "../sim/engine";
-import { swapExact } from "./palette";
+import type { Coat } from "../sim/engine.ts";
+import { swapExact } from "./palette.ts";
 
 export interface Sheet {
   canvas: HTMLCanvasElement;
@@ -17,6 +17,7 @@ export interface Sheet {
 
 export interface Sprites {
   horse: Sheet; // S01: H0 đứng · H1 đi bộ · H2 kiệu · H3 phi · H4 ăn/nằm · H5 đặc biệt (khập khiễng "!")
+  stall: Sheet; // S07: Ô chuồng 32×32
   rider: Sheet; // S14: H4 = ngựa + nài phi nước đại (6 khung)
   fx: Sheet; // S13: H0 bụi · H2 chớp đỏ · H4 zzz / tim
   people: Sheet; // S06: H0 quản lý · H1 HLV · H2 VET · H3 groom · H4 chủ ngựa · H5 nài — cột 0–3 đi bộ, 4 đứng, 5 hành động
@@ -220,11 +221,12 @@ export function useSprites(): { sprites: Sprites | null; error: string | null } 
   useEffect(() => {
     promise ??= Promise.all([
       pixelSheet("/assets/sprites/s01-horse.png"), // vẽ lại — art/gen/horse.ts
+      pixelSheet("/assets/sprites/s07-stall.png"),
       pixelSheet("/assets/sprites/s14-rider.png"),
       pixelSheet("/assets/sprites/s13-fx.png"),
       pixelSheet("/assets/sprites/s06-people.png"),
       pixelSheet("/assets/sprites/s15-vehicles.png"),
-    ]).then(([horse, rider, fx, people, vehicles]) => ({ horse, rider, fx, people, vehicles: vehicles.canvas }));
+    ]).then(([horse, stall, rider, fx, people, vehicles]) => ({ horse, stall, rider, fx, people, vehicles: vehicles.canvas }));
     let alive = true;
     promise.then(
       (s) => alive && setSprites(s),

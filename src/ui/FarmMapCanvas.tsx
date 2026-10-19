@@ -15,6 +15,7 @@ import { alphaMaskFromImage, hitTestObjects, type AlphaMask } from "../hub/pixel
 import { useFarmCamera } from "../hub/useFarmCamera";
 import { loadFarmAssets, type FarmAssets } from "../render/farmAssets";
 import { drawFarmScene, SQUASH_MS, squashScale } from "../render/farmScene";
+import { drawStableHorses } from "../render/stableHorses";
 import { createOutlineCanvas } from "../render/silhouette";
 import type { Sprites } from "../render/sprites";
 import c from "./FarmHub.module.css";
@@ -108,9 +109,10 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
     if (!canvas || !ctx) return;
     let frame = 0;
     const render = (now: number) => {
-      const { camera: cam, hoveredId: hid, tod: mode, screenSize: size, zoom: z, paddock: herd, hoverHorse: hh, trip: run } = live.current;
+      const { camera: cam, hoveredId: hid, tod: mode, screenSize: size, zoom: z, paddock: herd, stableHorses: assignedStalls, hoverHorse: hh, trip: run } = live.current;
       const t = now / 1000;
       const dpr = window.devicePixelRatio || 1;
+      const reducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.imageSmoothingEnabled = false;
       ctx.clearRect(0, 0, size.width, size.height);
@@ -118,6 +120,9 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
       ctx.scale(z, z);
       ctx.translate(-Math.round(cam.x), -Math.round(cam.y));
       drawFarmScene(ctx, assets, t, (actorCtx, time) => {
+        if (assignedStalls && assignedStalls.length > 0) {
+          drawStableHorses(actorCtx, sprites, assignedStalls, time, reducedMotion);
+        }
         drawFarmActors(actorCtx, sprites, time, herd.map((h) => h?.coat));
         if (run) drawDelivery(actorCtx, sprites.vehicles, run, now / 1000);
       }, pop.current && now - pop.current.t0 < SQUASH_MS ? { id: pop.current.id, ...squashScale(now - pop.current.t0) } : null);
