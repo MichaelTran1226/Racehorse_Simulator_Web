@@ -75,6 +75,25 @@ export function drawFarmActors(
   const coach = ambientActorPose("LEFT_COACH", time, ambientState);
   drawFrame(ctx, sprites.people, sprites.people.canvas, coach.frame, coach.row ?? 1, coach.x, coach.y, CELL, coach.flip);
 
+  // 6. Khu kho – phòng khám (vẽ theo y tăng dần để người phía trước che người phía sau)
+  const roadCart = ambientActorPose("ROAD_CART", time, ambientState);
+  drawRect(ctx, sprites.vehicles, VEHICLE_RECT.cartDriver, roadCart.x, roadCart.y, 1, roadCart.flip);
+
+  for (const id of ["CHAT_A", "CHAT_B"] as const) {
+    const p = ambientActorPose(id, time, ambientState);
+    drawFrame(ctx, sprites.people, sprites.people.canvas, p.frame, p.row ?? 4, p.x, p.y, CELL, p.flip);
+  }
+
+  const hayCart = ambientActorPose("SUPPLY_HAYCART", time, ambientState);
+  if (hayCart.active) {
+    drawRect(ctx, sprites.vehicles, VEHICLE_RECT.hayCart, hayCart.x, hayCart.y, 1, hayCart.flip);
+    drawFrame(ctx, sprites.people, sprites.people.canvas, hayCart.frame, 3, hayCart.x + hayCart.dir * 18, hayCart.y, CELL, hayCart.flip);
+  }
+
+  const grooming = ambientActorPose("BARN_GROOMING", time, ambientState);
+  drawFrame(ctx, sprites.horse, tinted(sprites.horse, "CHESTNUT"), 0, ROW.IDLE, grooming.x + 28, grooming.y, CELL);
+  drawFrame(ctx, sprites.people, sprites.people.canvas, grooming.frame, grooming.row ?? 3, grooming.x, grooming.y, CELL, grooming.flip);
+
 }
 
 /** Ban đêm: phủ tối + quầng đèn ở cửa sổ, chuồng, đường đua; đom đóm. Chỉ là lớp phủ lúc chạy, bố cục không đổi. */

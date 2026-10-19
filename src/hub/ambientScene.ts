@@ -32,7 +32,12 @@ export type AmbientActorId =
   | "SUPPLY_BARROW"
   | "HOUSE_CART"
   | "LEFT_RIDER"
-  | "LEFT_COACH";
+  | "LEFT_COACH"
+  | "ROAD_CART"
+  | "SUPPLY_HAYCART"
+  | "BARN_GROOMING"
+  | "CHAT_A"
+  | "CHAT_B";
 
 export const AMBIENT_ACTOR_IDS: readonly AmbientActorId[] = [
   "TRACK_RIDER_1",
@@ -45,6 +50,11 @@ export const AMBIENT_ACTOR_IDS: readonly AmbientActorId[] = [
   "HOUSE_CART",
   "LEFT_RIDER",
   "LEFT_COACH",
+  "ROAD_CART",
+  "SUPPLY_HAYCART",
+  "BARN_GROOMING",
+  "CHAT_A",
+  "CHAT_B",
 ] as const;
 
 export interface AmbientPose {
@@ -69,6 +79,12 @@ export const CART_PATH: Path = [{ x: 870, y: 346 }, { x: 1240, y: 346 }]; // xe 
 
 export const LEFT_RIDE_PATH: Path = [{ x: 32, y: 316 }, { x: 200, y: 316 }, { x: 200, y: 372 }, { x: 32, y: 372 }, { x: 32, y: 316 }]; // vòng cưỡi ô đất mép trái
 export const LEFT_COACH_POS = { x: 216, y: 412 }; // HLV đứng cạnh cổng ô đất trái
+
+export const ROAD_CART_PATH: Path = [{ x: 40, y: 596 }, { x: 1240, y: 596 }]; // xe điện trên đường đất chính
+export const HAYCART_PATH: Path = [{ x: 820, y: 700 }, { x: 1010, y: 700 }]; // xe kéo cỏ giữa kho và phòng khám
+export const GROOMING_POS = { x: 856, y: 756 }; // groom; ngựa đứng lệch phải 28 px
+export const CHAT_POS_A = { x: 960, y: 640 };
+export const CHAT_POS_B = { x: 988, y: 640 };
 
 /** Chu kỳ "đi walkS giây rồi dừng tay pauseS giây": quãng đã đi không lùi khi dừng. */
 export function walkPause(time: number, walkS: number, pauseS: number): { walkedS: number; paused: boolean } {
@@ -131,6 +147,20 @@ export function ambientActorPose(
       }
       case "LEFT_COACH":
         return { ...LEFT_COACH_POS, dir: -1, frame: 4, row: 1, flip: true, active: true };
+      case "ROAD_CART": {
+        const p = along(ROAD_CART_PATH, 0, true);
+        return { x: p.x, y: p.y, dir: 1, frame: 0, flip: false, active: true };
+      }
+      case "SUPPLY_HAYCART": {
+        const p = along(HAYCART_PATH, 0, true);
+        return { x: p.x, y: p.y, dir: 1, frame: 4, row: 3, flip: false, active: false };
+      }
+      case "BARN_GROOMING":
+        return { ...GROOMING_POS, dir: 1, frame: 4, row: 3, flip: false, active: true };
+      case "CHAT_A":
+        return { ...CHAT_POS_A, dir: 1, frame: 4, row: 4, flip: false, active: true };
+      case "CHAT_B":
+        return { ...CHAT_POS_B, dir: -1, frame: 4, row: 5, flip: true, active: true };
     }
   }
 
@@ -153,8 +183,9 @@ export function ambientActorPose(
       return { x: p.x, y: p.y, dir: p.dir, frame, row: 3, flip: p.dir < 0, active: true };
     }
     case "CLINIC_VET": {
-      const p = along(VET_PATH, effectiveTime * 18, true);
-      const frame = state.simulationRunning ? Math.floor(time * 6) % 4 : 4;
+      const w = walkPause(effectiveTime, 10, 3);
+      const p = along(VET_PATH, w.walkedS * 18, true);
+      const frame = !state.simulationRunning ? 4 : w.paused ? 5 : Math.floor(time * 6) % 4;
       return { x: p.x, y: p.y, dir: p.dir, frame, row: 2, flip: p.dir < 0, active: true };
     }
     case "HOUSE_MANAGER": {
@@ -185,6 +216,27 @@ export function ambientActorPose(
     case "LEFT_COACH": {
       const frame = state.simulationRunning && walkPause(time, 6, 2).paused ? 5 : 4;
       return { ...LEFT_COACH_POS, dir: -1, frame, row: 1, flip: true, active: true };
+    }
+    case "ROAD_CART": {
+      const p = along(ROAD_CART_PATH, effectiveTime * 45, true);
+      return { x: p.x, y: p.y, dir: p.dir, frame: 0, flip: p.dir < 0, active: true };
+    }
+    case "SUPPLY_HAYCART": {
+      const p = along(HAYCART_PATH, effectiveTime * 20, true);
+      const frame = state.simulationRunning ? Math.floor(time * 6) % 4 : 4;
+      return { x: p.x, y: p.y, dir: p.dir, frame, row: 3, flip: p.dir < 0, active: barrowActive(state) };
+    }
+    case "BARN_GROOMING": {
+      const frame = state.simulationRunning && walkPause(time, 2, 2).paused ? 5 : 4;
+      return { ...GROOMING_POS, dir: 1, frame, row: 3, flip: false, active: true };
+    }
+    case "CHAT_A": {
+      const frame = state.simulationRunning && walkPause(time, 3, 1).paused ? 5 : 4;
+      return { ...CHAT_POS_A, dir: 1, frame, row: 4, flip: false, active: true };
+    }
+    case "CHAT_B": {
+      const frame = state.simulationRunning && walkPause(time + 2, 3, 1).paused ? 5 : 4;
+      return { ...CHAT_POS_B, dir: -1, frame, row: 5, flip: true, active: true };
     }
   }
 }

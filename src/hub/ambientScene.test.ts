@@ -73,7 +73,7 @@ test("reduced motion returns a stable pose for every ambient actor", () => {
 });
 
 test("ambient actor ids contain only approved existing actors", () => {
-  assert.equal(AMBIENT_ACTOR_IDS.length, 10);
+  assert.equal(AMBIENT_ACTOR_IDS.length, 15);
   const expected = new Set([
     "TRACK_RIDER_1",
     "TRACK_RIDER_2",
@@ -85,6 +85,11 @@ test("ambient actor ids contain only approved existing actors", () => {
     "HOUSE_CART",
     "LEFT_RIDER",
     "LEFT_COACH",
+    "ROAD_CART",
+    "SUPPLY_HAYCART",
+    "BARN_GROOMING",
+    "CHAT_A",
+    "CHAT_B",
   ]);
   assert.deepEqual(new Set(AMBIENT_ACTOR_IDS), expected);
 });
@@ -114,4 +119,30 @@ test("nài trên ô đất trái luôn nằm trong khung vòng cưỡi, kể c�
 test("HLV giơ đồng hồ khi đang chạy, đứng yên khi tạm dừng", () => {
   assert.equal(ambientActorPose("LEFT_COACH", 7, runningState).frame, 5);
   assert.equal(ambientActorPose("LEFT_COACH", 7, { ...runningState, simulationRunning: false }).frame, 4);
+});
+
+test("bác sĩ đứng yên đúng chỗ khi khom khám", () => {
+  const a = ambientActorPose("CLINIC_VET", 10.5, runningState);
+  const b = ambientActorPose("CLINIC_VET", 12.5, runningState);
+  assert.equal(a.frame, 5);
+  assert.deepEqual({ x: a.x, y: a.y }, { x: b.x, y: b.y });
+  assert.equal(ambientActorPose("CLINIC_VET", 10.5, { ...runningState, simulationRunning: false }).frame, 4);
+});
+
+test("xe kéo cỏ ẩn khi kho hết cỏ", () => {
+  assert.equal(ambientActorPose("SUPPLY_HAYCART", 3, runningState).active, true);
+  assert.equal(ambientActorPose("SUPPLY_HAYCART", 3, { ...runningState, hasHay: false }).active, false);
+});
+
+test("hai người trò chuyện quay mặt vào nhau và không cùng làm động tác", () => {
+  const a = ambientActorPose("CHAT_A", 3.5, runningState);
+  const b = ambientActorPose("CHAT_B", 3.5, runningState);
+  assert.notEqual(a.flip, b.flip);
+  assert.ok(!(a.frame === 5 && b.frame === 5));
+});
+
+test("xe điện chạy trên đường chính", () => {
+  const p = ambientActorPose("ROAD_CART", 1e6, runningState);
+  assert.equal(p.y, 596);
+  assert.ok(p.x >= 40 && p.x <= 1240);
 });
