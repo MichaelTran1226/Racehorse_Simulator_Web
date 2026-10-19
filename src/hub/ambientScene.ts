@@ -8,6 +8,20 @@ export interface AmbientSceneState {
   readonly hasHay: boolean;
 }
 
+export interface AmbientClock {
+  readonly time: number;
+  readonly lastNow: number;
+}
+
+/** Advance only while the simulation runs, while always consuming real elapsed time. */
+export function advanceAmbientClock(clock: AmbientClock, now: number, running: boolean): AmbientClock {
+  const elapsed = Math.max(0, now - clock.lastNow);
+  return {
+    time: running ? clock.time + elapsed : clock.time,
+    lastNow: now,
+  };
+}
+
 export type AmbientActorId =
   | "TRACK_RIDER_1"
   | "TRACK_RIDER_2"
@@ -100,7 +114,7 @@ export function ambientActorPose(
     }
   }
 
-  const effectiveTime = state.simulationRunning ? time : 0;
+  const effectiveTime = time;
 
   switch (actor) {
     case "TRACK_RIDER_1": {

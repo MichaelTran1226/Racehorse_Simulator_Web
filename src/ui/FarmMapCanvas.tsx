@@ -2,6 +2,7 @@
 // lăn chuột → phóng xa/gần quanh con trỏ, bấm → camera lướt tới rồi gọi onEnter (App làm mờ dần sang trang làm việc).
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { drawFarmActors, drawNight } from "../hub/ambient";
+import { advanceAmbientClock } from "../hub/ambientScene";
 import { paddockHorse, paddockHorseAt, truckPose, TRUCK_STOP_X, TRUCK_UNLOAD_S } from "../hub/paths";
 import { DELIVERY_S, type SupplyId } from "../sim/inventory";
 import { drawRect, VEHICLE_RECT } from "../render/sprites";
@@ -55,6 +56,7 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
   const [locked, setLocked] = useState(false);
   const [hoverHorse, setHoverHorse] = useState(-1);
   const pop = useRef<{ id: string; t0: number } | null>(null); // công trình vừa chạm (nhún)
+  const ambientClock = useRef({ time: 0, lastNow: performance.now() / 1000 });
   const { camera, setCamera, onPointerDown, onPointerMove, finishPointer, stopMomentum } = useFarmCamera(viewport, { x: 0, y: 0 }, zoom);
 
   // Vòng vẽ đọc trạng thái mới nhất qua ref → không phải khởi động lại rAF mỗi lần camera đổi
@@ -112,7 +114,9 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
     let frame = 0;
     const render = (now: number) => {
       const { camera: cam, hoveredId: hid, tod: mode, screenSize: size, zoom: z, paddock: herd, stableHorses: assignedStalls, hoverHorse: hh, trip: run, simulationRunning: simRunning, hasHay: hayAvailable } = live.current;
-      const t = now / 1000;
+      const realTime = now / 1000;
+      ambientClock.current = advanceAmbientClock(ambientClock.current, realTime, simRunning);
+      const t = ambientClock.current.time;
       const dpr = window.devicePixelRatio || 1;
       const reducedMotion =
         typeof window !== "undefined" &&
@@ -130,9 +134,9 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
         }
         const ambientState = { reducedMotion, simulationRunning: simRunning, hasHay: hayAvailable };
         drawFarmActors(actorCtx, sprites, time, herd.map((h) => h?.coat), ambientState);
-        if (run) drawDelivery(actorCtx, sprites.vehicles, run, now / 1000, reducedMotion);
+        if (run) drawDelivery(actorCtx, sprites.vehicles, run, realTime, reducedMotion);
       }, pop.current && now - pop.current.t0 < SQUASH_MS ? { id: pop.current.id, ...squashScale(now - pop.current.t0) } : null);
-      if (mode === "NIGHT") drawNight(ctx, FARM_WORLD.width, FARM_WORLD.height, t, reducedMotion);
+      if (mode === "NIGHT") drawNight(ctx, FARM_WORLD.width, FARM_WORLD.height, realTime, reducedMotion);
       const hovered = FARM_OBJECTS.find((o) => o.id === hid);
       if (hovered) {
         const image = assets.objects.get(hovered.id);
@@ -169,7 +173,7 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
   function horseAt(event: ReactPointerEvent<HTMLCanvasElement>): number {
     const rect = event.currentTarget.getBoundingClientRect();
     const world = { x: camera.x + (event.clientX - rect.left) / zoom, y: camera.y + (event.clientY - rect.top) / zoom };
-    return paddockHorseAt(world, performance.now() / 1000, paddock);
+    return paddockHorseAt(world, ambientClock.current.time, paddock);
   }
 
   /** Lướt camera tới `center` đồng thời đổi mức phóng sang `toZoom`, ease-out; xong thì gọi done. */
