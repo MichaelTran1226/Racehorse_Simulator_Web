@@ -60,6 +60,7 @@ Khi nối dữ liệu (mục 6, bước 6): lấy `microchip` từ API thay vì 
     3. `src/ui/FarmHub.tsx` & `farmPopulation.ts`: **ĐÃ SỬA** (ổn định danh tính ngựa bãi thả và chuồng theo `id`, không nhảy ô khi đổi trạng thái y tế).
     4. `src/ui/App.tsx` (interval kho): tính tiêu hao theo số lần tick, không theo thời gian thực đã trôi, nên tab bị ẩn thì kho ngừng vơi. Cần lưu mốc thời gian lần trước và dùng thời gian thực × tốc độ, có giới hạn trên.
   - *Nhỏ còn lại:*
+    - Khi bật `reducedMotion`, ngựa bãi thả được vẽ ở pose thời gian 0 nhưng hit-test vẫn dùng đồng hồ ambient hiện tại; hover/click có thể lệch khỏi hình. Đây là lỗi có sẵn ngoài phạm vi remediation hiện tại.
     - `Popup.tsx`: `onClose` truyền inline bị tạo lại mỗi 0,5 giây nên đếm giờ đóng bị khởi động lại; cần giữ `onClose` trong ref.
     - `Popup.tsx`: bôi đen chữ rồi thả chuột ra ngoài bảng sẽ đóng bảng.
     - `FarmMapCanvas.tsx`: canvas có `tabIndex=0` nhưng không xử lý phím nào.
