@@ -18,8 +18,6 @@ aseprite.exe
 *.exe
 
 # Agent & assistant local metadata
-.superpowers
-.superpowers/
 .gemini
 .gemini/
 
