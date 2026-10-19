@@ -7,6 +7,7 @@ import { DELIVERY_S, type SupplyId } from "../sim/inventory";
 import { drawRect, VEHICLE_RECT } from "../render/sprites";
 import { SUPPLY_ICON } from "./supplyIcons";
 import type { HorseProfile } from "../sim/engine";
+import type { StableHorseAssignment } from "../hub/farmPopulation";
 import { cameraAt, clampCamera, MAX_ZOOM, minZoom, viewCenter, zoomAt, type Size } from "../hub/camera";
 import type { Point } from "../hub/farmLayout";
 import { FARM_OBJECTS, FARM_WORLD, type FarmObject } from "../hub/farmLayout";
@@ -31,15 +32,16 @@ interface Props {
   /** Đặt id để yêu cầu lướt tới công trình (từ cột "Các khu vực"); đổi giá trị mới chạy lại. */
   goTo: { id: string; seq: number } | null;
   onEnter: (target: FarmObject["target"], label: string) => void;
-  /** Ngựa thật đang ở bãi thả, theo thứ tự ô; chạm vào sẽ gọi onHorse. */
-  paddock: HorseProfile[];
+  /** Ngựa thật đang ở bãi thả, theo thứ tự ô (có thể chứa null); chạm vào sẽ gọi onHorse. */
+  paddock: readonly (HorseProfile | null)[];
+  stableHorses?: readonly StableHorseAssignment[];
   onHorse: (id: string) => void;
   /** Vừa quay về từ màn riêng của công trình này (Đường đua) → mở bản đồ đang phóng sát rồi lùi ra. */
   arriveFrom: FarmObject["target"] | null;
   trip: { arriveAt: number; items: SupplyId[] } | null;
 }
 
-export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter, paddock, onHorse, arriveFrom, trip }: Props) {
+export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter, paddock, stableHorses, onHorse, arriveFrom, trip }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [screenSize, setScreenSize] = useState<Size>({ width: 1, height: 1 });
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
@@ -53,8 +55,8 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
   const { camera, setCamera, onPointerDown, onPointerMove, finishPointer, stopMomentum } = useFarmCamera(viewport, { x: 0, y: 0 }, zoom);
 
   // Vòng vẽ đọc trạng thái mới nhất qua ref → không phải khởi động lại rAF mỗi lần camera đổi
-  const live = useRef({ camera, hoveredId, tod, screenSize, zoom, locked, paddock, hoverHorse, trip });
-  live.current = { camera, hoveredId, tod, screenSize, zoom, locked, paddock, hoverHorse, trip };
+  const live = useRef({ camera, hoveredId, tod, screenSize, zoom, locked, paddock, stableHorses, hoverHorse, trip });
+  live.current = { camera, hoveredId, tod, screenSize, zoom, locked, paddock, stableHorses, hoverHorse, trip };
 
   useEffect(() => {
     let alive = true;
@@ -116,7 +118,7 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
       ctx.scale(z, z);
       ctx.translate(-Math.round(cam.x), -Math.round(cam.y));
       drawFarmScene(ctx, assets, t, (actorCtx, time) => {
-        drawFarmActors(actorCtx, sprites, time, herd.map((h) => h.coat));
+        drawFarmActors(actorCtx, sprites, time, herd.map((h) => h?.coat));
         if (run) drawDelivery(actorCtx, sprites.vehicles, run, now / 1000);
       }, pop.current && now - pop.current.t0 < SQUASH_MS ? { id: pop.current.id, ...squashScale(now - pop.current.t0) } : null);
       if (mode === "NIGHT") drawNight(ctx, FARM_WORLD.width, FARM_WORLD.height, t);
@@ -138,7 +140,7 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
       }
       if (hh >= 0 && herd[hh]) {
         const p = paddockHorse(hh, t);
-        drawTag(ctx, herd[hh].name, p.x, p.y - 30);
+        drawTag(ctx, herd[hh]!.name, p.x, p.y - 30);
       }
       ctx.restore();
       frame = requestAnimationFrame(render);
@@ -156,7 +158,7 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
   function horseAt(event: ReactPointerEvent<HTMLCanvasElement>): number {
     const rect = event.currentTarget.getBoundingClientRect();
     const world = { x: camera.x + (event.clientX - rect.left) / zoom, y: camera.y + (event.clientY - rect.top) / zoom };
-    return paddockHorseAt(world, performance.now() / 1000, paddock.length);
+    return paddockHorseAt(world, performance.now() / 1000, paddock);
   }
 
   /** Lướt camera tới `center` đồng thời đổi mức phóng sang `toZoom`, ease-out; xong thì gọi done. */

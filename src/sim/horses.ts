@@ -1,5 +1,5 @@
 // Dữ liệu ngựa mẫu cho giai đoạn làm giao diện. Khi nối BE, danh sách này sẽ lấy từ API trung tâm (SIM-01).
-import { nextRandom, type Coat, type HorseProfile, type Lifecycle, type StallHealth, type Strategy } from "./engine";
+import { nextRandom, type Coat, type HorseProfile, type Lifecycle, type StallHealth, type Strategy } from "./engine.ts";
 
 export const COAT_LABEL: Record<Coat, string> = {
   BAY: "Hạt dẻ (Bay)",

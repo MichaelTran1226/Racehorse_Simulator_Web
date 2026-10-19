@@ -15,7 +15,7 @@ const MANAGER_PATH: Path = [{ x: 900, y: 474 }, { x: 1150, y: 474 }]; // trướ
 const BARROW_PATH: Path = [{ x: 620, y: 620 }, { x: 240, y: 620 }, { x: 240, y: 284 }, { x: 140, y: 284 }]; // kho → dãy chuồng
 const CART_PATH: Path = [{ x: 870, y: 346 }, { x: 1240, y: 346 }]; // nhánh tới văn phòng
 
-export function drawFarmActors(ctx: CanvasRenderingContext2D, sprites: Sprites, time: number, paddockCoats: readonly Coat[] = []): void {
+export function drawFarmActors(ctx: CanvasRenderingContext2D, sprites: Sprites, time: number, paddockCoats: readonly (Coat | null | undefined)[] = []): void {
   // Ngựa đua có nài chạy qua lại trên sân cát, kèm bụi
   for (const [path, speed, offset] of [[RIDER_PATH, 120, 0], [RIDER2_PATH, 100, 400]] as const) {
     const r = along(path, time * speed + offset, true);
@@ -26,6 +26,7 @@ export function drawFarmActors(ctx: CanvasRenderingContext2D, sprites: Sprites, 
 
   // Ngựa thật trong bãi thả, đúng màu lông
   paddockCoats.slice(0, PADDOCK_SLOTS).forEach((coat, slot) => {
+    if (!coat) return;
     const h = paddockHorse(slot, time);
     drawFrame(ctx, sprites.horse, tinted(sprites.horse, coat), h.frame, h.row, h.x, h.y, CELL, h.flip);
   });
