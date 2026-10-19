@@ -2,7 +2,7 @@ Add-Type -AssemblyName System.Drawing
 
 $root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $farmPath = Join-Path $PSScriptRoot "farm-day-x1.png"
-$stallSamplePath = Join-Path $PSScriptRoot "samples/stall-with-horse-sample.png"
+$stallSamplePath = Join-Path $PSScriptRoot "samples/stall-with-horse-clarity-sample.png"
 $outputPath = Join-Path $PSScriptRoot "samples/farm-with-horses-preview.png"
 
 $farm = [System.Drawing.Bitmap]::new($farmPath)

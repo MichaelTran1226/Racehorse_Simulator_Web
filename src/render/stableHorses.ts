@@ -5,10 +5,10 @@ import { tinted, type Sprites } from "./sprites.ts";
 
 /** Kích thước và tọa độ cửa sổ mở chấn song trong ô chuồng 32×32 của S07 (0,1). */
 export const STALL_OPENING = {
-  offsetX: 9,
-  offsetY: 4,
-  w: 17,
-  h: 9,
+  offsetX: 7,
+  offsetY: 3,
+  w: 19,
+  h: 12,
 } as const;
 
 /** Màu nền tối bên trong ô chuồng (pixel chuẩn S07 tại x=5, y=36). */
@@ -66,7 +66,7 @@ export function drawStableHorses(
       32,
       32,
       anchor.x - 8,
-      anchor.y + 2,
+      anchor.y + 1,
       32,
       32,
     );
@@ -74,14 +74,14 @@ export function drawStableHorses(
 
     // 3. Khôi phục các thanh viền, cột trụ và nửa cánh cửa dưới của S07 đảm bảo sắc nét
     if (sprites.stall?.canvas) {
-      // Thanh xà ngang trên (y: 0..3)
-      ctx.drawImage(sprites.stall.canvas, 0, 32, 32, 4, anchor.x, anchor.y, 32, 4);
-      // Trụ và chấn song mép trái (x: 0..8, y: 4..12)
-      ctx.drawImage(sprites.stall.canvas, 0, 36, 9, 9, anchor.x, anchor.y + 4, 9, 9);
-      // Trụ và chấn song mép phải (x: 26..31, y: 4..12)
-      ctx.drawImage(sprites.stall.canvas, 26, 36, 6, 9, anchor.x + 26, anchor.y + 4, 6, 9);
-      // Nửa cánh cửa dưới (y: 13..31)
-      ctx.drawImage(sprites.stall.canvas, 0, 45, 32, 19, anchor.x, anchor.y + 13, 32, 19);
+      // Thanh xà ngang trên (y: 0..2)
+      ctx.drawImage(sprites.stall.canvas, 0, 32, 32, 3, anchor.x, anchor.y, 32, 3);
+      // Trụ mép trái (x: 0..6, y: 3..14)
+      ctx.drawImage(sprites.stall.canvas, 0, 35, 7, 12, anchor.x, anchor.y + 3, 7, 12);
+      // Trụ mép phải (x: 26..31, y: 3..14)
+      ctx.drawImage(sprites.stall.canvas, 26, 35, 6, 12, anchor.x + 26, anchor.y + 3, 6, 12);
+      // Nửa cánh cửa dưới (y: 15..31)
+      ctx.drawImage(sprites.stall.canvas, 0, 47, 32, 17, anchor.x, anchor.y + 15, 32, 17);
     }
   }
 }
