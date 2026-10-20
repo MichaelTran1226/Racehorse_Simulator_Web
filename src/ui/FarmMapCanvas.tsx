@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { drawFarmActors, drawNight } from "../hub/ambient";
 import { advanceAmbientClock } from "../hub/ambientScene";
-import { paddockHorse, paddockHorseAt, truckPose, TRUCK_STOP_X, TRUCK_UNLOAD_S } from "../hub/paths";
+import { paddockHorse, paddockHorseAt, truckPose, TRUCK_UNLOAD_S } from "../hub/paths";
 import { DELIVERY_S, type SupplyId } from "../sim/inventory";
 import { drawRect, VEHICLE_RECT } from "../render/sprites";
 import { SUPPLY_ICON } from "./supplyIcons";
@@ -11,7 +11,7 @@ import type { HorseProfile } from "../sim/engine";
 import type { StableHorseAssignment } from "../hub/farmPopulation";
 import { cameraAt, clampCamera, MAX_ZOOM, minZoom, viewCenter, zoomAt, type Size } from "../hub/camera";
 import type { Point } from "../hub/farmLayout";
-import { FARM_OBJECTS, FARM_WORLD, type FarmObject } from "../hub/farmLayout";
+import { FARM_ANCHORS, FARM_OBJECTS, FARM_WORLD, type FarmObject } from "../hub/farmLayout";
 import { alphaMaskFromImage, hitTestObjects, type AlphaMask } from "../hub/pixelHitTest";
 import { useFarmCamera } from "../hub/useFarmCamera";
 import { loadFarmAssets, type FarmAssets } from "../render/farmAssets";
@@ -319,7 +319,7 @@ function iconImage(url: string): HTMLImageElement {
   return img;
 }
 
-const BARN_DOOR = { x: TRUCK_STOP_X, y: 690 };
+const BARN_DOOR = FARM_ANCHORS.supplyDoor;
 
 /** Xe tải giao hàng + các thùng hàng bay từ đuôi xe vào cửa kho trong lúc dỡ (theo đồng hồ thật). */
 /** Xe tải giao hàng + các thùng hàng bay từ đuôi xe vào cửa kho trong lúc dỡ (theo đồng hồ thật). */

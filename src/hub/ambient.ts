@@ -1,6 +1,6 @@
 import { drawFrame, drawRect, ROW, tinted, VEHICLE_RECT, type Sprites } from "../render/sprites.ts";
 import type { Coat } from "../sim/engine.ts";
-import type { Point } from "./farmLayout.ts";
+import { FARM_ANCHORS, type Point } from "./farmLayout.ts";
 import { PADDOCK_SLOTS, paddockHorse } from "./paths.ts";
 import {
   ambientActorPose,
@@ -53,10 +53,14 @@ export function drawFarmActors(
   drawFrame(ctx, sprites.people, sprites.people.canvas, vet.frame, vet.row ?? 2, vet.x, vet.y, CELL, vet.flip);
 
   const manager = ambientActorPose("HOUSE_MANAGER", time, ambientState);
-  drawFrame(ctx, sprites.people, sprites.people.canvas, manager.frame, manager.row ?? 0, manager.x, manager.y, CELL, manager.flip);
+  if (manager.active) {
+    drawFrame(ctx, sprites.people, sprites.people.canvas, manager.frame, manager.row ?? 0, manager.x, manager.y, CELL, manager.flip);
+  }
 
   const owner = ambientActorPose("HOUSE_OWNER", time, ambientState);
-  drawFrame(ctx, sprites.people, sprites.people.canvas, owner.frame, owner.row ?? 4, owner.x, owner.y, CELL, owner.flip);
+  if (owner.active) {
+    drawFrame(ctx, sprites.people, sprites.people.canvas, owner.frame, owner.row ?? 4, owner.x, owner.y, CELL, owner.flip);
+  }
 
   // 4. Xe: xe cút kít chở cỏ (chỉ hiện khi kho còn cỏ & đang chạy mô phỏng), xe điện sân vườn
   const barrow = ambientActorPose("SUPPLY_BARROW", time, ambientState);
@@ -94,19 +98,21 @@ export function drawFarmActors(
   drawFrame(ctx, sprites.horse, tinted(sprites.horse, "CHESTNUT"), 0, ROW.IDLE, grooming.x + 28, grooming.y, CELL);
   drawFrame(ctx, sprites.people, sprites.people.canvas, grooming.frame, grooming.row ?? 3, grooming.x, grooming.y, CELL, grooming.flip);
 
-  // 7. Sinh vật S16 đã duyệt: chim sẻ, mèo, bướm, túi gió
-  for (const id of ["S16_BIRD", "S16_CAT", "S16_BUTTERFLY", "S16_WINDSOCK"] as const) {
+  // 7. Con vật Stardew (gà, vịt, chó, mèo) — khung vuông 16/32 px, vẽ 1:1, chân tại y
+  for (const id of ["SV_CHICKEN_1", "SV_CHICKEN_2", "SV_CHICKEN_3", "SV_DUCK", "SV_DOG", "SV_CAT"] as const) {
     const p = ambientActorPose(id, time, ambientState);
-    drawFrame(ctx, sprites.ambientLife, sprites.ambientLife.canvas, p.frame, p.row ?? 0, p.x, p.y, CELL, p.flip);
+    if (!p.sheet || !p.size) continue;
+    const s = p.size;
+    ctx.drawImage(sprites.critters[p.sheet], p.frame * s, (p.row ?? 0) * s, s, s, Math.round(p.x - s / 2), Math.round(p.y - s + 2), s, s);
   }
-
 }
 
 /** Ban đêm: phủ tối + quầng đèn ở cửa sổ, chuồng, đường đua; đom đóm. Chỉ là lớp phủ lúc chạy, bố cục không đổi. */
 const LIGHTS: Point[] = [
-  { x: 80, y: 48 }, { x: 208, y: 48 }, { x: 112, y: 144 }, { x: 240, y: 144 }, { x: 336, y: 144 }, // cửa chuồng
-  { x: 960, y: 424 }, { x: 1070, y: 424 }, { x: 1080, y: 680 }, { x: 1220, y: 680 }, // cửa sổ văn phòng, phòng khám
-  { x: 704, y: 680 }, { x: 656, y: 224 }, { x: 1200, y: 224 }, // kho, cổng xuất phát, vạch đích
+  ...FARM_ANCHORS.stableStalls.map((p) => ({ x: p.x, y: p.y - 20 })), // cửa 2 Barn + mái che
+  { x: FARM_ANCHORS.houseDoor.x, y: FARM_ANCHORS.houseDoor.y - 24 }, { x: 920, y: 104 }, // cửa + cửa sổ nhà NPC
+  { x: FARM_ANCHORS.clinicDoor.x, y: FARM_ANCHORS.clinicDoor.y - 24 }, // phòng khám
+  { x: FARM_ANCHORS.supplyDoor.x, y: FARM_ANCHORS.supplyDoor.y - 40 }, // kho
 ];
 
 export function drawNight(ctx: CanvasRenderingContext2D, width: number, height: number, time: number, reducedMotion = false): void {

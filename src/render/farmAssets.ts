@@ -1,4 +1,14 @@
+import type { CritterSheet } from "../hub/ambientScene.ts";
 import { FARM_OBJECTS } from "../hub/farmLayout.ts";
+
+/** Con vật Stardew, PNG chép nguyên byte từ `Stardrew Valley/05_Animals_and_Ambient_Life/` (thay S16, không có bò). */
+export const CRITTER_URLS: Record<CritterSheet, string> = {
+  whiteChicken: "/assets/sprites/sv/white-chicken.png",
+  brownChicken: "/assets/sprites/sv/brown-chicken.png",
+  duck: "/assets/sprites/sv/duck.png",
+  dog: "/assets/sprites/sv/dog.png",
+  cat: "/assets/sprites/sv/cat.png",
+};
 
 export const FARM_ASSET_URLS = {
   ground: "/assets/maps/farm-ground.png",
@@ -10,8 +20,8 @@ export const FARM_ASSET_URLS = {
     fx: "/assets/sprites/s13-fx.png",
     rider: "/assets/sprites/s14-rider.png",
     vehicles: "/assets/sprites/s15-vehicles.png",
-    ambientLife: "/assets/sprites/s16-ambient-life.png",
   },
+  critters: CRITTER_URLS,
 } as const;
 
 export interface FarmAssets {

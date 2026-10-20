@@ -1,13 +1,13 @@
 {
   "version": 1,
   "files": {
-    "art/map/farm-layout.json": "c41aaace0df77b130e8d4f18c40796f6b8bf99744edb086d94a3e142bfcf07f2",
-    "art/aseprite/farm-day.aseprite": "6ba90fb3ec0cc467806a273be10a596aac3b05c376c15462111df8547d4898e8",
-    "art/preview/farm-day-x1.png": "85cc7c1647cbc10e302f722c5aafe440d009a1a1686be0b3562946b15d23f02b",
-    "public/assets/maps/farm-ground.png": "5827f305ebf1c83a716ffab199c235fc6fc9d33eba30c7ef7667809dc61cb969",
-    "public/assets/maps/objects/stable.png": "562933280c9147c17c2f12702a9ff43c0b9742feb36754c8a825f70fb411f04c",
-    "public/assets/maps/objects/barn.png": "518e059b12acac68dbb3af7d0b473c2fb436c7f26894c0af2748f5ba9a75a684",
-    "public/assets/maps/objects/vet.png": "5f3b98de94ad2fa2100c2cd6ac14ba571c96cb4d1e10322d3828c51a2ad77b70",
-    "public/assets/maps/objects/track.png": "d3e92ca9046a0821f6d112b28d3b472584fd8a33625311d1dff2506f8a212d70"
+    "art/map/farm-layout.json": "8083590e2f103ab4b863c57482226ca4666f0088725f91c68cbc96961b377ac4",
+    "art/aseprite/farm-day.aseprite": "010b8f6616f340656a487fe138779be6aa69d51fb9b93eb927967b1ad757a13d",
+    "art/preview/farm-day-x1.png": "c18cfd48b4d4a8f7c121024177dc510ea4ee0d18c5a336f77435a6b361efb74f",
+    "public/assets/maps/farm-ground.png": "c4a87a3a61f9c8d9f0053caadb9575f46684857ed0fbe4cd4298a3b0f7dff911",
+    "public/assets/maps/objects/stable.png": "21e5d6217f8e2c0a8648b570c512d172fc60edd4062b41b09e3bd49082d6f18e",
+    "public/assets/maps/objects/barn.png": "0e6f2022ffdb7e457f6aaa1b253e53fd7b7386c9d23774554072d374e5092371",
+    "public/assets/maps/objects/vet.png": "a333ec8be6e9eb33d0801d95ee13686d694985d8f43a5ba126cabd1e16c54c44",
+    "public/assets/maps/objects/track.png": "8f433e1393373a62aa69feac340386b27365a1cabf68dd2944a945ea3c44455a"
   }
 }

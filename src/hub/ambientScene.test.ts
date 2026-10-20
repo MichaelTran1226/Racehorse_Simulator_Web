@@ -6,8 +6,15 @@ import {
   ambientActorPose,
   barrowActive,
   walkPause,
+  doorTrip,
+  MANAGER_PATH,
+  CHICKEN_PATHS,
+  DOG_PATH,
+  OWNER_PATH,
   type AmbientSceneState,
 } from "./ambientScene.ts";
+
+import { FARM_ANCHORS } from "./farmLayout.ts";
 
 const runningState: AmbientSceneState = { reducedMotion: false, simulationRunning: true, hasHay: true };
 
@@ -73,7 +80,7 @@ test("reduced motion returns a stable pose for every ambient actor", () => {
 });
 
 test("ambient actor ids contain only approved existing actors", () => {
-  assert.equal(AMBIENT_ACTOR_IDS.length, 19);
+  assert.equal(AMBIENT_ACTOR_IDS.length, 21);
   const expected = new Set([
     "TRACK_RIDER_1",
     "TRACK_RIDER_2",
@@ -90,10 +97,12 @@ test("ambient actor ids contain only approved existing actors", () => {
     "BARN_GROOMING",
     "CHAT_A",
     "CHAT_B",
-    "S16_BIRD",
-    "S16_CAT",
-    "S16_BUTTERFLY",
-    "S16_WINDSOCK",
+    "SV_CHICKEN_1",
+    "SV_CHICKEN_2",
+    "SV_CHICKEN_3",
+    "SV_DUCK",
+    "SV_DOG",
+    "SV_CAT",
   ]);
   assert.deepEqual(new Set(AMBIENT_ACTOR_IDS), expected);
 });
@@ -110,7 +119,7 @@ test("walkPause đi rồi dừng theo chu kỳ, không lùi quãng đường", (
 test("nài trên ô đất trái luôn nằm trong khung vòng cưỡi, kể cả thời gian rất lớn", () => {
   for (const t of [0, 7.3, 1e6]) {
     const p = ambientActorPose("LEFT_RIDER", t, runningState);
-    assert.ok(p.x >= 32 && p.x <= 200 && p.y >= 316 && p.y <= 372, `${t}: ${p.x},${p.y}`);
+    assert.ok(p.x >= 96 && p.x <= 272 && p.y >= 80 && p.y <= 190, `${t}: ${p.x},${p.y}`);
   }
 });
 
@@ -141,26 +150,71 @@ test("hai người trò chuyện quay mặt vào nhau và không cùng làm đ�
 
 test("xe điện chạy trên đường chính", () => {
   const p = ambientActorPose("ROAD_CART", 1e6, runningState);
-  assert.equal(p.y, 596);
-  assert.ok(p.x >= 40 && p.x <= 1240);
+  assert.equal(p.y, 248);
+  assert.ok(p.x >= 24 && p.x <= 1256);
 });
 
-test("túi gió đứng yên một chỗ và chỉ phất khi đang chạy", () => {
-  const a = ambientActorPose("S16_WINDSOCK", 1, runningState);
-  const b = ambientActorPose("S16_WINDSOCK", 9, runningState);
-  assert.deepEqual({ x: a.x, y: a.y }, { x: b.x, y: b.y });
-  assert.ok(a.frame >= 2 && a.frame <= 5);
-  assert.equal(ambientActorPose("S16_WINDSOCK", 9, { ...runningState, simulationRunning: false }).frame, 0);
+test("con vật Stardew: không còn S16, đúng sheet và cỡ khung (không có bò)", () => {
+  assert.equal(AMBIENT_ACTOR_IDS.some((id) => id.startsWith("S16_")), false);
+  for (const id of AMBIENT_ACTOR_IDS.filter((id) => id.startsWith("SV_"))) {
+    const p = ambientActorPose(id, 5, runningState);
+    assert.ok(p.sheet && ["whiteChicken", "brownChicken", "duck", "dog", "cat"].includes(p.sheet), id);
+    assert.equal(p.size, p.sheet === "dog" || p.sheet === "cat" ? 32 : 16, id);
+  }
 });
 
-test("mèo và chim S16 đứng yên tại chỗ khi đang ở khung nghỉ/vươn vai", () => {
-  for (const [id, still] of [["S16_CAT", [0, 1, 4, 5]], ["S16_BIRD", [0, 1]]] as const) {
+test("gà và chó đứng yên tại chỗ khi nghỉ, khi đi dùng hàng phải/trái", () => {
+  for (const id of ["SV_CHICKEN_1", "SV_CHICKEN_2", "SV_DOG"] as const) {
     for (let t = 0; t < 12; t += 0.05) {
       const a = ambientActorPose(id, t, runningState);
       const b = ambientActorPose(id, t + 0.01, runningState);
-      if ((still as readonly number[]).includes(a.frame) && (still as readonly number[]).includes(b.frame)) {
-        assert.deepEqual({ x: a.x, y: a.y }, { x: b.x, y: b.y }, `${id} trượt ở t=${t}`);
-      }
+      if (a.row === 0 && b.row === 0) assert.deepEqual({ x: a.x, y: a.y }, { x: b.x, y: b.y }, `${id} trượt ở t=${t}`);
+      else if (a.row !== 0) assert.ok(a.row === 1 || a.row === 3, `${id} hàng ${a.row}`);
     }
+  }
+  assert.equal(ambientActorPose("SV_DOG", 2, { ...runningState, simulationRunning: false }).row, 0);
+});
+
+test("con vật vẫn trên đường đi khi time = 1e6", () => {
+  const within = (p: { x: number; y: number }, path: readonly { x: number; y: number }[]) =>
+    p.x >= Math.min(...path.map((q) => q.x)) && p.x <= Math.max(...path.map((q) => q.x)) &&
+    p.y >= Math.min(...path.map((q) => q.y)) && p.y <= Math.max(...path.map((q) => q.y));
+  assert.ok(within(ambientActorPose("SV_CHICKEN_1", 1e6, runningState), CHICKEN_PATHS[0]));
+  assert.ok(within(ambientActorPose("SV_DOG", 1e6, runningState), DOG_PATH));
+});
+
+
+test("doorTrip ra rồi vào, không lùi quãng đường trong một chu kỳ", () => {
+  for (const [time, walkedS, inside] of [[0, 0, false], [8, 8, false], [15.9, 15.9, false], [16, 16, true], [21.9, 16, true], [22, 0, false]] as const) {
+    assert.deepEqual(doorTrip(time, 16, 6), { walkedS, inside });
+  }
+});
+
+test("người ra từ cửa, về tới cửa trước khi ẩn trong nhà", () => {
+  for (const [id, phase, outS] of [["HOUSE_MANAGER", 0, 16], ["HOUSE_OWNER", 11, 14]] as const) {
+    for (const t of [22 - phase, outS - phase, outS + 1 - phase]) {
+      const p = ambientActorPose(id, t, runningState);
+      assert.deepEqual({ x: p.x, y: p.y }, FARM_ANCHORS.houseDoor);
+      assert.equal(p.active, t === 22 - phase);
+    }
+    const beforeDoor = ambientActorPose(id, outS - phase - 0.001, runningState);
+    assert.ok(Math.hypot(beforeDoor.x - FARM_ANCHORS.houseDoor.x, beforeDoor.y - FARM_ANCHORS.houseDoor.y) < 0.1);
+    const reduced = ambientActorPose(id, outS - phase, reducedState);
+    assert.equal(reduced.active, true);
+    assert.deepEqual({ x: reduced.x, y: reduced.y }, FARM_ANCHORS.houseDoor);
+    const running = ambientActorPose(id, 1, runningState);
+    const paused = ambientActorPose(id, 1, { ...runningState, simulationRunning: false });
+    assert.deepEqual({ x: paused.x, y: paused.y, active: paused.active }, { x: running.x, y: running.y, active: running.active });
+    assert.equal(paused.frame, 4);
+  }
+  const start = ambientActorPose("HOUSE_MANAGER", 0, runningState);
+  assert.deepEqual({ x: start.x, y: start.y }, FARM_ANCHORS.houseDoor);
+});
+
+test("người ra vào nhà vẫn trên đường đi khi time = 1e6", () => {
+  for (const [id, path] of [["HOUSE_MANAGER", MANAGER_PATH], ["HOUSE_OWNER", OWNER_PATH]] as const) {
+    const p = ambientActorPose(id, 1e6, runningState);
+    assert.ok(p.x >= Math.min(...path.map(p => p.x)) && p.x <= Math.max(...path.map(p => p.x)));
+    assert.ok(p.y >= Math.min(...path.map(p => p.y)) && p.y <= Math.max(...path.map(p => p.y)));
   }
 });

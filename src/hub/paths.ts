@@ -1,5 +1,5 @@
 // Chuyển động thuần (không phụ thuộc canvas) của nhân vật trên bản đồ — tọa độ thế giới 1280×768.
-import type { Point } from "./farmLayout";
+import { FARM_ANCHORS, type Point } from "./farmLayout.ts";
 
 export type Path = readonly Point[];
 
@@ -25,8 +25,8 @@ export function along(path: Path, distance: number, pingPong: boolean): Point & 
   return { ...path[0], dir: 1 };
 }
 
-const HORSE_PATH: Path = [{ x: 420, y: 420 }, { x: 700, y: 420 }]; // bãi thả
-const HORSE2_PATH: Path = [{ x: 440, y: 300 }, { x: 530, y: 300 }];
+const HORSE_PATH: Path = [{ x: 730, y: 400 }, { x: 1080, y: 400 }]; // bãi thả
+const HORSE2_PATH: Path = [{ x: 760, y: 340 }, { x: 900, y: 340 }];
 
 const PADDOCK_PATHS = [HORSE_PATH, HORSE2_PATH] as const;
 const PADDOCK_PHASE = [0, 5] as const;
@@ -64,9 +64,9 @@ export function paddockHorseAt(
 }
 
 
-// Xe tải giao hàng: vào từ mép trái theo đường đất hàng 18, dừng trước cửa kho, hạ cầu dỡ hàng, rồi chạy tiếp sang phải.
-export const TRUCK_Y = 604;
-export const TRUCK_STOP_X = 704; // giữa cửa Kho vật tư
+// Xe tải giao hàng: vào từ mép trái theo đường chính, dừng trước cửa kho, hạ cầu dỡ hàng, rồi chạy tiếp sang phải.
+export const TRUCK_Y = 250;
+export const TRUCK_STOP_X = FARM_ANCHORS.supplyDoor.x;
 const TRUCK_START_X = -140;
 const TRUCK_END_X = 1420;
 export const TRUCK_UNLOAD_S = 1.5;

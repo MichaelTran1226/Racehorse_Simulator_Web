@@ -4,16 +4,18 @@ import { test } from "node:test";
 import {
   ALLOWED_MAP_SHEETS,
   FARM_OBJECTS,
+  FARM_ANCHORS,
   FARM_PLACEMENTS,
   FARM_WORLD,
   RESERVED_CORRIDORS,
+  SHEET_SIZES,
   validateDecorCorridors,
   validateFarmLayout,
 } from "./farmLayout.ts";
 
 test("farm layout is a 1280 by 768 sprite-only world (≈2–3 screens at 2×)", () => {
-  assert.deepEqual(FARM_WORLD, { width: 1280, height: 768, tile: 32 });
-  assert.ok(FARM_PLACEMENTS.length > 40 * 24, "ground repeat must expand to a complete world");
+  assert.deepEqual(FARM_WORLD, { width: 1280, height: 768, tile: 16 });
+  assert.ok(FARM_PLACEMENTS.length > 80 * 48, "ground repeat must expand to a complete world");
   assert.equal(validateFarmLayout(), true);
 
   for (const placement of FARM_PLACEMENTS) {
@@ -56,6 +58,7 @@ test("Aseprite map builder only copies from the approved sheet allowlist", () =>
   for (const forbidden of ["drawPixel", "drawLine", "drawRect", "fill", "resize", "rotate", "text"]) {
     assert.equal(new RegExp(`\\b${forbidden}\\b`, "i").test(script), false, `${forbidden} is forbidden`);
   }
+  assert.match(script, /art\/png\/sv\//);
   assert.match(script, /Image\(source, Rectangle\(/);
 });
 
@@ -70,6 +73,69 @@ test("loose decor placements do not overlap reserved corridors or building bound
 });
 
 
-test("xe không còn bị ghép cứng vào bản đồ nền", () => {
-  assert.equal(FARM_PLACEMENTS.some((p) => p.sheet === "s15-vehicles"), false);
+test("bản đồ chỉ dùng sheet Stardew", () => {
+  assert.equal(FARM_PLACEMENTS.some((p) => /^s[01]/.test(p.sheet)), false);
+});
+
+test("mọi sheet bản đồ là PNG Stardew chép nguyên byte, đúng kích thước khai báo", () => {
+  assert.equal(Object.keys(SHEET_SIZES).length, 16);
+  for (const [key, size] of Object.entries(SHEET_SIZES)) {
+    const png = readFileSync(new URL(`../../art/png/sv/${key}.png`, import.meta.url));
+    assert.deepEqual(png.subarray(0, 8), Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), key);
+    assert.deepEqual({ w: png.readUInt32BE(16), h: png.readUInt32BE(20) }, size, key);
+  }
+  assert.equal(SHEET_SIZES["sv-barn"].w, 112);
+  assert.deepEqual(ALLOWED_MAP_SHEETS, new Set(Object.keys(SHEET_SIZES)));
+  assert.ok([...ALLOWED_MAP_SHEETS].every((s) => s.startsWith("sv-")));
+});
+
+const contains = (rect: { x: number; y: number; w: number; h: number }, point: { x: number; y: number }) =>
+  point.x >= rect.x && point.x <= rect.x + rect.w && point.y >= rect.y && point.y <= rect.y + rect.h;
+
+test("anchors nằm trong công trình và thế giới", () => {
+  const object = (id: string) => FARM_OBJECTS.find((o) => o.id === id)!;
+  assert.equal(FARM_ANCHORS.stableStalls.length, 3);
+  for (const point of FARM_ANCHORS.stableStalls.slice(0, 2)) assert.ok(contains(object("stable").bounds, point));
+  assert.ok(contains({ x: 0, y: 0, w: FARM_WORLD.width, h: FARM_WORLD.height }, FARM_ANCHORS.stableStalls[2]));
+  assert.ok(contains(object("barn").bounds, FARM_ANCHORS.supplyDoor));
+  assert.ok(contains(object("vet").bounds, FARM_ANCHORS.clinicDoor));
+  assert.ok(object("track").placements.some((p) => /^sv-tree[12]-spring$/.test(p.sheet)));
+});
+
+test("crop validation accepts each sheet edge and rejects one pixel overflow", () => {
+  const placement = FARM_PLACEMENTS[0];
+  const original = { sheet: placement.sheet, src: placement.src };
+  try {
+    for (const [sheet, size] of Object.entries(SHEET_SIZES)) {
+      placement.sheet = sheet;
+      placement.src = { x: size.w - 1, y: size.h - 1, w: 1, h: 1 };
+      assert.equal(validateFarmLayout(), true, sheet);
+      placement.src = { ...placement.src, w: 2 };
+      assert.throws(() => validateFarmLayout(), /Source rect outside sheet/, sheet);
+      placement.src = { x: size.w - 1, y: size.h - 1, w: 1, h: 2 };
+      assert.throws(() => validateFarmLayout(), /Source rect outside sheet/, sheet);
+    }
+  } finally {
+    Object.assign(placement, original);
+  }
+});
+
+test("approved canopy overhangs cannot move or change source into corridor obstacles", () => {
+  assert.equal(validateDecorCorridors(), true);
+  const placement = FARM_PLACEMENTS.find((p) => p.layer === "decor" && p.dest.x === 240 && p.dest.y === 224)!;
+  const original = { dest: placement.dest, src: placement.src };
+  try {
+    placement.dest = { x: 624, y: 272 };
+    assert.throws(() => validateDecorCorridors(), /overlaps reserved corridor/);
+    placement.dest = original.dest;
+    placement.src = { ...original.src, x: 1, w: 47 };
+    assert.throws(() => validateDecorCorridors(), /overlaps reserved corridor/);
+  } finally {
+    Object.assign(placement, original);
+  }
+});
+
+test("Coop bottom crop excludes the opaque white source block", () => {
+  const coopBottom = FARM_PLACEMENTS.find((p) => p.sheet === "sv-coop" && p.src.y === 112)!;
+  assert.equal(coopBottom.src.x + coopBottom.src.w, 64);
 });

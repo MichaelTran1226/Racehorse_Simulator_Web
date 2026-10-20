@@ -9,22 +9,29 @@ local layout = json.decode(handle:read("*a"))
 handle:close()
 
 local allowed = {
-  ["s01-horse"] = true,
-  ["s06-people"] = true,
-  ["s07-stall"] = true,
-  ["s08-farm"] = true,
-  ["s10-arena"] = true,
-  ["s11-icons"] = true,
-  ["s13-fx"] = true,
-  ["s14-rider"] = true,
-  ["s15-vehicles"] = true,
+  ["sv-spring-outdoors"] = true,
+  ["sv-flooring"] = true,
+  ["sv-fence-wood"] = true,
+  ["sv-fence-iron"] = true,
+  ["sv-barn"] = true,
+  ["sv-shed"] = true,
+  ["sv-silo"] = true,
+  ["sv-stable"] = true,
+  ["sv-coop"] = true,
+  ["sv-well"] = true,
+  ["sv-houses"] = true,
+  ["sv-spring-town"] = true,
+  ["sv-tree1-spring"] = true,
+  ["sv-tree2-spring"] = true,
+  ["sv-bushes"] = true,
+  ["sv-craftables"] = true,
 }
 
 local sources = {}
 local normalizedDir = app.fs.joinPath(root, "art/preview/provenance")
 app.fs.makeDirectory(normalizedDir)
 for name, _ in pairs(allowed) do
-  sources[name] = Image { fromFile = app.fs.joinPath(root, "art/png/" .. name .. ".png") }
+  sources[name] = Image { fromFile = app.fs.joinPath(root, "art/png/sv/" .. name .. ".png") }
   sources[name]:saveAs(app.fs.joinPath(normalizedDir, name .. ".png"))
 end
 
