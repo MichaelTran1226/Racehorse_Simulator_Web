@@ -1,0 +1,8 @@
+# Ensure JSON, TS, JS, and Lua files keep LF line endings across all platforms
+*.json text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.mjs text eol=lf
+*.lua text eol=lf
+*.md text eol=lf

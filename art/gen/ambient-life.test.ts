@@ -5,6 +5,7 @@ import {
   generateAmbientLifeSheet,
   S16_PALETTE_HEX,
 } from "./ambient-life.ts";
+import { existsSync, readFileSync } from "node:fs";
 import { FARM_ASSET_URLS } from "../../src/render/farmAssets.ts";
 
 test("generated S16 sheet is 192x192 and contains 6 rows of 6 cols", () => {
@@ -58,9 +59,12 @@ test("rows 4 and 5 are transparent and reserved", () => {
   }
 });
 
-test("S16 approved by the user on 2026-10-20 (all 4 rows) ships in runtime assets", () => {
+test("S16 rút khỏi runtime 20/10/2026: con vật Stardew thay thế", () => {
   assert.deepEqual([...APPROVED_S16_ROWS], ["BIRD", "CAT", "BUTTERFLY", "WINDSOCK"]);
   const urls = JSON.stringify(FARM_ASSET_URLS).toLowerCase();
-  assert.ok(urls.includes("s16-ambient-life.png"), "FARM_ASSET_URLS must include s16-ambient-life.png when rows are approved");
+  assert.equal(urls.includes("s16-ambient-life.png"), false);
+  assert.match(urls, /\/assets\/sprites\/sv\/white-chicken\.png/);
+  assert.equal(existsSync(new URL("../../public/assets/sprites/s16-ambient-life.png", import.meta.url)), false);
+  assert.equal(readFileSync(new URL("../../src/render/sprites.ts", import.meta.url), "utf8").includes("ambientLife"), false);
 });
 

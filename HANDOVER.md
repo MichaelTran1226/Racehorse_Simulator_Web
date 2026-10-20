@@ -12,20 +12,20 @@
 
 ## 1. Current State & Completed
 
-Kiểm tra lần cuối (19/10/2026): `npm run typecheck` sạch · `npm test` **51/51 đạt** · `npm run build` đạt · `npm run verify:map` đạt · kiểm tra Chromium headless không có lỗi console hoặc request thất bại; hai ảnh Canvas cách nhau 1 giây khi Pause có cùng SHA-256.
+Kiểm tra lần cuối (20/10/2026, bản đồ Stardew): `npm run typecheck` sạch · `npm test` **79/79 đạt** · `npm run build` đạt · `npm run verify:map` đạt · thử trên trình duyệt: bản đồ hiện đúng bố cục B, 4 công trình bấm mở đúng bảng, không lỗi console. **Chưa đo được fps thật** (khung trình duyệt bị ẩn khi đo).
 
 | Phần | Trạng thái | File chính |
 |---|---|---|
 | Bộ sprite chính thức (S01 ngựa, S14 nài, S07/S08/S10 bản đồ, S06 người, S15 xe, S13 hiệu ứng, S11 biểu tượng) vẽ bằng code → `.aseprite` | Xong, người dùng đã duyệt 4 đợt | `art/gen/*.ts`, `art/aseprite/*.lua`, `public/assets/sprites/` |
-| S16 sinh vật môi trường (Chim sẻ, Mèo, Bướm, Túi gió), ô 32×32, sheet 192×192, baseline y=30 | **Đã duyệt nguyên bản preview (20/10/2026)**, chạy trên bản đồ | `art/gen/ambient-life.ts`, `public/assets/sprites/s16-ambient-life.png`, `src/hub/ambientScene.ts` |
+| S16 sinh vật môi trường (Chim sẻ, Mèo, Bướm, Túi gió) | **Rút khỏi runtime 20/10/2026**: con vật Stardew thay thế. Sheet vẫn sinh được bằng code | `art/gen/ambient-life.ts` |
+| **Bản đồ trang trại Stardew** (bố cục B mùa xuân, duyệt 20/10/2026): nền ghép từ 16 sheet Stardew chép nguyên byte (`art/png/sv/`), ô 16 px, đất/đường autotile từ `Flooring.png`; 2 Barn = Khu chuồng, Silo + Shed + thùng/rương = Kho, nhà hai tầng = nhà NPC (quản lý, chủ ngựa ra vào, ẩn khi ở trong nhà), phòng khám Harvey (ghép 2 crop từ `spring_town.png`) = Phòng khám. Con vật nền: gà, vịt, chó, mèo Stardew (không có bò) | Xong (20/10), có test; `verify:map` kiểm 16 sheet `sv-*` (thêm luật trộn alpha của Aseprite trong `art/map/source-over.mjs`). Bấm Barn/Kho/Phòng khám/đường đua (kể cả cây giữa sân) đã thử trên trình duyệt | `art/map/gen-layout.ts`, `art/map/autotile.ts`, `farm-layout.json` (`anchors`), `src/hub/ambientScene.ts` (`doorTrip`, `SV_*`), `src/render/farmAssets.ts` (`CRITTER_URLS`), `docs/superpowers/plans/2026-10-20-stardew-farm-map.md` |
 | Hoạt động tự chạy: nài cưỡi ngựa nước kiệu vòng ô đất mép trái + HLV bấm giờ; khu kho–phòng khám có xe điện, xe kéo cỏ (ẩn khi hết cỏ), groom chải ngựa, bác sĩ dừng khám, hai người trò chuyện. Xe không còn ghép cứng trong ảnh nền | Xong (20/10), có test; mọi nhân vật đứng yên khi giảm chuyển động | `src/hub/ambientScene.ts` (`walkPause`), `src/hub/ambient.ts`, `art/map/gen-layout.ts` |
 | Thẻ ngựa: thanh nhịp tim 3 vùng có tên (Nghỉ / Vận động / Quá sức) + câu giải thích; mã chip 15 số | Xong (20/10), có test | `src/ui/heartZones.ts`, `src/ui/HorseCard.tsx` |
-| Bản đồ trang trại 1280×768 theo bố cục M1, ghép từ sprite đã duyệt + 14 vật phẩm tĩnh không lấn hành lang | Đã rebuild; manifest SHA-256 ràng buộc layout, `.aseprite` và toàn bộ PNG để phát hiện output cũ | `art/map/gen-layout.ts`, `art/map/farm-build-manifest.json`, `public/assets/maps/` |
 | Màn chính kiểu Hay Day: bản đồ phủ kín, HUD 4 góc (giờ, ngày/đêm, bộ đếm ngựa/sự cố/khóa y tế/kho sắp hết, nút Ngựa/Kho/Tốc độ) | Xong (T1) | `src/ui/FarmHub.tsx` |
 | Camera: kéo + quán tính, lăn chuột phóng quanh con trỏ, lướt tới công trình, phóng sát vào Đường đua và lùi ra khi quay về | Xong (T1, T7, T11) | `src/hub/camera.ts`, `useFarmCamera.ts`, `src/ui/FarmMapCanvas.tsx` |
 | Bảng nổi dùng chung (nảy mở/thu đóng, Esc, giữ focus, trả focus) | Xong (T2) | `src/ui/Popup.tsx` |
 | Ẩn chữ kỹ thuật, gỡ bảng gói tin; bus vẫn publish gói SRS | Xong (T3) | `src/sim/bus.ts`, `packets.ts` |
-| Thẻ ngựa + Đàn ngựa; gắn ngựa thật tại 2 ô bãi thả và 7 ô cửa chuồng mở (không đổi màu hay nhảy ô khi khóa y tế) | Xong (T4, T13); cửa chuồng đã mở rộng để đầu ngựa dễ đọc hơn | `HorseCard.tsx`, `HorseList.tsx`, `src/hub/farmPopulation.ts`, `src/render/stableHorses.ts` |
+| Thẻ ngựa + Đàn ngựa; gắn ngựa thật tại 2 ô bãi thả và **3 chỗ đứng chuồng** (ô cửa 2 Barn + mái che Stable; lấp bằng 3 ngựa đầu tiên theo ô chuồng không ra bãi thả) | Xong (T4, T13; đổi 7 → 3 chỗ khi sang bản đồ Stardew 20/10) | `HorseCard.tsx`, `HorseList.tsx`, `src/hub/farmPopulation.ts`, `src/render/stableHorses.ts` |
 | Khu chuồng, Phòng khám thành bảng nổi | Xong (T5, T6) | `StallTab.tsx`, `VetZone.tsx` |
 | Đường đua (Chạy thử 1 ngựa, Đua 6 làn), chọn ngựa bằng chân dung | Xong (T7) | `TrialTab.tsx`, `RaceTab.tsx`, `HorsePicker.tsx` |
 | Kho vật tư: mô hình tồn kho, bảng Kho, xe tải giao hàng, icon bay vào kho, số đếm | Xong (T8–T10) | `src/sim/inventory.ts`, `SupplyPanel.tsx`, `paths.ts` (`truckPose`) |

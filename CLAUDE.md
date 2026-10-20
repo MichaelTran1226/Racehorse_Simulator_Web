@@ -85,9 +85,10 @@ Trên Windows, gọi Aseprite bằng `Start-Process -NoNewWindow -Wait` (gọi b
 - **Không tự động khóa y tế:** sự cố chỉ gửi `sim:incident_report`; khóa/gỡ khóa là thao tác bấm của người.
 - **Logic thuần tách khỏi DOM** (`src/hub/camera.ts`, `paths.ts`, `farmLayout.ts`, `src/sim/*`, `src/render/farmScene.ts`): không import module chạm DOM/canvas. Test import kèm đuôi `.ts`, vì Node không tự tìm file `.ts` khi import không có đuôi.
 - **Logic mới không tầm thường phải có test** `*.test.ts` đặt cạnh file.
-- **Bản đồ chỉ crop/copy/place sprite đã duyệt** (không vẽ primitive, scale, rotate, chèn chữ, không dùng ảnh concept). `verify:map` kiểm điều này.
-- Sheet đã duyệt: S01, S06, S07, S08, S10, S11, S13, S14, S15, S16 (S16 duyệt 20/10/2026). Sprite mới phải qua preview và duyệt trước khi vào `public/assets/`.
-- Sprite: ô 32×32, sheet 6×6 = 192×192, nền trong suốt, chân y = 30, đúng bảng màu SRS §12; đổi màu bằng `src/render/palette.ts`.
+- **Bản đồ chỉ crop/copy/place sprite đã duyệt** (không vẽ primitive, scale, rotate, sửa pixel, chèn chữ, không dùng ảnh concept). `verify:map` kiểm điều này.
+- **Bản đồ trang trại dùng asset Stardew** (bố cục B mùa xuân, duyệt 20/10/2026; người dùng xác nhận được phép dùng): nền chỉ lấy từ 16 sheet `art/png/sv/sv-*.png` (chép nguyên byte từ `Stardrew Valley/`), ô 16 px, thế giới 80×48 ô = 1280×768. Con vật nền (gà, vịt, chó, mèo; **không có bò**) là PNG Stardew ở `public/assets/sprites/sv/`. S16 đã rút khỏi runtime. Ngựa (S01/S14), người (S06), xe (S15), hiệu ứng (S13) vẫn là sprite tự vẽ. Toạ độ gắn công trình (ô cửa Barn, cửa kho, nhà NPC, phòng khám) nằm ở `anchors` trong `farm-layout.json` (`FARM_ANCHORS`). Plan: `docs/superpowers/plans/2026-10-20-stardew-farm-map.md`.
+- Sheet tự vẽ đã duyệt: S01, S06, S07, S08, S10, S11, S13, S14, S15 (S16 rút khỏi runtime 20/10/2026). Sprite mới phải qua preview và duyệt trước khi vào `public/assets/`.
+- Sprite tự vẽ: ô 32×32, sheet 6×6 = 192×192, nền trong suốt, chân y = 30, đúng bảng màu SRS §12; đổi màu bằng `src/render/palette.ts`.
 - Mọi hiệu ứng có nhánh `prefers-reduced-motion` (chỉ còn mờ dần).
 - Font: chữ có dấu tiếng Việt dùng VT323; Silkscreen không có dấu, chỉ dùng cho chữ ASCII.
 - **Mã chip ngựa:** `microchip` là 15 chữ số (ISO 11784/11785), khớp ràng buộc BE `/^\d{15}$/`; Simulator tự sinh `985141` + 9 số trong `src/sim/horses.ts` và gửi đi dưới tên `microchip_id` (`horseRef` trong `packets.ts`). **Mã chip được hiện cho mọi người xem, kể cả người dùng phổ thông** (ngoại lệ của quy tắc "không hiện chữ kỹ thuật"): đủ 15 số, không che, chỉ trong `HorseCard`, chia nhóm 3 số qua `formatMicrochip` (`src/sim/engine.ts`). Khóa nội bộ luôn là `horse_id`, không phải mã chip. Simulator chưa có `rfid`; khi nối API phải tôn trọng việc BE che mã chip với GROOM (chỉ 4 số cuối). Chi tiết: `HANDOVER.md` mục "Mã chip ngựa".
@@ -102,6 +103,6 @@ Trên Windows, gọi Aseprite bằng `Start-Process -NoNewWindow -Wait` (gọi b
 | `src/render/` | Nạp sprite, đổi màu, `farmScene.ts`, `scenes.ts` (chuồng/đua), `silhouette.ts` |
 | `src/ui/` | `App`, `FarmHub` (HUD), `FarmMapCanvas`, `Popup`, `HorseCard`, `HorseList`, `HorsePicker`, `StallTab`, `VetZone`, `SupplyPanel`, `TrialTab`, `RaceTab`, `AssetOverview` (`/?dev`) |
 | `art/gen/` | Script vẽ sprite bằng code → `art/png`, `public/assets/sprites` |
-| `art/map/gen-layout.ts` → `farm-layout.json` | Bố cục bản đồ 40×24 ô (1280×768), kiểu M1 |
+| `art/map/gen-layout.ts` → `farm-layout.json` | Bố cục bản đồ Stardew 80×48 ô 16 px (1280×768), bố cục B; đất/đường dùng autotile `art/map/autotile.ts` |
 | `art/aseprite/*.lua` | Build `.aseprite` + PNG bản đồ |
 | `tasks/plan-hayday.md`, `tasks/todo-hayday.md` | Kế hoạch giao diện Hay Day (T1–T12; T10 còn 2 ô chưa làm, xem HANDOVER.md) |

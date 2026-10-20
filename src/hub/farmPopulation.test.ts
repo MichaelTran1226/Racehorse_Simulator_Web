@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { seedHorses } from "../sim/horses.ts";
+import { FARM_ANCHORS } from "./farmLayout.ts";
 import {
   assignPaddockHorses,
   assignStableHorses,
@@ -24,8 +25,32 @@ test("a horse uses the visible stable anchor derived from its stall and is never
   assert.ok(stable.every(({ horse }) => !paddock.some((candidate) => candidate?.id === horse.id)));
 });
 
-test("visible stable anchors are 7 immutable positions matching open stall openings", () => {
-  assert.equal(VISIBLE_STABLE_STALLS.length, 7);
-  assert.equal(new Set(VISIBLE_STABLE_STALLS.map(({ x, y }) => `${x},${y}`)).size, 7);
-  assert.ok(VISIBLE_STABLE_STALLS.every(({ x, y }) => x >= 0 && x < 384 && y >= 32 && y < 160));
+test("chỗ đứng chuồng nhìn thấy là 3 vị trí lấy từ anchors", () => {
+  assert.equal(VISIBLE_STABLE_STALLS.length, 3);
+  assert.deepEqual(VISIBLE_STABLE_STALLS.map(({ x, y }) => ({ x, y })), FARM_ANCHORS.stableStalls);
+  assert.ok(Object.isFrozen(VISIBLE_STABLE_STALLS));
+  for (const [index, anchor] of VISIBLE_STABLE_STALLS.entries()) {
+    assert.ok(Object.isFrozen(anchor));
+    assert.equal(anchor.index, index);
+    assert.equal(anchor.cellX, Math.floor(anchor.x / 16));
+    assert.equal(anchor.cellY, Math.floor(anchor.y / 16));
+  }
+});
+
+test("chỉ 3 ngựa đầu (theo ô chuồng) hiện ở chuồng và không trùng", () => {
+  const horses = seedHorses().slice(0, 6).map((horse, index) => ({
+    ...horse, health: "FIT" as const, medicalLock: false, stall: { col: index, row: 0 },
+  }));
+  const stable = assignStableHorses(horses, new Set());
+  assert.deepEqual(stable.map(({ anchor }) => anchor.index), [0, 1, 2]);
+  assert.deepEqual(stable.map(({ horse }) => horse.id), horses.slice(0, 3).map(({ id }) => id));
+  assert.equal(new Set(stable.map(({ horse }) => horse.id)).size, 3);
+});
+
+test("3 chỗ đứng chuồng lấp bằng ngựa không ra bãi thả, theo thứ tự ô chuồng", () => {
+  const horses = seedHorses();
+  const paddock = assignPaddockHorses(horses);
+  const stable = assignStableHorses(horses, new Set(paddock.flatMap((horse) => (horse ? [horse.id] : []))));
+  assert.deepEqual(stable.map(({ anchor }) => anchor.index), [0, 1, 2]);
+  assert.deepEqual(stable.map(({ horse }) => horse.id), ["HRS-003", "HRS-004", "HRS-005"]);
 });

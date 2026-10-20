@@ -1,3 +1,4 @@
+import { isExactTranslucentComposite } from "./map/source-over.mjs";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { inflateSync } from "node:zlib";
@@ -61,7 +62,7 @@ function colors(path) {
   return result;
 }
 
-const sheets = ["s01-horse", "s06-people", "s07-stall", "s08-farm", "s10-arena", "s11-icons", "s13-fx", "s14-rider", "s15-vehicles"];
+const sheets = ["sv-spring-outdoors", "sv-flooring", "sv-fence-wood", "sv-fence-iron", "sv-barn", "sv-shed", "sv-silo", "sv-stable", "sv-coop", "sv-well", "sv-houses", "sv-spring-town", "sv-tree1-spring", "sv-tree2-spring", "sv-bushes", "sv-craftables"];
 // Compare with Aseprite-normalized copies so color-profile conversion is not mistaken for authored pixels.
 const approved = new Set(sheets.flatMap((name) => [...colors(`art/preview/provenance/${name}.png`)]));
 const parse = (value) => value.split(":").map(Number);
@@ -99,7 +100,7 @@ const outputs = [
   "public/assets/maps/objects/vet.png", "public/assets/maps/objects/track.png",
 ];
 for (const path of outputs) {
-  for (const color of colors(path)) assert.ok(allowed.has(color) || isProfileEquivalent(color) || isRoundingOfDerived(color), `${path} contains RGBA not derivable by source-over copy ${color}`);
+  for (const color of colors(path)) assert.ok(allowed.has(color) || isProfileEquivalent(color) || isRoundingOfDerived(color) || isExactTranslucentComposite(parse(color), translucent), `${path} contains RGBA not derivable by source-over copy ${color}`);
 }
 assertFarmBuildFresh(readFarmBuildManifest());
 console.log(`verified ${outputs.length} generated PNGs against ${sheets.length} approved sprite sheets and copy compositing`);

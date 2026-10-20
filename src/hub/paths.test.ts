@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { FARM_ANCHORS } from "./farmLayout.ts";
 import { paddockHorse, paddockHorseAt, PADDOCK_SLOTS, truckPose, TRUCK_STOP_X } from "./paths.ts";
 
 test("tapping a paddock horse finds its slot; empty grass and missing horses find none", () => {
@@ -18,8 +19,16 @@ test("delivery truck drives in, parks to unload until arrival, then leaves the m
   assert.equal(truckPose(arrive - 9, arrive, 8), null, "not yet dispatched");
   const driving = truckPose(arrive - 4, arrive, 8);
   assert.ok(driving && !driving.open && driving.x < TRUCK_STOP_X);
-  assert.deepEqual(truckPose(arrive - 0.5, arrive, 8), { x: TRUCK_STOP_X, y: 604, open: true });
+  assert.equal(TRUCK_STOP_X, FARM_ANCHORS.supplyDoor.x);
+  assert.deepEqual(truckPose(arrive - 0.5, arrive, 8), { x: TRUCK_STOP_X, y: 250, open: true });
   const leaving = truckPose(arrive + 2, arrive, 8);
   assert.ok(leaving && !leaving.open && leaving.x > TRUCK_STOP_X);
   assert.equal(truckPose(arrive + 5, arrive, 8), null, "gone");
+});
+
+test("paddock horses start on the approved lanes", () => {
+  assert.deepEqual(paddockHorse(0, 0), { x: 730, y: 400, frame: 0, row: 1, flip: false });
+  const second = paddockHorse(1, 0);
+  assert.equal(second.x, 840);
+  assert.equal(second.y, 340);
 });
