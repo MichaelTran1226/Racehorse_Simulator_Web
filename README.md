@@ -15,6 +15,7 @@
 > **Bạn đang xem Phiên Bản 1 (v1.0.0 — Bản đầy đủ gốc theo chuẩn SRS):**
 > - **Mã nguồn:** Toàn bộ bản đồ thế giới và sprite đều là pixel-art độc quyền vẽ bằng code sinh (`art/gen/*.ts`) và đóng gói qua Aseprite CLI (`farm-day.aseprite`).
 > - **Sinh vật môi trường:** Bộ S16 độc quyền gồm chim sẻ, mèo cam lười, bướm vàng và túi gió.
+> - **Mã chip ngựa (Microchip 15 số ISO 11784/11785):** Hiển thị trực tiếp trong thẻ ngựa (`HorseCard`), nhóm 3 số dễ đọc (vd: `985 141 000 000 001`), đồng bộ với gói tin telemetry `microchip_id`.
 > - **Hiệu ứng thời gian:** Có đầy đủ chu kỳ **Ban Ngày (Day Mode)** & **Ban Đêm (Night Mode)** với đèn lồng chuồng trại ấm áp và đom đóm lập lòe.
 > - **Chuyển sang Phiên bản 2 (Stardew Valley):** Xem nhánh [`v2-stardew-valley`](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/tree/v2-stardew-valley) hoặc đọc [VERSIONS.md](VERSIONS.md).
 
@@ -38,7 +39,7 @@ Chạm trực tiếp vào bất kỳ chú ngựa nào trên bãi cỏ hoặc b�
 | 📋 Danh sách đàn ngựa (Horse Roster) | 🩺 Thẻ Telemetry chi tiết (Horse Card) |
 |:---:|:---:|
 | ![Horse Roster](docs/screenshots/03-horse-roster.png) | ![Horse Card Telemetry](docs/screenshots/04-horse-card-telemetry.png) |
-| *Lưới thẻ chiến mã với avatar pixel art, tình trạng sức khỏe (Đủ điều kiện, Cần theo dõi, Khóa)* | *Chân dung hoạt ảnh, thanh đo nhịp tim (BPM) 3 dải màu, thể lực, tốc độ km/h, mã chip 15 số ISO và nút bật/tắt Khóa y tế* |
+| *Lưới thẻ chiến mã với avatar pixel art, tình trạng sức khỏe (Đủ điều kiện, Cần theo dõi, Khóa)* | *Chân dung hoạt ảnh, thanh đo nhịp tim (BPM) 3 dải màu, thể lực, tốc độ km/h, **dòng hiển thị Mã chip 15 số ISO 11784/11785** và nút bật/tắt Khóa y tế* |
 
 ---
 
