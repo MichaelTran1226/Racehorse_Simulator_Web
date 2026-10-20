@@ -6,6 +6,19 @@
 
 ---
 
+## 📦 Các Phiên Bản Mô Hình (Model Versions)
+
+Dự án được phân nhánh và đóng gói chính thức thành 2 phiên bản độc lập:
+
+- **Phiên bản 1: v1 (Original Pixel-Art Simulator)**: Nhánh [`v1`](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/tree/v1) · Tag [`v1.0.0`](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/releases/tag/v1.0.0).  
+  Bản đồ trang trại pixel art độc quyền do code tự sinh (S01–S16), sinh vật môi trường (chim, mèo, bướm, túi gió), giao diện Hay Day, động cơ Telemetry và 64/64 tests pass.
+- **Phiên bản 2: v2 (Stardew Valley Simulator)**: Nhánh [`v2-stardew-valley`](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/tree/v2-stardew-valley) · Tag [`v2.0.0`](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/releases/tag/v2.0.0).  
+  Bản đồ trang trại phong cách Stardew Valley (Bố cục B mùa xuân), hệ thống autotile 4×4, công trình Barns/Clinic/Shed/Houses, sinh vật Stardew (gà, vịt, chó, mèo), hệ thống anchors và 79/79 tests pass.
+
+👉 *Xem chi tiết bảng so sánh và hướng dẫn chuyển đổi/chạy song song tại [VERSIONS.md](VERSIONS.md).*
+
+---
+
 ## 📸 Showcase Giao Diện Thực Tế (Visual Showcase)
 
 Hệ thống được thiết kế theo phong cách game quản lý nông trại Hay Day kết hợp pixel art cổ điển. Toàn bộ bản đồ thế giới 1280×768 được dựng từ các bộ sprite độc quyền đã qua kiểm định màu sắc.
