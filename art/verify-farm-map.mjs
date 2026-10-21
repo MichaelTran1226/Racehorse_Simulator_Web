@@ -62,7 +62,7 @@ function colors(path) {
   return result;
 }
 
-const sheets = ["sv-spring-outdoors", "sv-flooring", "sv-fence-wood", "sv-fence-iron", "sv-barn", "sv-shed", "sv-silo", "sv-stable", "sv-coop", "sv-well", "sv-houses", "sv-spring-town", "sv-tree1-spring", "sv-tree2-spring", "sv-bushes", "sv-craftables"];
+const sheets = ["sv-spring-outdoors", "sv-flooring", "sv-fence-wood", "sv-fence-iron", "sv-barn", "sv-shed", "sv-silo", "sv-stable", "sv-coop", "sv-well", "sv-houses", "sv-spring-town", "sv-tree1-spring", "sv-tree2-spring", "sv-bushes", "sv-craftables", "sv-mill", "sv-clinic"];
 // Compare with Aseprite-normalized copies so color-profile conversion is not mistaken for authored pixels.
 const approved = new Set(sheets.flatMap((name) => [...colors(`art/preview/provenance/${name}.png`)]));
 const parse = (value) => value.split(":").map(Number);

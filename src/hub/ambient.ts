@@ -4,6 +4,7 @@ import { FARM_ANCHORS, type Point } from "./farmLayout.ts";
 import { PADDOCK_SLOTS, paddockHorse } from "./paths.ts";
 import {
   ambientActorPose,
+  perchedBirds,
   type AmbientSceneState,
 } from "./ambientScene.ts";
 
@@ -99,18 +100,30 @@ export function drawFarmActors(
   drawFrame(ctx, sprites.people, sprites.people.canvas, grooming.frame, grooming.row ?? 3, grooming.x, grooming.y, CELL, grooming.flip);
 
   // 7. Con vật Stardew (gà, vịt, chó, mèo) — khung vuông 16/32 px, vẽ 1:1, chân tại y
-  for (const id of ["SV_CHICKEN_1", "SV_CHICKEN_2", "SV_CHICKEN_3", "SV_DUCK", "SV_DOG", "SV_CAT"] as const) {
-    const p = ambientActorPose(id, time, ambientState);
+  const critters = [
+    ...(["SV_CHICKEN_1", "SV_CHICKEN_2", "SV_CHICKEN_3", "SV_DUCK", "SV_DOG", "SV_CAT", "WILD_BLUEBIRD_1", "WILD_BLUEBIRD_2", "WILD_SPARROW_1", "WILD_SPARROW_2", "WILD_RABBIT", "WILD_SQUIRREL"] as const).map((id) => ambientActorPose(id, time, ambientState)),
+    ...perchedBirds(time, ambientState), // vẽ sau cùng: chim đậu trên tán cây
+  ];
+  for (const p of critters) {
     if (!p.sheet || !p.size) continue;
     const s = p.size;
-    ctx.drawImage(sprites.critters[p.sheet], p.frame * s, (p.row ?? 0) * s, s, s, Math.round(p.x - s / 2), Math.round(p.y - s + 2), s, s);
+    const sheet = sprites.critters[p.sheet];
+    if (!p.flip) {
+      ctx.drawImage(sheet, p.frame * s, (p.row ?? 0) * s, s, s, Math.round(p.x - s / 2), Math.round(p.y - s + 2), s, s);
+      continue;
+    }
+    ctx.save();
+    ctx.translate(Math.round(p.x), 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(sheet, p.frame * s, (p.row ?? 0) * s, s, s, -s / 2, Math.round(p.y - s + 2), s, s);
+    ctx.restore();
   }
 }
 
 /** Ban đêm: phủ tối + quầng đèn ở cửa sổ, chuồng, đường đua; đom đóm. Chỉ là lớp phủ lúc chạy, bố cục không đổi. */
 const LIGHTS: Point[] = [
   ...FARM_ANCHORS.stableStalls.map((p) => ({ x: p.x, y: p.y - 20 })), // cửa 2 Barn + mái che
-  { x: FARM_ANCHORS.houseDoor.x, y: FARM_ANCHORS.houseDoor.y - 24 }, { x: 920, y: 104 }, // cửa + cửa sổ nhà NPC
+  { x: FARM_ANCHORS.houseDoor.x, y: FARM_ANCHORS.houseDoor.y - 24 }, { x: 888, y: 262 }, // cửa + cửa sổ nhà NPC
   { x: FARM_ANCHORS.clinicDoor.x, y: FARM_ANCHORS.clinicDoor.y - 24 }, // phòng khám
   { x: FARM_ANCHORS.supplyDoor.x, y: FARM_ANCHORS.supplyDoor.y - 40 }, // kho
 ];

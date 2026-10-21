@@ -1,72 +1,56 @@
-# 🐎 EquiFlow Simulator Web (IoT ảo / Digital Twin)
+# 🐎 EquiFlow Simulator Web — Phiên Bản 3 (v3: TMEC Intro + bố cục mới)
 
-[![Release v1.0.0](https://img.shields.io/badge/Release-v1.0.0-blue.svg)](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/releases/tag/v1.0.0)
-[![Release v2.0.0](https://img.shields.io/badge/Release-v2.0.0-blue.svg)](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/releases/tag/v2.0.0)
-[![Branch v1](https://img.shields.io/badge/Branch-v1-success.svg)](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/tree/v1)
-[![Branch v2](https://img.shields.io/badge/Branch-v2--stardew--valley-success.svg)](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/tree/v2-stardew-valley)
-[![Tests v1](https://img.shields.io/badge/Tests%20v1-64%2F64%20Pass-brightgreen.svg)](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/tree/v1)
-[![Tests v2](https://img.shields.io/badge/Tests%20v2-79%2F79%20Pass-brightgreen.svg)](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/tree/v2-stardew-valley)
+> **v3 là bản độc lập** chép từ v2 (React + Canvas + kéo/zoom camera + nhân vật), khác v2 ở:
+> - **Bản đồ mới** (`art/map/gen-layout.ts`, theo bố cục ảnh tham khảo): đường xe hàng 3 ô chạy thẳng mép trái → cửa Kho vật tư → mép phải; đường đua bầu dục nhỏ hơn; Chuồng ngựa (Barn + mái che Stable) cách Kho 6 ô; Trạm Y tế, Nhà NV chăm sóc; sân huấn luyện đông bắc; hai vườn cảnh phía tây; không có sông/ao. Màn chính mở ở giữa 4 công trình (`anchors.mainFocus`).
+> - **Trạm Y tế đối xứng**: `art/aseprite/patch-clinic.lua` dựng `sv-clinic.png` từ nửa trái phòng khám Harvey (lật gương) — ngoại lệ "chỉ crop" do người dùng duyệt 21/10/2026, chỉ cho sprite này.
+> - **Intro TMEC** (`src/ui/IntroOverlay.tsx`, mốc thời gian ở `introTimeline.ts`): mây Stardew 3 lớp phủ kín màn hình → "TMEC" nảy → giãn thành "THIEN MA EQUESTRIAN CLUB" → mây tách hai bên, màn chính 1.06 → 1 (4,2 s). Chạm/phím để bỏ qua; giảm chuyển động chỉ mờ dần. Mây cắt từ `Minigames/Clouds.png` bằng `art/aseprite/cut-clouds.lua`.
+> - Cổng dev **5175** (chạy song song v1/v2 ở 5174). Bản preview tĩnh cũ của v3 cất ở `_legacy-preview/`.
+
+---
+
+## 🎬 Hoạt Cảnh Mở Màn & Nông Trại Sống Động (TMEC Intro & Ambient Showcase)
+
+<p align="center">
+  <img src="docs/showcase/intro-tmec-showcase.gif" alt="TMEC Intro & Farm Ambient Showcase" width="90%" />
+  <br />
+  <em>Hiệu ứng mây Stardew 3 lớp nảy chữ TMEC (Thien Ma Equestrian Club) và chuyển cảnh vào bản đồ nông trại sống động</em>
+</p>
+
+---
+
+# 🐎 EquiFlow Simulator Web — Phiên Bản 2 (v2: Stardew Valley Farm Edition)
+
+[![Release](https://img.shields.io/badge/Release-v2.0.0-blue.svg)](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/releases/tag/v2.0.0)
+[![Branch](https://img.shields.io/badge/Branch-v2--stardew--valley-success.svg)](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/tree/v2-stardew-valley)
+[![Tests](https://img.shields.io/badge/Tests-79%2F79%20Pass-brightgreen.svg)](https://github.com/MichaelTran1226/Racehorse_Simulator_Web)
+[![Style](https://img.shields.io/badge/Art-Stardew%20Valley%20Curated%20Assets%20%2B%20Autotile-orange.svg)](https://github.com/MichaelTran1226/Racehorse_Simulator_Web)
 
 > **Phân hệ 1 theo SRS & Design Handoff v2.0** (`horse simulation model/`).  
-> Ứng dụng web độc lập, đồ họa **Pixel Art trên HTML5 Canvas 2D**, giao diện tương tác phong cách **Hay Day** thân thiện với người dùng (viên/nút tròn phồng, bảng gỗ nảy nổi, âm hưởng nông trại).  
-> Tích hợp động cơ mô phỏng sinh trắc học ngựa (Telemetry Math Engine), quản lý kho vật tư, khu chuồng trại, trạm thú y và trường đua kịch tính.
+> Ứng dụng web độc lập, đồ họa **Pixel Art trên HTML5 Canvas 2D phong cách Stardew Valley**, kết hợp giao diện tương tác **Hay Day** thân thiện với người dùng.  
+> Tích hợp bản đồ nông trại mùa xuân bố cục B, động cơ mô phỏng sinh trắc học ngựa (Telemetry Math Engine), quản lý kho vật tư, khu chuồng trại, trạm thú y và trường đua kịch tính.
 
 ---
 
-## 📦 Các Phiên Bản Mô Hình Được Đóng Gói (Packaged Versions)
-
-Dự án được phân nhánh và đóng gói chính thức thành **2 phiên bản độc lập hoàn chỉnh** trên GitHub:
-
-| Phiên bản | Nhánh Git | Thẻ Phát Hành | Đặc điểm nổi bật | Bộ kiểm thử |
-|---|---|---|---|:---:|
-| **Phiên bản 1 (v1)** | [`v1`](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/tree/v1) | [`v1.0.0`](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/releases/tag/v1.0.0) | **Bản gốc chuẩn SRS**: Đồ họa pixel-art độc quyền tự sinh bằng code (S01–S16), chu kỳ Ngày/Đêm (đèn lồng & đom đóm), sinh vật S16 (chim sẻ, mèo cam, bướm, túi gió), xe cút kít chở cỏ, **Mã chip 15 số ISO 11784/11785** trên thẻ ngựa. | **64/64 tests pass** |
-| **Phiên bản 2 (v2)** | [`v2-stardew-valley`](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/tree/v2-stardew-valley) | [`v2.0.0`](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/releases/tag/v2.0.0) | **Bản Stardew Valley**: Nền bản đồ Bố cục B mùa xuân 1280×768 (ô 16px) từ 16 bộ sheet ConcernedApe nguyên bản, thuật toán **Autotile 4×4** đất/đường, 2 Barns, Silo + Shed, phòng khám Harvey, thú cưng & gia cầm Stardew (gà, vịt, chó, mèo), hệ thống anchors. | **79/79 tests pass** |
-
-👉 *Xem chi tiết bảng so sánh chuyên sâu và hướng dẫn chạy song song 2 cổng tại tệp [VERSIONS.md](VERSIONS.md).*
+> [!NOTE]
+> **Bạn đang xem Phiên Bản 2 (v2.0.0 — Stardew Valley Edition):**
+> - **Mã nguồn:** Nền bản đồ thế giới 1280×768 (ô 16px) được ghép từ 16 bộ tileset gốc ConcernedApe từ Stardew Valley (`Flooring`, `Town`, `Barn`, `Shed`, `Silo`, `Houses`, ...).
+> - **Autotile 4×4:** Đất nện và đường đi tự động tính toán 16 trạng thái lân cận mượt mà từ `Flooring.png`.
+> - **Sinh vật môi trường:** Đàn gia cầm & thú cưng Stardew di chuyển sống động: gà trắng, gà nâu, vịt, chó cưng và mèo mướp (thay thế S16).
+> - **Hệ thống Anchors:** Tọa độ cửa công trình và 3 vị trí ngựa đứng trong chuồng được chuẩn hóa nguồn dữ liệu duy nhất (`anchors`).
+> - **Động cơ Telemetry:** Kế thừa trọn vẹn từ v1 (nhịp tim 3 vùng, mã chip 15 số ISO 11784/11785, quản lý thể lực, bề mặt sân, chướng ngại vật).
+> - **Chuyển sang Phiên bản 1 (Bản gốc Pixel-Art):** Xem nhánh [`v1`](https://github.com/MichaelTran1226/Racehorse_Simulator_Web/tree/v1) hoặc đọc [VERSIONS.md](VERSIONS.md).
 
 ---
 
-## 🚀 Hướng Dẫn Chuyển Đổi & Khởi Chạy
+## 📸 Showcase Giao Diện Thực Tế (v2 Visual Showcase)
 
-### 1. Khởi chạy Bản v1 (Original Pixel-Art Edition — Cổng 5173)
-```bash
-git checkout v1
-npm test          # Chạy 64/64 bài kiểm thử
-npm run dev       # Mở tại http://localhost:5173
-```
+### 1. Bản Đồ Trang Trại Stardew Valley (Bố Cục B Mùa Xuân) — Ngày & Đêm
+Toàn cảnh trang trại 1280×768 mang âm hưởng đồng quê thung lũng Stardew: thảm cỏ hoa mùa xuân xanh ngát, 2 chuồng Barn gỗ sồi, cụm kho Silo và Shed kiên cố, phòng khám thú y Harvey và nhà lớn 2 tầng cho NPC sinh hoạt. Camera kéo thả mượt mà với quán tính vật lý và lăn chuột zoom tự do quanh con trỏ.
 
-### 2. Khởi chạy Bản v2 (Stardew Valley Edition — Cổng 5174)
-```bash
-git checkout v2-stardew-valley
-npm test          # Chạy 79/79 bài kiểm thử
-npm run dev -- --port 5174  # Mở tại http://localhost:5174
-```
-
-### 3. Mẹo: Mở Song Song Cả Hai Bản (Git Worktree)
-```bash
-# Tạo thư mục song song cho v2 (chỉ cần làm 1 lần)
-git worktree add ../Racehorse_Simulator_Web_v2 v2-stardew-valley
-
-# Chạy v1 tại thư mục hiện tại (cổng 5173)
-npm run dev
-
-# Mở terminal mới, chạy v2 tại thư mục worktree (cổng 5174)
-cd ../Racehorse_Simulator_Web_v2 && npm run dev -- --port 5174
-```
-
----
-
-## 📸 Showcase Giao Diện Thực Tế (Visual Showcase)
-
-Hệ thống được thiết kế theo phong cách game quản lý nông trại Hay Day kết hợp pixel art cổ điển. Toàn bộ bản đồ thế giới 1280×768 được dựng từ các bộ sprite độc quyền đã qua kiểm định màu sắc.
-
-### 1. Bản Đồ Trang Trại Chính (Farm Hub) — Ban Ngày & Ban Đêm
-Bản đồ trang trại phủ kín màn hình với cơ chế camera trượt mượt mà (kéo chuột để đi dạo, có quán tính vật lý khi thả tay, lăn chuột để phóng to/thu nhỏ quanh con trỏ). Bãi thả ngựa có các chiến mã thong thả gặm cỏ, xe cút kít chở cỏ chạy dọc đường mòn, cùng HUD nổi 4 góc theo dõi thời gian thực.
-
-| ☀ Toàn cảnh ban ngày (Day Mode) | ☾ Ánh đèn & đom đóm ban đêm (Night Mode) |
+| ☀ Toàn cảnh ban ngày Stardew (Day Mode) | ☾ Ánh đèn & đom đóm ban đêm (Night Mode) |
 |:---:|:---:|
 | ![Farm Hub Day](docs/screenshots/01-farm-hub-day.png) | ![Farm Hub Night](docs/screenshots/02-farm-hub-night.png) |
-| *Bãi cỏ xanh mát, đàn ngựa gặm cỏ, xe buggy tuần tra, HUD chỉ số 4 góc* | *Hiệu ứng đèn lồng chuồng trại ấm áp, đom đóm lập lòe và trăng khuyết* |
+| *Bố cục B mùa xuân: 2 Barns, Silo + Shed, phòng khám Harvey, đàn gà vịt đi dạo, chó vẫy đuôi, HUD 4 góc* | *Hiệu ứng ban đêm huyền ảo, ánh sáng vàng hắt từ các khung cửa gỗ Stardew, đom đóm lập lòe* |
 
 ---
 
@@ -76,12 +60,12 @@ Chạm trực tiếp vào bất kỳ chú ngựa nào trên bãi cỏ hoặc b�
 | 📋 Danh sách đàn ngựa (Horse Roster) | 🩺 Thẻ Telemetry chi tiết (Horse Card) |
 |:---:|:---:|
 | ![Horse Roster](docs/screenshots/03-horse-roster.png) | ![Horse Card Telemetry](docs/screenshots/04-horse-card-telemetry.png) |
-| *Lưới thẻ chiến mã với avatar pixel art, tình trạng sức khỏe (Đủ điều kiện, Cần theo dõi, Khóa)* | *Chân dung hoạt ảnh, thanh đo nhịp tim (BPM) 3 dải màu, thể lực, tốc độ km/h, **dòng hiển thị Mã chip 15 số ISO** và nút bật/tắt Khóa y tế* |
+| *Lưới thẻ chiến mã với avatar pixel art, tình trạng sức khỏe (Đủ điều kiện, Cần theo dõi, Khóa)* | *Chân dung hoạt ảnh, thanh đo nhịp tim (BPM) 3 dải màu, thể lực, tốc độ km/h, mã chip 15 số ISO và nút bật/tắt Khóa y tế* |
 
 ---
 
 ### 3. Khu Chuồng Trại & Trạm Thú Y (Stalls & Vet Clinic)
-Bấm vào công trình trên bản đồ: camera lướt tới vị trí công trình và mở bảng nổi gỗ đặc trưng.
+Bấm vào công trình trên bản đồ: camera lướt tới vị trí công trình và mở bảng nổi gỗ phong cách Hay Day.
 
 | 🏠 Khu chuồng trại (6×6 Stalls Grid) | 🏥 Trạm khám thú y (Vet Clinic) |
 |:---:|:---:|
@@ -111,66 +95,53 @@ Mô phỏng tiêu hao tài nguyên (cỏ khô, yến mạch, rơm lót chuồng,
 
 ---
 
-## 🏛 Kiến Trúc & Công Nghệ Cốt Lõi
+## 🌾 Tài Nguyên Đồ Họa Stardew Valley (v2 Curated Assets)
 
-1. **Hiển Thị Đồ Họa Tốc Độ Cao (Canvas 2D):**
-   - Vòng lặp `requestAnimationFrame` duy trì ổn định **60 FPS**.
-   - Phân lớp đồ họa chuyên nghiệp: Lớp nền tĩnh (Ground Map) → Lớp chiều sâu (Z-Sorted Objects) → Lớp động (Dynamic Actors & Critters).
-2. **Động Cơ Mô Phỏng Toán Học (Telemetry Engine):**
-   - Tính toán nhịp tim (Heart Rate BPM), thể lực (Stamina Drain/Recovery) theo từng nhịp bước chạy (Walk, Trot, Canter, Gallop).
-   - Tác động của mặt sân (Cỏ nhanh & ít hao, Cát chậm & tiêu hao nhiều, Hỗn hợp trung tính) và tình trạng thời tiết (Khô ráo / Lầy lội).
-3. **Mã Chip Định Danh 15 Số (ISO 11784/11785):**
-   - Cung cấp mã định danh chuẩn quốc tế cho từng cá thể ngựa, chia nhóm 3 số dễ đọc (ví dụ: `985 141 000 000 001`).
-4. **Mô Phỏng Tiêu Hao Tài Nguyên & Hậu Cần Kho:**
-   - Định mức tiêu hao tự động theo số lượng đàn ngựa.
-   - Cơ chế xe tải giao hàng thông minh: gộp các đơn hàng cùng thời điểm vào một chuyến xe chuyên chở.
-5. **Bus Sự Kiện Cục Bộ (Event Bus):**
-   - Phân tách hoàn toàn giữa giao diện người dùng (UI) và động cơ mô phỏng, sẵn sàng tích hợp với Backend NestJS qua Socket.IO.
+Toàn bộ đồ họa nền được chép nguyên byte từ các bộ sprite gốc của ConcernedApe và ghép theo quy chuẩn kiểm định nghiêm ngặt:
 
----
+| Sheet Stardew | Kích thước | Vai trò trong Bản Đồ v2 |
+|---|---|---|
+| `sv-spring-outdoors` | 400×1264 px | Nền cỏ mùa xuân, bụi hoa dại, thềm đất tự nhiên |
+| `sv-flooring` | 256×256 px | Nguồn gạch lát đường và bãi cát cho thuật toán autotile 4×4 |
+| `sv-barn` | 112×128 px | 2 dãy chuồng ngựa lớn (Khu chuồng trại chính) |
+| `sv-shed` | 112×128 px | Nhà kho phụ kiện & dụng cụ chăm sóc |
+| `sv-silo` | 48×128 px | Tháp dự trữ cỏ khô & yến mạch |
+| `sv-houses` | 272×432 px | Nhà lớn 2 tầng cho quản lý & chủ ngựa ra vào |
+| `sv-spring-town` | 512×992 px | Phòng khám thú y Harvey Clinic |
+| `sv-tree1-spring`, `sv-tree2-spring` | 48×160 px | Hàng cây sồi mùa xuân che bóng mát |
+| `sv-fence-wood`, `sv-fence-iron` | 48×192 px | Hàng rào gỗ bãi thả và rào sắt bao quanh |
+| `sv-craftables` | 128×736 px | Thùng gỗ, rương đồ, bao cám trang trí khu kho |
 
-## 📋 Kịch Bản Kiểm Thử & Nghiệm Thu (Acceptance Test Scenarios)
-
-| Mã | Kịch bản | Thao tác thực hiện | Kết quả kỳ vọng |
-|---|---|---|---|
-| **TC-01** | **Khởi Động & Tải Sprite** | Mở trình duyệt tại địa chỉ web. | Màn hình tải mượt mà, toàn bộ tài nguyên bản đồ và sprite nạp đầy đủ; không có thông báo lỗi trong DevTools console. |
-| **TC-02** | **Điều Hướng Camera** | Giữ chuột trái và kéo trên bản đồ; thả chuột với tốc độ nhanh. Lăn chuột tại một điểm bất kỳ. | Camera di chuyển theo tay kéo; khi thả tay có quán tính lướt nhẹ và dừng êm; lăn chuột phóng to/thu nhỏ chính xác quanh vị trí con trỏ chuột. |
-| **TC-03** | **Tương Tác Thẻ Ngựa** | Chạm vào một chú ngựa đang gặm cỏ trên bãi thả (hoặc bấm nút "Ngựa" ở góc phải dưới). | Thẻ thông tin ngựa bật mở với hoạt ảnh phồng nảy mượt mà; chân dung ngựa cử động; thanh nhịp tim nhảy số liên tục; hiển thị mã chip 15 số rõ ràng. |
-| **TC-04** | **Đặt Hàng & Giao Cỏ** | Bấm vào Nhà kho (hoặc nút "Kho"), bấm nút "Đặt thêm" tại mục Cỏ khô. | Số lượng tồn kho chuyển trạng thái đặt hàng; xe tải xuất hiện từ cổng vào, di chuyển đến trước cửa kho dỡ hàng và rời đi; kho được lấp đầy. |
-| **TC-05** | **Xem Chi Tiết Chuồng / Trạm Xá** | Bấm vào Chuồng ngựa hoặc Trạm thú y trên bản đồ. | Camera lướt đến công trình; công trình nhún nhẹ và bảng nổi tương ứng mở ra với đầy đủ thông số quản lý. |
-| **TC-06** | **Chạy Thử Đường Đua (Trial)** | Chuyển sang khu vực Đường đua. Chọn ngựa, chọn cự ly, mặt sân Cát. Bấm "Bắt đầu chạy thử". | Ngựa phi nước đại trên đường đua, thanh telemetry nhảy nhịp tim, tốc độ tức thời và hiển thị hoạt ảnh bật nhảy khi qua rào. |
-| **TC-07** | **Đua Ngựa 6 Làn (Race)** | Tại màn hình Đường đua, chuyển sang tab Đua 6 làn. Bấm "Mở cổng xuất phát". | Cổng bật mở, 6 nài ngựa cùng phi nước đại. Bảng xếp hạng bên phải cập nhật vị trí và khoảng cách liên tục cho tới khi qua đích. |
-| **TC-08** | **Điều Tốc Mô Phỏng** | Bấm nút tốc độ ở góc dưới phải để chuyển qua lại `1×` → `10×` → `60×` → `II` (Tạm dừng). | Tốc độ tiêu hao kho, nhịp di chuyển và thời gian mô phỏng tăng tốc hoặc đứng yên tương ứng; xe cút kít và sinh vật tạm dừng khi ở trạng thái `II`. |
-| **TC-09** | **Hỗ Trợ Giảm Chuyển Động** | Bật tùy chọn `prefers-reduced-motion` của HĐH hoặc thêm `?reducedMotion=1` trên URL. | Hiệu ứng nảy/phóng camera tự động chuyển sang hiệu ứng mờ dần (fade); mọi nhân vật đứng yên ở tư thế tĩnh chuẩn; tắt bụi cát đường đua. |
+### Sinh vật môi trường Stardew (Critters Runtime):
+- 🐔 **White Chicken / Brown Chicken**: Đi dạo gặm thóc quanh khu kho.
+- 🦆 **Duck**: Thong thả bơi lội và đi dạo bãi cỏ.
+- 🐕 **Dog**: Chó cưng vẫy đuôi, đứng canh cổng bãi thả.
+- 🐱 **Cat**: Mèo mướp lười biếng nằm sưởi nắng trước hiên nhà.
 
 ---
 
-## 📁 Cấu Trúc Dự Án (Project Structure)
+## 🧪 Kiểm Thử & Đảm Bảo Chất Lượng (Quality Gates)
 
+Phiên bản v2 bổ sung kiểm thử cho autotile, tính toàn vẹn byte của 16 sheet Stardew và hệ thống anchors:
+
+- `npm run typecheck`: **0 lỗi TypeScript** (chế độ strict).
+- `npm test`: **79/79 bài kiểm thử tự động đạt 100%**.
+- `npm run build`: Tạo bundle production tối ưu (`dist/`).
+
+```bash
+# Khởi chạy kiểm thử
+npm test
+
+# Khởi chạy server phát triển
+npm run dev
 ```
-Racehorse_Simulator_Web/
-├── art/                           # Tài nguyên nguồn và script vẽ đồ họa
-│   ├── aseprite/                  # Script tự động hóa đóng gói Lua cho Aseprite CLI
-│   ├── gen/                       # Script TypeScript sinh sprite pixel bằng thuật toán
-│   ├── map/                       # Bố cục bản đồ farm-layout.json & script sinh
-│   └── preview/                   # Ảnh xem trước các sheet sprite và bản đồ
-├── docs/                          # Tài liệu & hình ảnh showcase
-│   └── screenshots/               # Ảnh chụp thực tế các màn hình ứng dụng
-├── public/                        # Static assets phục vụ Vite
-│   └── assets/
-│       ├── maps/                  # Bản đồ farm-ground.png và từng PNG công trình
-│       └── sprites/               # Sprite sheet s01-s16 chuẩn hóa 192×192
-├── scripts/                       # Các tiện ích tự động hóa (chụp ảnh showcase...)
-│   └── capture-screenshots.mjs    # Kịch bản Playwright tự động chụp ảnh giao diện
-├── src/                           # Mã nguồn chính của ứng dụng
-│   ├── assets/manifest.ts         # Danh mục asset, quy chuẩn và bảng màu SRS §12
-│   ├── hub/                       # Logic camera (quán tính, zoom), hit-test, layout, đường đi
-│   ├── render/                    # Đổi màu lông/áo nài, nạp sprite, vẽ cảnh canvas
-│   ├── sim/                       # Động cơ mô phỏng: telemetry, bus sự kiện, kho vật tư
-│   └── ui/                        # Các React component (FarmHub, FarmMapCanvas, Popups...)
-├── VERSIONS.md                    # Hướng dẫn chi tiết hai phiên bản v1 và v2
-├── index.html                     # Điểm vào ứng dụng web
-├── package.json                   # Cấu hình dự án & scripts
-├── tsconfig.json                  # Cấu hình TypeScript nghiêm ngặt
-└── vite.config.ts                 # Cấu hình Vite bundler
-```
+
+---
+
+## 🧭 Điều Hướng Giữa Các Phiên Bản
+
+| Phiên bản | Nhánh | Lệnh chuyển nhanh |
+|---|---|---|
+| **Bản v1 (Original Pixel-Art)** | `v1` | `git checkout v1` |
+| **Bản v2 (Hiện tại)** | `v2-stardew-valley` | `git checkout v2-stardew-valley` |
+| **Tài liệu so sánh** | `main` | Xem tệp [VERSIONS.md](VERSIONS.md) |

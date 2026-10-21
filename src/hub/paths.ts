@@ -25,8 +25,8 @@ export function along(path: Path, distance: number, pingPong: boolean): Point & 
   return { ...path[0], dir: 1 };
 }
 
-const HORSE_PATH: Path = [{ x: 730, y: 400 }, { x: 1080, y: 400 }]; // bãi thả
-const HORSE2_PATH: Path = [{ x: 760, y: 340 }, { x: 900, y: 340 }];
+const HORSE_PATH: Path = [{ x: 460, y: 496 }, { x: 700, y: 496 }]; // bãi thả: vườn cỏ giữa đường đua
+const HORSE2_PATH: Path = [{ x: 520, y: 528 }, { x: 760, y: 528 }];
 
 const PADDOCK_PATHS = [HORSE_PATH, HORSE2_PATH] as const;
 const PADDOCK_PHASE = [0, 5] as const;
@@ -64,8 +64,8 @@ export function paddockHorseAt(
 }
 
 
-// Xe tải giao hàng: vào từ mép trái theo đường chính, dừng trước cửa kho, hạ cầu dỡ hàng, rồi chạy tiếp sang phải.
-export const TRUCK_Y = 250;
+// Xe tải giao hàng: vào từ mép trái theo đường xe hàng 3 ô, dừng trước cửa kho, hạ cầu dỡ hàng, rồi chạy tiếp sang phải.
+export const TRUCK_Y = 340;
 export const TRUCK_STOP_X = FARM_ANCHORS.supplyDoor.x;
 const TRUCK_START_X = -140;
 const TRUCK_END_X = 1420;

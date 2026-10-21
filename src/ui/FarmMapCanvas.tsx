@@ -57,6 +57,7 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
   const [hoverHorse, setHoverHorse] = useState(-1);
   const pop = useRef<{ id: string; t0: number } | null>(null); // công trình vừa chạm (nhún)
   const ambientClock = useRef({ time: 0, lastNow: performance.now() / 1000 });
+  const centred = useRef(false);
   const { camera, setCamera, onPointerDown, onPointerMove, finishPointer, stopMomentum } = useFarmCamera(viewport, { x: 0, y: 0 }, zoom);
 
   // Vòng vẽ đọc trạng thái mới nhất qua ref → không phải khởi động lại rAF mỗi lần camera đổi
@@ -98,7 +99,10 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
       setScreenSize({ width, height });
       const z = Math.max(minZoom({ width, height }, FARM_WORLD), live.current.zoom);
       setZoom(z);
-      setCamera((current) => clampCamera(current, { width: width / z, height: height / z }, FARM_WORLD));
+      // Lần đầu có kích thước thật: màn chính mở ra giữa cụm 4 công trình; sau đó chỉ giữ camera trong bản đồ
+      const first = !centred.current && width > 1;
+      if (first) centred.current = true;
+      setCamera((current) => first ? cameraAt(FARM_ANCHORS.mainFocus, z, { width, height }, FARM_WORLD) : clampCamera(current, { width: width / z, height: height / z }, FARM_WORLD));
     };
     resize();
     const observer = new ResizeObserver(resize);
