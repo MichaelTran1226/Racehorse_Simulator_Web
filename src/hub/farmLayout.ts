@@ -17,6 +17,9 @@ export const SHEET_SIZES: Readonly<Record<string, { w: number; h: number }>> = {
   "sv-tree2-spring": { w: 48, h: 160 },
   "sv-bushes": { w: 128, h: 256 },
   "sv-craftables": { w: 128, h: 736 },
+  "sv-mill": { w: 224, h: 128 },
+  /** Phòng khám Harvey dựng đối xứng từ nửa trái sv-spring-town (art/aseprite/patch-clinic.lua; ngoại lệ người dùng duyệt 21/10/2026). */
+  "sv-clinic": { w: 112, h: 128 },
 };
 
 export const ALLOWED_MAP_SHEETS: ReadonlySet<string> = new Set(Object.keys(SHEET_SIZES));
@@ -57,7 +60,7 @@ export interface FarmObject {
 }
 
 export const FARM_WORLD = rawLayout.world;
-export const FARM_ANCHORS: { stableStalls: Point[]; supplyDoor: Point; houseDoor: Point; clinicDoor: Point } = rawLayout.anchors;
+export const FARM_ANCHORS: { stableStalls: Point[]; supplyDoor: Point; houseDoor: Point; clinicDoor: Point; mainFocus: Point; perches: Point[] } = rawLayout.anchors;
 
 function expandRepeated(
   base: Omit<FarmPlacement, "dest"> & { dest: Point },
@@ -130,16 +133,13 @@ export function validateFarmLayout(): true {
   return true;
 }
 
+/** Đường người, xe và ngựa đi qua: đồ trang trí rời không được đè lên. */
 export const RESERVED_CORRIDORS: readonly Rect[] = [
-  { x: 16, y: 224, w: 1248, h: 32 },
-  { x: 624, y: 256, w: 32, h: 192 },
-  { x: 32, y: 448, w: 1216, h: 48 },
-  { x: 32, y: 688, w: 1216, h: 48 },
-  { x: 32, y: 448, w: 48, h: 288 },
-  { x: 1200, y: 448, w: 48, h: 288 },
-  { x: 720, y: 384, w: 380, h: 32 },
-  { x: 750, y: 324, w: 160, h: 32 },
-  { x: 64, y: 48, w: 240, h: 160 },
+  { x: 0, y: 304, w: 1280, h: 48 },   // đường xe hàng 3 ô, mép trái → cửa kho → mép phải
+  { x: 16, y: 80, w: 1248, h: 32 },   // đường trên
+  { x: 192, y: 80, w: 32, h: 688 },   // đường dọc phía tây
+  { x: 608, y: 80, w: 32, h: 208 },   // nhánh giữa chuồng ngựa và trạm y tế
+  { x: 624, y: 704, w: 48, h: 64 },   // cổng nam đường đua
 ] as const;
 
 function rectsOverlap(a: Rect, b: Rect): boolean {
@@ -150,17 +150,8 @@ export function validateDecorCorridors(): true {
   const looseDecor = loosePlacements.filter((p) => p.layer === "decor");
   for (const decor of looseDecor) {
     const rect: Rect = { x: decor.dest.x, y: decor.dest.y, w: decor.src.w, h: decor.src.h };
-    for (const [index, corridor] of RESERVED_CORRIDORS.entries()) {
-      // Approved layout B canopy overhangs; only these exact crops may cross these corridors.
-      const treeOverhang = index === 0 && decor.sheet === "sv-tree2-spring"
-        && decor.src.x === 0 && decor.src.y === 0 && decor.src.w === 48 && decor.src.h === 96
-        && ((rect.x === 0 && rect.y === 208) || (rect.x === 240 && rect.y === 224) || (rect.x === 96 && rect.y === 240));
-      const bushOverhang = index === 6 && decor.sheet === "sv-bushes"
-        && decor.src.x === 1 && decor.src.y === 132 && decor.src.w === 47 && decor.src.h === 43
-        && rect.x === 832 && rect.y === 357;
-      if (rectsOverlap(rect, corridor) && !treeOverhang && !bushOverhang) {
-        throw new Error(`Decor placement at (${decor.dest.x}, ${decor.dest.y}) overlaps reserved corridor`);
-      }
+    if (RESERVED_CORRIDORS.some((corridor) => rectsOverlap(rect, corridor))) {
+      throw new Error(`Decor placement at (${decor.dest.x}, ${decor.dest.y}) overlaps reserved corridor`);
     }
     for (const object of FARM_OBJECTS) {
       if (rectsOverlap(rect, object.bounds)) {
@@ -170,4 +161,5 @@ export function validateDecorCorridors(): true {
   }
   return true;
 }
+
 

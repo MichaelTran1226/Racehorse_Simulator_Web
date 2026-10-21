@@ -8,6 +8,8 @@ export const CRITTER_URLS: Record<CritterSheet, string> = {
   duck: "/assets/sprites/sv/duck.png",
   dog: "/assets/sprites/sv/dog.png",
   cat: "/assets/sprites/sv/cat.png",
+  /** Chim, thỏ, sóc: critters_ambient.png chép nguyên byte từ `Stardrew Valley/05_Animals_and_Ambient_Life/`. */
+  wild: "/assets/sprites/sv/critters.png",
 };
 
 export const FARM_ASSET_URLS = {

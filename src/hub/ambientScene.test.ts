@@ -11,10 +11,15 @@ import {
   CHICKEN_PATHS,
   DOG_PATH,
   OWNER_PATH,
+  WILD_KINDS,
+  WILD_PATHS,
+  perchedBirds,
+  POULTRY_YARD,
+  DUCK_PATH,
   type AmbientSceneState,
 } from "./ambientScene.ts";
 
-import { FARM_ANCHORS } from "./farmLayout.ts";
+import { FARM_ANCHORS, FARM_PLACEMENTS } from "./farmLayout.ts";
 
 const runningState: AmbientSceneState = { reducedMotion: false, simulationRunning: true, hasHay: true };
 
@@ -80,7 +85,7 @@ test("reduced motion returns a stable pose for every ambient actor", () => {
 });
 
 test("ambient actor ids contain only approved existing actors", () => {
-  assert.equal(AMBIENT_ACTOR_IDS.length, 21);
+  assert.equal(AMBIENT_ACTOR_IDS.length, 27);
   const expected = new Set([
     "TRACK_RIDER_1",
     "TRACK_RIDER_2",
@@ -103,6 +108,12 @@ test("ambient actor ids contain only approved existing actors", () => {
     "SV_DUCK",
     "SV_DOG",
     "SV_CAT",
+    "WILD_BLUEBIRD_1",
+    "WILD_BLUEBIRD_2",
+    "WILD_SPARROW_1",
+    "WILD_SPARROW_2",
+    "WILD_RABBIT",
+    "WILD_SQUIRREL",
   ]);
   assert.deepEqual(new Set(AMBIENT_ACTOR_IDS), expected);
 });
@@ -116,10 +127,10 @@ test("walkPause đi rồi dừng theo chu kỳ, không lùi quãng đường", (
   assert.ok(far.walkedS > 0 && Number.isFinite(far.walkedS));
 });
 
-test("nài trên ô đất trái luôn nằm trong khung vòng cưỡi, kể cả thời gian rất lớn", () => {
+test("nài trong sân cát huấn luyện luôn nằm trong khung vòng cưỡi, kể cả thời gian rất lớn", () => {
   for (const t of [0, 7.3, 1e6]) {
     const p = ambientActorPose("LEFT_RIDER", t, runningState);
-    assert.ok(p.x >= 96 && p.x <= 272 && p.y >= 80 && p.y <= 190, `${t}: ${p.x},${p.y}`);
+    assert.ok(p.x >= 1024 && p.x <= 1200 && p.y >= 200 && p.y <= 256, `${t}: ${p.x},${p.y}`);
   }
 });
 
@@ -150,7 +161,7 @@ test("hai người trò chuyện quay mặt vào nhau và không cùng làm đ�
 
 test("xe điện chạy trên đường chính", () => {
   const p = ambientActorPose("ROAD_CART", 1e6, runningState);
-  assert.equal(p.y, 248);
+  assert.ok(p.y >= 304 && p.y <= 352, "trên đường xe hàng");
   assert.ok(p.x >= 24 && p.x <= 1256);
 });
 
@@ -216,5 +227,55 @@ test("người ra vào nhà vẫn trên đường đi khi time = 1e6", () => {
     const p = ambientActorPose(id, 1e6, runningState);
     assert.ok(p.x >= Math.min(...path.map(p => p.x)) && p.x <= Math.max(...path.map(p => p.x)));
     assert.ok(p.y >= Math.min(...path.map(p => p.y)) && p.y <= Math.max(...path.map(p => p.y)));
+  }
+});
+
+test("con vật hoang ở vườn phía tây: đúng sheet, ở trên đường đi, quay mặt theo hướng đi", () => {
+  for (const id of AMBIENT_ACTOR_IDS.filter((id) => id.startsWith("WILD_"))) {
+    const path = WILD_PATHS[id as keyof typeof WILD_PATHS];
+    for (const time of [0, 3.7, 1e6]) {
+      const p = ambientActorPose(id, time, runningState);
+      assert.equal(p.sheet, "wild", id);
+      assert.equal(p.size, 32, id);
+      assert.ok(p.x >= Math.min(...path.map((q) => q.x)) && p.x <= Math.max(...path.map((q) => q.x)), `${id} x ở t=${time}`);
+      assert.ok(p.x < 176, `${id} ở vườn phía tây`);
+      const kind = Object.values(WILD_KINDS).find((k) => k.row === p.row)!;
+      assert.ok(kind, `${id} hàng ${p.row}`);
+      assert.equal(p.flip, p.dir !== kind.faces, `${id} quay mặt theo hướng đi`);
+      assert.ok(([...kind.walk, ...kind.idle] as number[]).includes(p.frame), `${id} khung ${p.frame}`);
+    }
+    assert.deepEqual(ambientActorPose(id, 0, reducedState), ambientActorPose(id, 50, reducedState), `${id} đứng yên khi giảm chuyển động`);
+  }
+});
+
+test("xe điện chạy ngang trên đường trên cùng, không lên xuống", () => {
+  const a = ambientActorPose("HOUSE_CART", 0, runningState);
+  const b = ambientActorPose("HOUSE_CART", 7, runningState);
+  assert.equal(a.y, b.y);
+  assert.ok(a.y >= 80 && a.y <= 112, "trên đường trên cùng (y 80–112)");
+});
+
+test("chim đậu đúng trên tán cây đã đặt trong bản đồ, đổi tư thế chậm, đứng im khi giảm chuyển động", () => {
+  const trees = FARM_PLACEMENTS.filter((p) => /^sv-tree[12]-spring$/.test(p.sheet) || (p.sheet === "sv-spring-outdoors" && p.src.x === 160 && p.src.y === 0 && p.src.h === 96));
+  assert.ok(FARM_ANCHORS.perches.length >= 6);
+  for (const p of FARM_ANCHORS.perches) {
+    assert.ok(trees.some((t) => p.x >= t.dest.x && p.x <= t.dest.x + t.src.w && p.y >= t.dest.y && p.y <= t.dest.y + t.src.h * 0.6), `(${p.x},${p.y}) nằm trên tán một cây`);
+  }
+  const birds = perchedBirds(5, runningState);
+  assert.equal(birds.length, FARM_ANCHORS.perches.length);
+  for (const b of birds) {
+    const kind = Object.values(WILD_KINDS).find((k) => k.row === b.row)!;
+    assert.ok((kind.idle as readonly number[]).includes(b.frame));
+    assert.equal(b.sheet, "wild");
+  }
+  assert.deepEqual(perchedBirds(0, reducedState), perchedBirds(77, reducedState));
+  assert.ok(new Set(birds.map((b) => b.row)).size >= 3, "có sẻ, chim xanh và quạ");
+});
+
+test("gà và vịt sống trong vườn rào phía tây trên", () => {
+  const inYard = (q: { x: number; y: number }) => q.x >= POULTRY_YARD.x && q.x <= POULTRY_YARD.x + POULTRY_YARD.w && q.y >= POULTRY_YARD.y && q.y <= POULTRY_YARD.y + POULTRY_YARD.h;
+  for (const path of [...CHICKEN_PATHS, DUCK_PATH]) assert.ok(path.every(inYard));
+  for (const id of ["SV_CHICKEN_1", "SV_CHICKEN_2", "SV_CHICKEN_3", "SV_DUCK"] as const) {
+    for (const time of [0, 4.2, 1e6]) assert.ok(inYard(ambientActorPose(id, time, runningState)), id);
   }
 });

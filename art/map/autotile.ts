@@ -34,3 +34,14 @@ export function dirtTiles(m: Mask): { x: number; y: number; c: number; r: number
       }
   return tiles;
 }
+
+/** Vòng hình sân vận động (đường đua bầu dục): ô nằm trong hình ngoài nhưng ngoài hình trong, bề rộng `w` ô. */
+export function stadiumRing(m: Mask, x0: number, y0: number, x1: number, y1: number, w: number): void {
+  const r = (y1 + 1 - y0) / 2, cy = y0 + r, ax = x0 + r, bx = x1 + 1 - r;
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      const px = x + 0.5, py = y + 0.5;
+      const d = Math.hypot(px - Math.max(ax, Math.min(bx, px)), py - cy);
+      if (d <= r && d > r - w && y >= 0 && x >= 0 && y < m.length && x < (m[y]?.length ?? 0)) m[y][x] = true;
+    }
+}

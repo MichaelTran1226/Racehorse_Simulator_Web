@@ -123,4 +123,17 @@
   --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
   --meter-glint: rgba(255, 255, 255, 0.35);
   --ease-scene: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ---- Intro TMEC: mây Stardew (tông chính lấy từ Clouds.png) + chữ nổi vàng hổ phách ---- */
+  --intro-cloud: #d9f4ff;
+  --intro-cloud-light: #f2fbff;
+  --intro-gold-top: #fff3b0;
+  --intro-gold-mid: #ffc93c;
+  --intro-gold-low: #e08a12;
+  --intro-stroke: #5a2e0e;
+  --intro-extrude: #8a4b14;
+  --intro-extrude-dark: #3d1f08;
+  --intro-sheen: rgba(255, 255, 255, 0.85);
+  --intro-glow: rgba(255, 214, 102, 0.55);
+  --ease-part: cubic-bezier(0.65, 0, 0.35, 1);
 }

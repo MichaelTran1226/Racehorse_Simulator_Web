@@ -77,8 +77,8 @@ test("bản đồ chỉ dùng sheet Stardew", () => {
   assert.equal(FARM_PLACEMENTS.some((p) => /^s[01]/.test(p.sheet)), false);
 });
 
-test("mọi sheet bản đồ là PNG Stardew chép nguyên byte, đúng kích thước khai báo", () => {
-  assert.equal(Object.keys(SHEET_SIZES).length, 16);
+test("mọi sheet bản đồ là PNG Stardew (chép nguyên byte, trừ sv-clinic vá đối xứng), đúng kích thước khai báo", () => {
+  assert.equal(Object.keys(SHEET_SIZES).length, 18);
   for (const [key, size] of Object.entries(SHEET_SIZES)) {
     const png = readFileSync(new URL(`../../art/png/sv/${key}.png`, import.meta.url));
     assert.deepEqual(png.subarray(0, 8), Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), key);
@@ -120,22 +120,24 @@ test("crop validation accepts each sheet edge and rejects one pixel overflow", (
   }
 });
 
-test("approved canopy overhangs cannot move or change source into corridor obstacles", () => {
+test("decor moved onto the truck road or a building is rejected", () => {
   assert.equal(validateDecorCorridors(), true);
-  const placement = FARM_PLACEMENTS.find((p) => p.layer === "decor" && p.dest.x === 240 && p.dest.y === 224)!;
-  const original = { dest: placement.dest, src: placement.src };
+  const placement = FARM_PLACEMENTS.find((p) => p.layer === "decor" && p.sheet === "sv-spring-town" && p.src.y === 448)!; // một cây đèn
+  const original = placement.dest;
   try {
-    placement.dest = { x: 624, y: 272 };
+    placement.dest = { x: 400, y: 310 };
     assert.throws(() => validateDecorCorridors(), /overlaps reserved corridor/);
-    placement.dest = original.dest;
-    placement.src = { ...original.src, x: 1, w: 47 };
-    assert.throws(() => validateDecorCorridors(), /overlaps reserved corridor/);
+    placement.dest = { x: 700, y: 200 };
+    assert.throws(() => validateDecorCorridors(), /overlaps building vet/);
   } finally {
-    Object.assign(placement, original);
+    placement.dest = original;
   }
 });
 
-test("Coop bottom crop excludes the opaque white source block", () => {
-  const coopBottom = FARM_PLACEMENTS.find((p) => p.sheet === "sv-coop" && p.src.y === 112)!;
-  assert.equal(coopBottom.src.x + coopBottom.src.w, 64);
+test("đường xe hàng chạy thẳng qua cửa kho, xuyên từ mép trái sang mép phải", () => {
+  const road = RESERVED_CORRIDORS[0];
+  assert.deepEqual({ x: road.x, w: road.w, h: road.h }, { x: 0, w: FARM_WORLD.width, h: 48 }, "3 ô × 16 px, đủ chiều ngang");
+  const barn = FARM_OBJECTS.find((o) => o.id === "barn")!;
+  assert.ok(FARM_ANCHORS.supplyDoor.x > barn.bounds.x && FARM_ANCHORS.supplyDoor.x < barn.bounds.x + barn.bounds.w);
+  assert.ok(road.y - (barn.bounds.y + barn.bounds.h) <= 16, "cửa kho nhìn thẳng ra đường");
 });

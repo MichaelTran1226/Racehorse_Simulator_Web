@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { dirtTile, dirtTiles, fillRect, ring, type Mask } from './autotile.ts';
+import { dirtTile, dirtTiles, fillRect, ring, stadiumRing, type Mask } from './autotile.ts';
 
 test('dirtTile maps all sixteen neighbor combinations into the 4×4 source block', () => {
   const cases: [boolean, boolean, boolean, boolean, number, number][] = [
@@ -52,3 +52,14 @@ test('dirtTiles joins the vertical path to the race ring', () => {
   assert.notEqual(joinedRing.r, 0);
 });
 
+
+test('stadiumRing is a closed oval band: straights are w tiles thick, centre and corners stay grass', () => {
+  const m: Mask = Array.from({ length: 20 }, () => Array<boolean>(40).fill(false));
+  stadiumRing(m, 0, 0, 39, 19, 3);
+  const col = (x: number) => m.map((row) => row[x]);
+  assert.deepEqual(col(20).map((v, y) => (v ? y : -1)).filter((y) => y >= 0), [0, 1, 2, 17, 18, 19]);
+  assert.equal(m[10][20], false, 'infield is grass');
+  assert.equal(m[0][0] || m[19][39], false, 'rounded ends leave the corners empty');
+  assert.equal(m[10][0] && m[10][39], true, 'ends reach the outer edge at the middle row');
+  assert.ok(dirtTiles(m).length > 0);
+});

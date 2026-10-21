@@ -25,6 +25,8 @@ local allowed = {
   ["sv-tree2-spring"] = true,
   ["sv-bushes"] = true,
   ["sv-craftables"] = true,
+  ["sv-mill"] = true,
+  ["sv-clinic"] = true,
 }
 
 local sources = {}

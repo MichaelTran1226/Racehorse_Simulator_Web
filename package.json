@@ -1,13 +1,13 @@
 {
-  "name": "racehorse-simulator-web",
+  "name": "racehorse-simulator-web-v3",
   "version": "0.1.0",
   "description": "EquiFlow Simulator Web (Digital Twin / IoT ảo) — SRS & Design Handoff v2.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --port 5174",
+    "dev": "vite --port 5175",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview --port 5174",
+    "preview": "vite preview --port 5175",
     "typecheck": "tsc --noEmit",
     "test": "node --test",
     "stamp:map": "node art/map/farm-build-manifest.mjs",

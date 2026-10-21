@@ -1,0 +1,258 @@
+/* Intro TMEC — mốc thời gian đến từ biến CSS do IntroOverlay.tsx đặt (nguồn: introTimeline.ts). */
+
+.stage {
+  height: 100%;
+}
+
+/* Màn chính nằm sẵn dưới mây, phóng 1.06 rồi lùi về 1 khi mây tách (cảm giác hạ xuống xuyên mây). */
+.revealing {
+  transform-origin: 50% 50%;
+  animation: reveal var(--part-ms) var(--ease-part) var(--part-start) both;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ---- Mây: mỗi lớp chia nửa trái / nửa phải, lấn qua giữa để khép kín ---- */
+.half {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 56%;
+  animation-duration: calc(var(--part-ms) * var(--speed));
+  animation-timing-function: var(--ease-part);
+  animation-delay: var(--part-start);
+  animation-fill-mode: both;
+}
+
+.left {
+  left: 0;
+  transform-origin: 0 50%;
+  animation-name: part-left;
+}
+
+.right {
+  right: 0;
+  transform-origin: 100% 50%;
+  animation-name: part-right;
+}
+
+/* Lớp xa có nền mây đặc nên màn hình luôn kín 100%; lớp gần tách nhanh hơn (parallax). */
+.back {
+  z-index: 1;
+  --speed: 1;
+  background: linear-gradient(var(--intro-cloud-light), var(--intro-cloud));
+}
+
+.mid {
+  z-index: 2;
+  --speed: 0.9;
+}
+
+.front {
+  z-index: 3;
+  --speed: 0.8;
+}
+
+.puff {
+  position: absolute;
+  top: var(--y);
+  width: var(--w);
+  image-rendering: pixelated;
+  pointer-events: none;
+  animation: bob var(--bob) ease-in-out var(--phase) infinite alternate;
+}
+
+.left .puff {
+  left: var(--x);
+}
+
+.right .puff {
+  right: var(--x);
+}
+
+/* ---- Tiêu đề nổi 3D: lớp đùn (::before) phía sau, lớp vàng + viền + vệt sáng (::after) phía trước ---- */
+.title {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  font: 700 clamp(48px, 7.6vw, 140px) / 1 var(--font-display);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  filter: drop-shadow(0 0 0.22em var(--intro-glow));
+  /* scale (nảy, thu về) và translate (bồng bềnh) là hai thuộc tính riêng nên không đè nhau. */
+  animation:
+    pop var(--pop-ms) linear var(--pop-start) both,
+    shrink var(--expand-ms) var(--ease-scene) var(--expand-start) forwards,
+    float 1.6s ease-in-out var(--float-start) infinite alternate,
+    title-out 520ms ease-in var(--part-start) forwards;
+}
+
+.word {
+  display: inline-flex;
+  animation: word-gap var(--grow-ms) ease-out var(--expand-start) both;
+}
+
+.letter {
+  position: relative;
+  display: inline-block;
+  color: transparent;
+}
+
+.letter::before,
+.letter::after {
+  content: attr(data-char);
+  position: absolute;
+  inset: 0;
+}
+
+/* Viền dày chỉ ở lớp sau: nửa ngoài lộ ra thành đường bao, lớp vàng phía trước phủ phần trong. */
+.letter::before {
+  color: var(--intro-extrude);
+  -webkit-text-stroke: 0.12em var(--intro-stroke);
+  paint-order: stroke fill;
+  text-shadow:
+    0 0.03em 0 var(--intro-extrude),
+    0 0.06em 0 var(--intro-extrude),
+    0 0.09em 0 var(--intro-extrude-dark),
+    0 0.12em 0 var(--intro-extrude-dark),
+    0 0.16em 0 var(--intro-stroke);
+}
+
+.letter::after {
+  color: transparent;
+  background-image:
+    linear-gradient(115deg, transparent 42%, var(--intro-sheen) 50%, transparent 58%),
+    linear-gradient(180deg, var(--intro-gold-top), var(--intro-gold-mid) 55%, var(--intro-gold-low));
+  background-size: 320% 100%, 100% 100%;
+  background-position: 160% 0, 0 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: sheen 900ms ease-in-out calc(var(--float-start) + var(--i) * 25ms) both;
+}
+
+/* Chữ không phải chữ đầu từ: ẩn ở pha 1, giãn ra lần lượt ở pha 2. */
+.letter:not(.initial) {
+  max-width: 0;
+  opacity: 0;
+  animation: grow var(--grow-ms) var(--ease-pop) calc(var(--expand-start) + var(--delay)) forwards;
+}
+
+.hint {
+  position: absolute;
+  bottom: 5vh;
+  left: 50%;
+  z-index: 5;
+  margin: 0;
+  padding: 4px 12px;
+  color: var(--ink);
+  background: var(--intro-cloud-light);
+  box-shadow: 0 0 0 2px var(--intro-cloud);
+  font: 22px / 1 var(--font);
+  transform: translateX(-50%);
+  pointer-events: none;
+  animation: hint-out 300ms linear var(--part-start) forwards;
+}
+
+@keyframes reveal {
+  from { transform: scale(1.06); }
+  to { transform: scale(1); }
+}
+
+/* Kéo giãn ra mép rồi mờ ở đoạn cuối, để khi gỡ lớp phủ không còn mẩu mây nào biến mất đột ngột. */
+@keyframes part-left {
+  75% { opacity: 1; }
+  to { opacity: 0; transform: translateX(calc(-100% - 70vmax)) scaleX(1.12); }
+}
+
+@keyframes part-right {
+  75% { opacity: 1; }
+  to { opacity: 0; transform: translateX(calc(100% + 70vmax)) scaleX(1.12); }
+}
+
+@keyframes bob {
+  from { transform: translateY(-0.8vmax); }
+  to { transform: translateY(0.8vmax); }
+}
+
+/* Nảy đàn hồi 0 → 1.1 → 1 quanh cỡ "TMEC" (1.4 lần cỡ tên đầy đủ), kèm nhún nhẹ. */
+@keyframes pop {
+  0% { scale: 0; animation-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1.2); }
+  55% { scale: calc(1.4 * 1.1); animation-timing-function: ease-in-out; }
+  78% { scale: calc(1.4 * 0.97); animation-timing-function: ease-out; }
+  100% { scale: 1.4; }
+}
+
+/* Giãn thành tên đầy đủ thì thu về cỡ thật để vừa màn hình. */
+@keyframes shrink {
+  to { scale: 1; }
+}
+
+@keyframes float {
+  from { translate: 0 -0.06em; }
+  to { translate: 0 0.06em; }
+}
+
+@keyframes title-out {
+  to { opacity: 0; scale: 0.82; }
+}
+
+@keyframes word-gap {
+  from { margin: 0; }
+  to { margin: 0 0.16em; }
+}
+
+@keyframes grow {
+  to { max-width: 1em; opacity: 1; }
+}
+
+@keyframes sheen {
+  from { background-position: 160% 0, 0 0; }
+  to { background-position: -60% 0, 0 0; }
+}
+
+@keyframes hint-out {
+  to { opacity: 0; }
+}
+
+@keyframes overlay-out {
+  to { opacity: 0; }
+}
+
+/* Giảm chuyển động: không bay, không nảy; hiện sẵn tên đầy đủ rồi chỉ mờ dần lớp phủ. */
+@media (prefers-reduced-motion: reduce) {
+  .revealing,
+  .half,
+  .puff,
+  .title,
+  .word,
+  .letter,
+  .letter::after,
+  .hint {
+    animation: none;
+  }
+
+  .letter:not(.initial) {
+    max-width: none;
+    opacity: 1;
+  }
+
+  .word {
+    margin: 0 0.16em;
+  }
+
+  .overlay {
+    animation: overlay-out var(--reduced-ms) linear var(--reduced-start) forwards;
+  }
+}
