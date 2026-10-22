@@ -99,6 +99,39 @@
   }
 }
 
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border: 1px solid var(--ink);
+  font-size: var(--fs-xs, 12px);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.statusBadge.online {
+  background: #1b4d2e;
+  color: #79f29d;
+}
+
+.statusBadge.connecting {
+  background: #5c4308;
+  color: #f7d154;
+}
+
+.statusBadge.offline {
+  background: #541919;
+  color: #fca5a5;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dot {
     animation: none;
@@ -355,4 +388,34 @@
   .curtainDots i {
     animation: none;
   }
+}
+
+.centerNotice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--ink);
+}
+
+.userBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--cream);
+  margin-left: 8px;
+}
+
+.logoutBtn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: var(--cream);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  cursor: pointer;
 }

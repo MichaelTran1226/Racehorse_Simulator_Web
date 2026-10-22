@@ -1,6 +1,7 @@
 // Vẽ cảnh pixel art bằng Canvas 2D: đường đua nhìn ngang (chạy thử / đua 6 làn) và sơ đồ chuồng 6×6.
 // Màu ở đây là bảng màu của tranh game (không phải token giao diện).
 import { OBSTACLE, type HorseProfile, type Incident, type Obstacle, type RunStatus, type StallHealth, type Surface, type TrackCondition } from "../sim/engine";
+import type { MockStall, MockStallZone } from "../sim/mockData";
 import { drawFrame, ROW, tinted, type Sprites } from "./sprites";
 
 export const ART = {
@@ -338,6 +339,107 @@ export function drawStalls(
         ctx.strokeRect(x + 9, y + 9, cw - 18, ch - 18);
         ctx.setLineDash([]);
       }
+    }
+  }
+}
+
+/** Vẽ sơ đồ chuồng theo từng khu (Zone A, B, C) với kích thước lưới tùy biến và trạng thái bảo trì/ngừng dùng. */
+export function drawZoneStalls(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  sp: Sprites,
+  zone: MockStallZone,
+  zoneStalls: readonly MockStall[],
+  horses: HorseProfile[],
+  vitals: Map<string, { hr: number }>,
+  selectedStallCode: string | null,
+  t: number,
+): void {
+  const cols = zone.cols;
+  const rows = zone.rows;
+  const cw = w / cols;
+  const ch = h / rows;
+  rect(ctx, 0, 0, w, h, ART.woodDark);
+
+  const horsesById = new Map(horses.map((hz) => [hz.id, hz]));
+  const horsesByName = new Map(horses.map((hz) => [hz.name.toLowerCase(), hz]));
+
+  for (const s of zoneStalls) {
+    const x = s.col * cw;
+    const y = s.row * ch;
+
+    // Vách sau và vách ngăn chuồng
+    rect(ctx, x + 3, y + 3, cw - 6, ch * 0.34, ART.wood);
+    for (let k = 1; k < 4; k++) rect(ctx, x + 3, y + 3 + (ch * 0.34 * k) / 4, cw - 6, 1, ART.woodDark);
+
+    // Nền chuồng theo trạng thái
+    if (s.status === "MAINTENANCE") {
+      // Nền vạch sọc bảo trì
+      rect(ctx, x + 3, y + 3 + ch * 0.34, cw - 6, ch * 0.66 - 6, "#5A3820");
+      for (let stripe = 0; stripe < cw; stripe += 16) {
+        rect(ctx, x + 3 + stripe, y + 3 + ch * 0.34, 8, ch * 0.66 - 6, "rgba(230, 126, 34, 0.28)");
+      }
+      label(ctx, "⚒ ĐANG BẢO TRÌ", x + cw / 2, y + ch * 0.58, 16, "#E67E22", "center", "VT323");
+      label(ctx, "Thay đệm lót & van nước", x + cw / 2, y + ch * 0.76, 13, "rgba(255,255,255,0.75)", "center", "VT323");
+    } else if (s.status === "INACTIVE") {
+      rect(ctx, x + 3, y + 3 + ch * 0.34, cw - 6, ch * 0.66 - 6, "#34495E");
+      label(ctx, "⊘ NGỪNG SỬ DỤNG", x + cw / 2, y + ch * 0.58, 16, "#95A5A6", "center", "VT323");
+      label(ctx, "Nâng cấp áp lực âm", x + cw / 2, y + ch * 0.76, 13, "rgba(255,255,255,0.65)", "center", "VT323");
+    } else {
+      // AVAILABLE hoặc OCCUPIED
+      const horse = s.horseId ? horsesById.get(s.horseId) ?? (s.horseName ? horsesByName.get(s.horseName.toLowerCase()) : undefined) : undefined;
+      rect(ctx, x + 3, y + 3 + ch * 0.34, cw - 6, ch * 0.66 - 6, horse ? ART.straw : ART.empty);
+      for (let strawI = 0; strawI < 10; strawI++) {
+        const sx = x + 6 + hash(s.row * 97 + s.col * 13 + strawI) * (cw - 14);
+        const sy = y + ch * 0.4 + hash(s.row * 31 + s.col * 7 + strawI * 3) * (ch * 0.5);
+        rect(ctx, sx, sy, 5, 1, ART.strawDark);
+      }
+      rect(ctx, x + 3, y + ch * 0.36 - 4, cw * 0.18, 6, ART.woodLight); // máng ăn
+
+      if (!horse) {
+        label(ctx, "Trống (Sẵn sàng)", x + cw / 2, y + ch * 0.72, 15, "rgba(30,38,34,0.55)", "center", "VT323");
+      } else {
+        const color = HEALTH_COLOR[horse.health];
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 3;
+        ctx.strokeRect(x + 4.5, y + 4.5, cw - 9, ch - 9);
+
+        const act = horse.lifecycle === "CHAN_THUONG" ? "INJURED" : stallActivity(horse, t);
+        const src = tinted(sp.horse, horse.coat);
+        const base = y + ch - 10;
+        const hh = Math.min(ch * 0.74, 96);
+        const cx = x + cw / 2;
+        if (act === "INJURED") drawFrame(ctx, sp.horse, src, 2 + (Math.floor(t * 1.5) % 2), ROW.SPECIAL, cx, base, hh);
+        else if (act === "GRAZE") drawFrame(ctx, sp.horse, src, Math.floor(t * 2) % 3, ROW.REST, cx, base, hh);
+        else if (act === "LIE") {
+          drawFrame(ctx, sp.horse, src, 3 + (Math.floor(t) % 3), ROW.REST, cx, base, hh);
+          drawFrame(ctx, sp.fx, sp.fx.canvas, 2 + (Math.floor(t) % 2), 4, cx + cw * 0.22, y + ch * 0.48, ch * 0.34);
+        } else drawFrame(ctx, sp.horse, src, Math.floor(t * 3) % 6, ROW.IDLE, cx, base, hh);
+
+        // Bảng tên + nhịp tim
+        rect(ctx, x + 6, y + 22, Math.min(cw * 0.68, 120), 13, "rgba(20,26,23,0.85)");
+        label(ctx, fitText(ctx, horse.name, Math.min(cw * 0.68, 120) - 6, "13px VT323, monospace"), x + 9, y + 32, 13, "#FFFFFF", "left", "VT323");
+        const hr = vitals.get(horse.id)?.hr;
+        if (hr !== undefined) {
+          rect(ctx, x + 6, y + 37, 44, 12, "rgba(20,26,23,0.85)");
+          label(ctx, `♥ ${Math.round(hr)}`, x + 9, y + 47, 13, "#FF8A80", "left", "VT323");
+        }
+        if (horse.medicalLock || s.notes?.includes("khóa y tế")) padlock(ctx, x + cw - 24, y + 8, 16);
+      }
+    }
+
+    // Huy hiệu mã ô chuồng ở góc trên trái (A-01, B-08, C-01)
+    rect(ctx, x + 6, y + 6, 36, 14, "rgba(0,0,0,0.7)");
+    label(ctx, s.code, x + 24, y + 17, 13, "#FFE082", "center", "VT323");
+
+    // Khung viền chọn (nét đứt)
+    if (s.code === selectedStallCode) {
+      ctx.strokeStyle = ART.select;
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([5, 4]);
+      ctx.strokeRect(x + 5, y + 5, cw - 10, ch - 10);
+      ctx.setLineDash([]);
     }
   }
 }

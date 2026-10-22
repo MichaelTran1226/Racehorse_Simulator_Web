@@ -1,0 +1,120 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--map-dim);
+  z-index: 1000;
+  padding: 16px;
+}
+
+.card {
+  width: min(420px, 100%);
+  background: var(--parchment);
+  border: 4px solid var(--ink);
+  border-radius: var(--hud-pill-radius);
+  box-shadow: var(--hud-shadow);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: popIn 0.28s var(--ease-pop) both;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+}
+
+.header {
+  text-align: center;
+  border-bottom: 2px dashed rgba(60, 42, 33, 0.2);
+  padding-bottom: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  color: var(--ink);
+  font-family: var(--font-display, inherit);
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: rgba(60, 42, 33, 0.7);
+}
+
+.errorBanner {
+  background: #ffdede;
+  border: 2px solid #d9534f;
+  color: #a94442;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.input {
+  padding: 10px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input:focus {
+  border-color: #3b82f6;
+}
+
+.submitBtn {
+  margin-top: 8px;
+  padding: 12px;
+  background: #2563eb;
+  color: #ffffff;
+  border: 2px solid var(--ink);
+  border-radius: var(--hud-pill-radius);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--ink);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.submitBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--ink);
+}
+
+.submitBtn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--ink);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

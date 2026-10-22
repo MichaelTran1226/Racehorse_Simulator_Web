@@ -98,6 +98,7 @@ const outputs = [
   "art/preview/farm-day-x1.png", "public/assets/maps/farm-ground.png",
   "public/assets/maps/objects/stable.png", "public/assets/maps/objects/barn.png",
   "public/assets/maps/objects/vet.png", "public/assets/maps/objects/track.png",
+  "public/assets/maps/objects/groom-house.png",
 ];
 for (const path of outputs) {
   for (const color of colors(path)) assert.ok(allowed.has(color) || isProfileEquivalent(color) || isRoundingOfDerived(color) || isExactTranslucentComposite(parse(color), translucent), `${path} contains RGBA not derivable by source-over copy ${color}`);

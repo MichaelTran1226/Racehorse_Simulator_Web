@@ -13,6 +13,7 @@ export const FARM_BUILD_INPUTS = [
   "public/assets/maps/objects/barn.png",
   "public/assets/maps/objects/vet.png",
   "public/assets/maps/objects/track.png",
+  "public/assets/maps/objects/groom-house.png",
 ];
 
 const MANIFEST_PATH = "art/map/farm-build-manifest.json";

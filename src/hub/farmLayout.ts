@@ -26,7 +26,7 @@ export const ALLOWED_MAP_SHEETS: ReadonlySet<string> = new Set(Object.keys(SHEET
 
 export type MapSheet = (typeof rawLayout)["placements"][number]["sheet"];
 /** Đường đua mở màn riêng; các khu còn lại mở bảng nổi ngay trên bản đồ. */
-export type FarmTarget = "STALL" | "TRACK" | "VET" | "SUPPLY";
+export type FarmTarget = "STALL" | "TRACK" | "VET" | "SUPPLY" | "GROOM";
 
 export interface Rect {
   x: number;
@@ -107,6 +107,8 @@ export const FARM_OBJECTS: FarmObject[] = rawLayout.objects.map((object) => {
   return { ...object, target: object.target as FarmTarget, placements };
 });
 
+export const FARM_INTERACTIVE_OBJECTS: readonly FarmObject[] = FARM_OBJECTS;
+
 export const FARM_PLACEMENTS: FarmPlacement[] = [
   ...fillPlacements,
   ...loosePlacements,
@@ -115,7 +117,7 @@ export const FARM_PLACEMENTS: FarmPlacement[] = [
 
 export function validateFarmLayout(): true {
   const ids = new Set<string>();
-  const targets = new Set<FarmTarget>(["STALL", "TRACK", "VET", "SUPPLY"]);
+  const targets = new Set<FarmTarget>(["STALL", "TRACK", "VET", "SUPPLY", "GROOM"]);
   if (FARM_WORLD.width !== 1280 || FARM_WORLD.height !== 768 || FARM_WORLD.tile !== 16) throw new Error("Invalid farm world");
   for (const placement of FARM_PLACEMENTS) {
     if (!ALLOWED_MAP_SHEETS.has(placement.sheet)) throw new Error(`Disallowed sheet ${placement.sheet}`);

@@ -61,9 +61,12 @@ export function incidentPacket(
   kind: IncidentKind,
   location: "TRACK" | "STALL",
   run?: RunState,
+  packetId?: string,
 ) {
+  const pid = packetId || `inc-${sessionId ?? "stall"}-${h.id}-${kind}-${Date.now()}`;
   return {
     event: "sim:incident_report",
+    packet_id: pid,
     session_id: sessionId,
     timestamp_ms: Date.now(),
     horse: horseRef(h),
@@ -83,9 +86,10 @@ export function incidentPacket(
   };
 }
 
-export function workoutFinishedPacket(sessionId: string, h: HorseProfile, run: RunState) {
+export function workoutFinishedPacket(sessionId: string, h: HorseProfile, run: RunState, packetId?: string) {
   return {
     event: "sim:session_finished",
+    packet_id: packetId || `fin-${sessionId}-${h.id}`,
     session_id: sessionId,
     type: "WORKOUT",
     status: run.status === "ABORTED_INJURY" ? "ABORTED_INJURY" : "COMPLETED",
@@ -116,9 +120,10 @@ export function raceProgressPacket(sessionId: string, race: Race) {
   };
 }
 
-export function raceFinishedPacket(sessionId: string, race: Race) {
+export function raceFinishedPacket(sessionId: string, race: Race, packetId?: string) {
   return {
     event: "sim:session_finished",
+    packet_id: packetId || `fin-${sessionId}-race`,
     session_id: sessionId,
     type: "RACE",
     surface: race.surface,
