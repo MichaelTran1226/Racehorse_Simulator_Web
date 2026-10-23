@@ -22,7 +22,6 @@ export function CreateHorseModal({ onClose, onCreated, totalHorsesCount }: Props
   const [gender, setGender] = useState('STALLION');
   const [color, setColor] = useState('Bay');
   const [microchip, setMicrochip] = useState('');
-  const [rfid, setRfid] = useState('');
 
   const [breeds, setBreeds] = useState<string[]>(['Thoroughbred', 'Arabian', 'Quarter Horse']);
   const [colors, setColors] = useState<string[]>(['Bay', 'Chestnut', 'Black', 'Gray', 'Roan']);
@@ -61,7 +60,6 @@ export function CreateHorseModal({ onClose, onCreated, totalHorsesCount }: Props
         color,
       };
       if (microchip.trim()) payload.microchip = microchip.trim();
-      if (rfid.trim()) payload.rfid = rfid.trim();
 
       const created = await createHorse(payload);
       const mapped = toHorseProfile(created, totalHorsesCount);
@@ -169,36 +167,19 @@ export function CreateHorseModal({ onClose, onCreated, totalHorsesCount }: Props
           </div>
         </div>
 
-        <div className={c.row}>
-          <div className={c.field}>
-            <label className={c.label} htmlFor="ch-chip">
-              Mã chip (15 số ISO, tùy chọn)
-            </label>
-            <input
-              id="ch-chip"
-              type="text"
-              className={c.input}
-              value={microchip}
-              onChange={(e) => setMicrochip(e.target.value)}
-              placeholder="Để trống để BE tự sinh 985..."
-              disabled={loading}
-            />
-          </div>
-
-          <div className={c.field}>
-            <label className={c.label} htmlFor="ch-rfid">
-              Thẻ RFID (tùy chọn)
-            </label>
-            <input
-              id="ch-rfid"
-              type="text"
-              className={c.input}
-              value={rfid}
-              onChange={(e) => setRfid(e.target.value)}
-              placeholder="RFID-..."
-              disabled={loading}
-            />
-          </div>
+        <div className={c.field}>
+          <label className={c.label} htmlFor="ch-chip">
+            Mã chip vi mạch (15 số ISO, tùy chọn)
+          </label>
+          <input
+            id="ch-chip"
+            type="text"
+            className={c.input}
+            value={microchip}
+            onChange={(e) => setMicrochip(e.target.value)}
+            placeholder="Để trống để BE tự sinh 985..."
+            disabled={loading}
+          />
         </div>
 
         <div className={c.actions}>

@@ -14,7 +14,6 @@ test('horseMapper: preserves UUID, horseCode, name, breed, and isMedicalLocked',
     status: 'IN_TRAINING',
     isMedicalLocked: true,
     microchip: '985141000000001',
-    rfid: 'RFID-1234',
   };
 
   const profile = toHorseProfile(beHorse, 0);

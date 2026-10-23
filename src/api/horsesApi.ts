@@ -7,7 +7,6 @@ export interface CreateHorseInput {
   gender: string;
   color: string;
   microchip?: string;
-  rfid?: string;
   stallId?: string;
 }
 
