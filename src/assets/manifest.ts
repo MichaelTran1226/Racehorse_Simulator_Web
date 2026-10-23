@@ -179,7 +179,7 @@ export const ASSETS: Asset[] = [
     rows: [
       "6 trạng thái ngựa (sẵn sàng · đang tập · theo dõi · chấn thương · cách ly · nghỉ)",
       "khóa đỏ · mở khóa · “!” · nhịp tim · thân nhiệt · tốc độ",
-      "sải bước · tần số sải · calo · thể lực · chip RFID · cây phả hệ",
+      "sải bước · tần số sải · calo · thể lực · vi mạch Microchip · cây phả hệ",
       "ống tiêm · thuốc tẩy giun · móng sắt · bao thức ăn · vòi tắm · xô đá",
       "báo cáo sự cố · chuông · đồng hồ · mặt trời · mặt trăng · cân",
       "thước · xe chở ngựa thu nhỏ · …",

@@ -1,0 +1,452 @@
+{
+  "version": 1,
+  "project": "Racehorse_Simulator_Web_v3",
+  "note": "filePath bắt đầu bằng '/assets/' là URL web (Vite phục vụ từ public/); bắt đầu bằng 'art/' là file nguồn chỉ dùng khi dựng bản đồ, không tải ở runtime. Sinh bằng scripts/gen-asset-manifest.mjs.",
+  "world": {
+    "width": 1280,
+    "height": 768,
+    "tile": 16
+  },
+  "assets": [
+    {
+      "id": "map.farm-ground",
+      "filePath": "/assets/maps/farm-ground.png",
+      "width": 1280,
+      "height": 768,
+      "tileSize": 16,
+      "layer": "map-ground"
+    },
+    {
+      "id": "map-object.barn",
+      "filePath": "/assets/maps/objects/barn.png",
+      "width": 144,
+      "height": 128,
+      "tileSize": 16,
+      "layer": "map-object"
+    },
+    {
+      "id": "map-object.stable",
+      "filePath": "/assets/maps/objects/stable.png",
+      "width": 160,
+      "height": 128,
+      "tileSize": 16,
+      "layer": "map-object"
+    },
+    {
+      "id": "map-object.track",
+      "filePath": "/assets/maps/objects/track.png",
+      "width": 752,
+      "height": 368,
+      "tileSize": 16,
+      "layer": "map-object"
+    },
+    {
+      "id": "map-object.vet",
+      "filePath": "/assets/maps/objects/vet.png",
+      "width": 112,
+      "height": 128,
+      "tileSize": 16,
+      "layer": "map-object"
+    },
+    {
+      "id": "sprite.s01-horse",
+      "filePath": "/assets/sprites/s01-horse.png",
+      "width": 192,
+      "height": 192,
+      "tileSize": 32,
+      "layer": "actor-sprite"
+    },
+    {
+      "id": "sprite.s06-people",
+      "filePath": "/assets/sprites/s06-people.png",
+      "width": 192,
+      "height": 192,
+      "tileSize": 32,
+      "layer": "actor-sprite"
+    },
+    {
+      "id": "sprite.s07-stall",
+      "filePath": "/assets/sprites/s07-stall.png",
+      "width": 192,
+      "height": 192,
+      "tileSize": 32,
+      "layer": "actor-sprite"
+    },
+    {
+      "id": "sprite.s11-icons",
+      "filePath": "/assets/sprites/s11-icons.png",
+      "width": 192,
+      "height": 192,
+      "tileSize": 32,
+      "layer": "actor-sprite"
+    },
+    {
+      "id": "sprite.s13-fx",
+      "filePath": "/assets/sprites/s13-fx.png",
+      "width": 192,
+      "height": 192,
+      "tileSize": 32,
+      "layer": "actor-sprite"
+    },
+    {
+      "id": "sprite.s14-rider",
+      "filePath": "/assets/sprites/s14-rider.png",
+      "width": 192,
+      "height": 192,
+      "tileSize": 32,
+      "layer": "actor-sprite"
+    },
+    {
+      "id": "sprite.s15-vehicles",
+      "filePath": "/assets/sprites/s15-vehicles.png",
+      "width": 192,
+      "height": 192,
+      "tileSize": 32,
+      "layer": "actor-sprite"
+    },
+    {
+      "id": "dev-sprite.s08-farm",
+      "filePath": "/assets/sprites/s08-farm.png",
+      "width": 192,
+      "height": 192,
+      "tileSize": 32,
+      "layer": "dev-overview-only"
+    },
+    {
+      "id": "dev-sprite.s10-arena",
+      "filePath": "/assets/sprites/s10-arena.png",
+      "width": 192,
+      "height": 192,
+      "tileSize": 32,
+      "layer": "dev-overview-only"
+    },
+    {
+      "id": "critter.brown-chicken",
+      "filePath": "/assets/sprites/sv/brown-chicken.png",
+      "width": 64,
+      "height": 112,
+      "tileSize": 16,
+      "layer": "critter-sprite"
+    },
+    {
+      "id": "critter.cat",
+      "filePath": "/assets/sprites/sv/cat.png",
+      "width": 128,
+      "height": 256,
+      "tileSize": 32,
+      "layer": "critter-sprite"
+    },
+    {
+      "id": "critter.critters",
+      "filePath": "/assets/sprites/sv/critters.png",
+      "width": 320,
+      "height": 320,
+      "tileSize": 32,
+      "layer": "critter-sprite"
+    },
+    {
+      "id": "critter.dog",
+      "filePath": "/assets/sprites/sv/dog.png",
+      "width": 128,
+      "height": 288,
+      "tileSize": 32,
+      "layer": "critter-sprite"
+    },
+    {
+      "id": "critter.duck",
+      "filePath": "/assets/sprites/sv/duck.png",
+      "width": 64,
+      "height": 112,
+      "tileSize": 16,
+      "layer": "critter-sprite"
+    },
+    {
+      "id": "critter.white-chicken",
+      "filePath": "/assets/sprites/sv/white-chicken.png",
+      "width": 64,
+      "height": 112,
+      "tileSize": 16,
+      "layer": "critter-sprite"
+    },
+    {
+      "id": "cloud.big",
+      "filePath": "/assets/clouds/big.png",
+      "width": 492,
+      "height": 336,
+      "tileSize": null,
+      "layer": "intro-cloud"
+    },
+    {
+      "id": "cloud.mid1",
+      "filePath": "/assets/clouds/mid1.png",
+      "width": 136,
+      "height": 96,
+      "tileSize": null,
+      "layer": "intro-cloud"
+    },
+    {
+      "id": "cloud.mid2",
+      "filePath": "/assets/clouds/mid2.png",
+      "width": 184,
+      "height": 124,
+      "tileSize": null,
+      "layer": "intro-cloud"
+    },
+    {
+      "id": "cloud.small1",
+      "filePath": "/assets/clouds/small1.png",
+      "width": 94,
+      "height": 60,
+      "tileSize": null,
+      "layer": "intro-cloud"
+    },
+    {
+      "id": "cloud.small2",
+      "filePath": "/assets/clouds/small2.png",
+      "width": 136,
+      "height": 64,
+      "tileSize": null,
+      "layer": "intro-cloud"
+    },
+    {
+      "id": "cloud.small3",
+      "filePath": "/assets/clouds/small3.png",
+      "width": 80,
+      "height": 48,
+      "tileSize": null,
+      "layer": "intro-cloud"
+    },
+    {
+      "id": "sheet.sv-barn",
+      "filePath": "art/png/sv/sv-barn.png",
+      "width": 112,
+      "height": 128,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-bushes",
+      "filePath": "art/png/sv/sv-bushes.png",
+      "width": 128,
+      "height": 256,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-clinic",
+      "filePath": "art/png/sv/sv-clinic.png",
+      "width": 112,
+      "height": 128,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-coop",
+      "filePath": "art/png/sv/sv-coop.png",
+      "width": 96,
+      "height": 128,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-craftables",
+      "filePath": "art/png/sv/sv-craftables.png",
+      "width": 128,
+      "height": 736,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-fence-iron",
+      "filePath": "art/png/sv/sv-fence-iron.png",
+      "width": 48,
+      "height": 192,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-fence-wood",
+      "filePath": "art/png/sv/sv-fence-wood.png",
+      "width": 48,
+      "height": 192,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-flooring",
+      "filePath": "art/png/sv/sv-flooring.png",
+      "width": 256,
+      "height": 256,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-houses",
+      "filePath": "art/png/sv/sv-houses.png",
+      "width": 272,
+      "height": 432,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-mill",
+      "filePath": "art/png/sv/sv-mill.png",
+      "width": 224,
+      "height": 128,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-shed",
+      "filePath": "art/png/sv/sv-shed.png",
+      "width": 112,
+      "height": 128,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-silo",
+      "filePath": "art/png/sv/sv-silo.png",
+      "width": 48,
+      "height": 128,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-spring-outdoors",
+      "filePath": "art/png/sv/sv-spring-outdoors.png",
+      "width": 400,
+      "height": 1264,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-spring-town",
+      "filePath": "art/png/sv/sv-spring-town.png",
+      "width": 512,
+      "height": 992,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-stable",
+      "filePath": "art/png/sv/sv-stable.png",
+      "width": 64,
+      "height": 96,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-tree1-spring",
+      "filePath": "art/png/sv/sv-tree1-spring.png",
+      "width": 48,
+      "height": 160,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-tree2-spring",
+      "filePath": "art/png/sv/sv-tree2-spring.png",
+      "width": 48,
+      "height": 160,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-well",
+      "filePath": "art/png/sv/sv-well.png",
+      "width": 48,
+      "height": 80,
+      "tileSize": 16,
+      "layer": "map-source-sheet"
+    },
+    {
+      "id": "sheet.sv-clouds",
+      "filePath": "art/png/sv/sv-clouds.png",
+      "width": 512,
+      "height": 696,
+      "tileSize": null,
+      "layer": "cloud-source-sheet"
+    },
+    {
+      "id": "aseprite.farm-day",
+      "filePath": "art/aseprite/farm-day.aseprite",
+      "width": 1280,
+      "height": 768,
+      "tileSize": 16,
+      "layer": "aseprite-source"
+    },
+    {
+      "id": "aseprite.s01-horse",
+      "filePath": "art/aseprite/s01-horse.aseprite",
+      "width": 32,
+      "height": 32,
+      "tileSize": 32,
+      "layer": "aseprite-source"
+    },
+    {
+      "id": "aseprite.s06-people",
+      "filePath": "art/aseprite/s06-people.aseprite",
+      "width": 32,
+      "height": 32,
+      "tileSize": 32,
+      "layer": "aseprite-source"
+    },
+    {
+      "id": "aseprite.s07-stall",
+      "filePath": "art/aseprite/s07-stall.aseprite",
+      "width": 192,
+      "height": 192,
+      "tileSize": 32,
+      "layer": "aseprite-source"
+    },
+    {
+      "id": "aseprite.s08-farm",
+      "filePath": "art/aseprite/s08-farm.aseprite",
+      "width": 192,
+      "height": 192,
+      "tileSize": 32,
+      "layer": "aseprite-source"
+    },
+    {
+      "id": "aseprite.s10-arena",
+      "filePath": "art/aseprite/s10-arena.aseprite",
+      "width": 192,
+      "height": 192,
+      "tileSize": 32,
+      "layer": "aseprite-source"
+    },
+    {
+      "id": "aseprite.s11-icons",
+      "filePath": "art/aseprite/s11-icons.aseprite",
+      "width": 192,
+      "height": 192,
+      "tileSize": 32,
+      "layer": "aseprite-source"
+    },
+    {
+      "id": "aseprite.s13-fx",
+      "filePath": "art/aseprite/s13-fx.aseprite",
+      "width": 32,
+      "height": 32,
+      "tileSize": 32,
+      "layer": "aseprite-source"
+    },
+    {
+      "id": "aseprite.s14-rider",
+      "filePath": "art/aseprite/s14-rider.aseprite",
+      "width": 32,
+      "height": 32,
+      "tileSize": 32,
+      "layer": "aseprite-source"
+    },
+    {
+      "id": "aseprite.s15-vehicles",
+      "filePath": "art/aseprite/s15-vehicles.aseprite",
+      "width": 192,
+      "height": 192,
+      "tileSize": 32,
+      "layer": "aseprite-source"
+    }
+  ]
+}

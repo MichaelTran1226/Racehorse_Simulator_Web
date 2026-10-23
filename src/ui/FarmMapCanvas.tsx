@@ -10,8 +10,7 @@ import { SUPPLY_ICON } from "./supplyIcons";
 import type { HorseProfile } from "../sim/engine";
 import type { StableHorseAssignment } from "../hub/farmPopulation";
 import { cameraAt, clampCamera, MAX_ZOOM, minZoom, viewCenter, zoomAt, type Size } from "../hub/camera";
-import type { Point } from "../hub/farmLayout";
-import { FARM_ANCHORS, FARM_OBJECTS, FARM_WORLD, type FarmObject } from "../hub/farmLayout";
+import { FARM_ANCHORS, FARM_INTERACTIVE_OBJECTS, FARM_WORLD, type FarmObject, type Point } from "../hub/farmLayout";
 import { alphaMaskFromImage, hitTestObjects, type AlphaMask } from "../hub/pixelHitTest";
 import { useFarmCamera } from "../hub/useFarmCamera";
 import { loadFarmAssets, type FarmAssets } from "../render/farmAssets";
@@ -33,7 +32,7 @@ interface Props {
   onHover: (id: string | null) => void;
   /** Đặt id để yêu cầu lướt tới công trình (từ cột "Các khu vực"); đổi giá trị mới chạy lại. */
   goTo: { id: string; seq: number } | null;
-  onEnter: (target: FarmObject["target"], label: string) => void;
+  onEnter: (target: FarmObject["target"] | "GROOM", label: string) => void;
   /** Ngựa thật đang ở bãi thả, theo thứ tự ô (có thể chứa null); chạm vào sẽ gọi onHorse. */
   paddock: readonly (HorseProfile | null)[];
   stableHorses?: readonly StableHorseAssignment[];
@@ -71,10 +70,11 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
       const nextMasks = new Map<string, AlphaMask>();
       const nextOutlines = new Map<string, HTMLCanvasElement>();
       const color = getComputedStyle(document.documentElement).getPropertyValue("--map-outline").trim();
-      for (const object of FARM_OBJECTS) {
+      for (const object of FARM_INTERACTIVE_OBJECTS) {
         const image = loaded.objects.get(object.id);
-        if (!image) continue;
-        const mask = alphaMaskFromImage(image, object.bounds.w, object.bounds.h);
+        const mask = image
+          ? alphaMaskFromImage(image, object.bounds.w, object.bounds.h)
+          : { alpha: new Uint8ClampedArray(object.bounds.w * object.bounds.h).fill(255), width: object.bounds.w, height: object.bounds.h };
         nextMasks.set(object.id, mask);
         nextOutlines.set(object.id, createOutlineCanvas(mask.alpha, mask.width, mask.height, color));
       }
@@ -141,7 +141,7 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
         if (run) drawDelivery(actorCtx, sprites.vehicles, run, realTime, reducedMotion);
       }, pop.current && now - pop.current.t0 < SQUASH_MS ? { id: pop.current.id, ...squashScale(now - pop.current.t0) } : null);
       if (mode === "NIGHT") drawNight(ctx, FARM_WORLD.width, FARM_WORLD.height, realTime, reducedMotion);
-      const hovered = FARM_OBJECTS.find((o) => o.id === hid);
+      const hovered = FARM_INTERACTIVE_OBJECTS.find((o) => o.id === hid);
       if (hovered) {
         const image = assets.objects.get(hovered.id);
         const outline = outlines.get(hovered.id);
@@ -170,7 +170,7 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
 
   function objectAt(event: ReactPointerEvent<HTMLCanvasElement>): FarmObject | null {
     const rect = event.currentTarget.getBoundingClientRect();
-    return hitTestObjects({ x: (event.clientX - rect.left) / zoom, y: (event.clientY - rect.top) / zoom }, camera, FARM_OBJECTS, masks);
+    return hitTestObjects({ x: (event.clientX - rect.left) / zoom, y: (event.clientY - rect.top) / zoom }, camera, FARM_INTERACTIVE_OBJECTS, masks);
   }
 
   /** Ô bãi thả có ngựa dưới con trỏ (cùng đồng hồ performance.now với vòng vẽ), hoặc -1. */
@@ -221,7 +221,7 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
   const arrived = useRef(false);
   useEffect(() => {
     if (arrived.current || !arriveFrom || screenSize.width <= 1) return;
-    const object = FARM_OBJECTS.find((o) => o.target === arriveFrom);
+    const object = FARM_INTERACTIVE_OBJECTS.find((o) => o.target === arriveFrom);
     if (!object) return;
     arrived.current = true;
     setZoom(MAX_ZOOM);
@@ -255,7 +255,7 @@ export function FarmMapCanvas({ sprites, tod, hoveredId, onHover, goTo, onEnter,
   useEffect(() => {
     if (!goTo || goTo.seq === lastGo.current) return;
     lastGo.current = goTo.seq;
-    const object = FARM_OBJECTS.find((o) => o.id === goTo.id);
+    const object = FARM_INTERACTIVE_OBJECTS.find((o) => o.id === goTo.id);
     if (object) activate(object);
   });
 

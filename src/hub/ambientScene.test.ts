@@ -14,8 +14,11 @@ import {
   WILD_KINDS,
   WILD_PATHS,
   perchedBirds,
+  getFlyingBirds,
   POULTRY_YARD,
   DUCK_PATH,
+  getChimneySmokePuffs,
+  getActiveSpeechBubbles,
   type AmbientSceneState,
 } from "./ambientScene.ts";
 
@@ -279,3 +282,46 @@ test("gà và vịt sống trong vườn rào phía tây trên", () => {
     for (const time of [0, 4.2, 1e6]) assert.ok(inYard(ambientActorPose(id, time, runningState)), id);
   }
 });
+
+test("khói ống khói bốc lên bồng bềnh từ nhà Groom và đứng yên khi giảm chuyển động", () => {
+  const normal = getChimneySmokePuffs(5, false);
+  assert.equal(normal.length, 5);
+  for (const p of normal) {
+    assert.ok(p.x >= 950 && p.x <= 975);
+    assert.ok(p.y <= 148 && p.y >= 110);
+    assert.ok(p.alpha >= 0 && p.alpha <= 0.7);
+  }
+  const reduced = getChimneySmokePuffs(5, true);
+  assert.equal(reduced.length, 1);
+  assert.equal(reduced[0].x, 955);
+});
+
+test("bong bóng thoại NPC hiển thị theo chu kỳ, đúng người và không bị rỗng", () => {
+  const b1 = getActiveSpeechBubbles(2);
+  assert.ok(b1.some((b) => b.actorId === "CHAT_A" && b.text.length > 0));
+  const b2 = getActiveSpeechBubbles(7);
+  assert.ok(b2.some((b) => b.actorId === "CHAT_B" && b.text.length > 0));
+  for (let t = 0; t < 60; t += 3) {
+    const list = getActiveSpeechBubbles(t);
+    for (const b of list) {
+      assert.ok(b.text.length > 0);
+      assert.ok(AMBIENT_ACTOR_IDS.includes(b.actorId));
+    }
+  }
+});
+
+test("chim bay lượn vồng giữa các tán cây theo đường parabol và biến mất khi giảm chuyển động", () => {
+  const birdsFlying = getFlyingBirds(2, runningState);
+  assert.ok(birdsFlying.length > 0, "phải có ít nhất một chim đang bay ở t=2s");
+  for (const b of birdsFlying) {
+    assert.equal(b.sheet, "wild");
+    assert.equal(b.size, 32);
+    assert.ok(b.frame >= 0 && b.frame <= 3, "khung vỗ cánh là cột 0..3");
+    assert.ok(b.x >= 0 && b.x <= 1280);
+    assert.ok(b.y >= 0 && b.y <= 768);
+  }
+  const reducedBirds = getFlyingBirds(2, reducedState);
+  assert.equal(reducedBirds.length, 0, "không có chim bay khi bật reducedMotion");
+});
+
+

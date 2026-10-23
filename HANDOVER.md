@@ -71,7 +71,7 @@ Khi nối dữ liệu (mục 6, bước 6): lấy `microchip` từ API thay vì 
     - Một số màu hex viết cứng trong canvas (`drawRoofTag`, `ambient.ts`).
     - Chú thích trong `ambient.ts` còn nhắc "văn phòng".
     - Hiệu ứng `glide` không hủy rAF khi unmount.
-- **Mâu thuẫn chưa xử lý:** `CONSTRAINTS.md` RULE-MED-02 nói chấn thương nặng sẽ **tự động** tạo MedicalRecord và bật MedicalLock. Ngày 18/10/2026 người dùng quyết định Simulator **không** tự khóa (chỉ báo sự cố, bác sĩ thú y quyết định). CONSTRAINTS.md chưa được cập nhật. Nhóm cần chốt và sửa văn bản; không tự ý sửa trong code.
+- **Đã chốt ngày 21/10/2026:** `CONSTRAINTS.md` RULE-MED-02 đã được sửa theo ADR-3: chấn thương nặng dừng phiên và gửi cảnh báo `CRITICAL`, nhưng chỉ Veterinarian mới được tạo bệnh án và bật MedicalLock sau khi xác nhận.
 
 ## 3. Architectural Decisions (ADR)
 
@@ -79,7 +79,7 @@ Khi nối dữ liệu (mục 6, bước 6): lấy `microchip` từ API thay vì 
 |---|---|---|---|
 | ADR-1 | SRS & Design Handoff **v2.0** là nguồn chuẩn: Simulator là web riêng, Canvas 2D pixel art | Người dùng chốt 18/10; v2.0 mới hơn tài liệu "3 giai đoạn" | Godot WASM, Three.js; tài liệu 3GiaiDoan (đánh dấu OUTDATED) |
 | ADR-2 | **UI trước, nối dữ liệu sau.** Mọi dữ liệu chạy trên bus cục bộ với tên sự kiện đúng SRS §8 | Cần bản trình diễn được trước khi nối NestJS; đổi bus sang Socket.IO sẽ không phải sửa UI | Nối Socket hub ngay từ đầu |
-| ADR-3 | **Không tự động khóa y tế.** Sự cố → `sim:incident_report` → hệ thống báo các actor quản lý; bác sĩ thú y nhận cảnh báo cho mọi ngựa trên sân/trong chuồng | Quyết định của người dùng 18/10, đúng RULE-AI-01 (máy không tự đổi trạng thái) | Tự bật MedicalLock theo RULE-MED-02 (xem mâu thuẫn ở mục 2) |
+| ADR-3 | **Không tự động khóa y tế.** Sự cố → `sim:incident_report` → hệ thống báo các actor quản lý; bác sĩ thú y nhận cảnh báo cho mọi ngựa trên sân/trong chuồng | Quyết định của người dùng 18/10 và xác nhận lại 21/10, đúng RULE-AI-01 và RULE-MED-02 đã cập nhật | Tự bật MedicalLock từ Simulator |
 | ADR-4 | **Vẽ lại toàn bộ sprite bằng code**, đóng gói `.aseprite` | Ảnh concept AI bị chồng hình, cắt nửa, sai kích thước; người dùng muốn bản "chính thức" sửa được trong Aseprite | Cắt/thu nhỏ ảnh concept JPEG |
 | ADR-5 | Bản đồ **chỉ crop/copy/place** từ sprite đã duyệt, kiểm bằng `verify:map` | Giữ đúng provenance màu, không lẫn ảnh concept | Vẽ primitive/scale/rotate trong Lua; ảnh nền M1/M2 |
 | ADR-6 | Bản đồ **1280×768, bố cục M1**, kéo + lăn chuột (mặc định ×1.5) | Người dùng thấy bản 2048×1536 quá rộng và thưa; muốn dày đặc như M1 | Bản 2048×1536 của ChatGPT; ×2 cố định |
@@ -121,14 +121,41 @@ Khi nối dữ liệu (mục 6, bước 6): lấy `microchip` từ API thay vì 
 - Công cụ: **Aseprite 1.3.18 CLI** (bản cá nhân, đường dẫn trên máy cũ là `D:\Users\ASUS\Downloads\Programs\Aseprite-v1.3.18.6-Windows\aseprite.exe`, cần đổi theo máy mới). Chỉ cần khi dựng lại sprite/bản đồ; chạy web thì không cần.
 - Node ≥ 24 cho `npm test` của Simulator (chạy thẳng `.ts`); BE yêu cầu Node ≥ 20.19.
 
-## 6. Next Steps / Action Items (theo thứ tự)
+## 6. Real-Time Integration Status (Phiên 21–22/10/2026 — Hoàn thành)
 
-1. Xử lý mục 0: xóa `claude_data/` trước khi chia sẻ thư mục (git đã có và đã chặn thư mục này).
-2. Sửa 4 lỗi "Quan trọng" của review (mục 2) trước khi người dùng duyệt bản cuối. Hai lỗi đầu là yêu cầu của T10 đã bị tích nhầm.
-3. Người dùng duyệt bản cuối giao diện Hay Day (ô cuối `tasks/todo-hayday.md`). Lưu trữ `tasks/plan.md`, `tasks/todo.md` và `SPEC-sprite-farm-map.md` cũ khi được đồng ý.
-4. Chốt mâu thuẫn RULE-MED-02 trong `CONSTRAINTS.md` với ADR-3, có xác nhận của người duyệt.
-5. Cân nhắc thêm Simulator vào `start.bat`/`stop.bat` (cổng 5174).
-6. **Nối dữ liệu** (giai đoạn kế tiếp đã thống nhất): thay `src/sim/bus.ts` bằng client Socket.IO tới NestJS hub; nạp ngựa thật từ API (tôn trọng RULE-RBAC-01); nhận `sys:medical_lock_sync` từ Main Web thay vì nút khóa trong Simulator.
-7. Kho vật tư: thay định mức demo bằng định mức thật và nối kho BE (trừ kho phải dùng transaction, RULE-CONC-01).
-8. Bảo mật/xác thực thiết bị Simulator (đang hoãn theo quyết định).
-9. Việc nhỏ (gồm các lỗi "Nhỏ" của review): zoom theo bước nguyên nếu pixel không đều gây khó chịu; nhớ mức zoom giữa các lần vào/ra.
+1. **Khởi động 1-Click trọn gói (`start.bat` / `stop.bat`):** Đã tích hợp Simulator (Cổng `5175`), tự động cài đặt dependency, giải phóng cổng và mở trình duyệt đồng thời cùng FE (5173) và BE (3000).
+2. **Xác thực & Đồng bộ danh mục cá thể ngựa (REST API):** Đã kết nối API đăng nhập `/auth/login`, đồng bộ cá thể thật từ CSDL `/horses`, hỗ trợ Club Manager tạo ngựa mới trực tiếp từ Simulator.
+3. **Truyền dẫn Real-time & Đồng bộ 2 chiều (Socket.IO `/simulator`):**
+   - Stream 1 Hz telemetry (`sim:telemetry_tick`) và tiến độ đua 6 làn (`sim:race_progress`).
+   - Sự cố khẩn cấp (`sim:incident_report`) và tổng kết hoàn thành (`sim:session_finished`) được gửi tin cậy với ACK và lưu trữ bền vững vào PostgreSQL (`SimulatorSession` & `IncidentReport`).
+   - Khóa Y Tế 2 chiều: Khi Bác sĩ Thú y đặt/hủy khóa trên Web, backend phát `sys:medical_lock_sync` tới Simulator để lập tức khóa/mở quyền chạy thử nặng hoặc thi đấu.
+4. **Giám sát trực tiếp trên Frontend (`/training/monitor`):** Màn hình Live Monitor chuyển đổi từ dữ liệu tĩnh sang tích hợp song song REST snapshot và luồng Socket.IO trực tiếp; trang sự cố `/incidents` tự động làm mới khi có gói tin chấn thương.
+5. **Căn chỉnh nhãn nhà Nhân sự & Pipeline đối tượng bản đồ:**
+   - Chuyển `groom-house` thành đối tượng chính thức trong `art/map/gen-layout.ts` (`building("groom-house", "Nhân viên", "GROOM", 60, ...)`), tạo `objects/groom-house.png` (52, 17, 144×144).
+   - Tên hiển thị thống nhất là `Nhân viên` (thay cho nhãn cũ `Nhà nhân viên & Groom`).
+   - Tự động vẽ viền vàng (`--map-outline`) chuẩn pixel art khi rê chuột và mở đúng Popup Quản lý/Nhân sự khi click.
+   - Ảnh chụp minh chứng nghiệm thu thực tế trên trình duyệt:
+     - Rê chuột hiển thị viền vàng + nhãn nóc: `docs/evidence/staff-house-hover.png`
+     - Bấm mở bảng nổi Nhân viên: `docs/evidence/staff-house-popup.png`
+6. **Khôi phục cổng chất lượng Frontend Zero-Warning:**
+   - Cập nhật script `lint` thành `oxlint --deny-warnings` (chặn đứng mọi warning phát sinh).
+   - Đã xử lý triệt để toàn bộ **103 warnings trên 59 files** (về 0 warnings tuyệt đối không dùng suppression/disable):
+     - `10d17a9` fix(fe): remove unused declarations and enable deny-warnings
+     - `00b5b97` fix(fe): separate non-component exports for Fast Refresh
+     - `44c8460` fix(fe): eliminate set-state-in-effect and purity warnings for zero-warning quality gate
+7. **Bằng chứng kiểm thử toàn diện (Chạy lại ngày 22/10/2026):**
+   - **Simulator (`Racehorse_Simulator_Web_v3`):**
+     - Unit & Engine tests: **115/115 tests pass** (`npm test`)
+     - Typecheck: **0 lỗi** (`npm run typecheck`)
+     - Map Provenance & Build Manifest: **Đạt** (`npm run verify:map` — kiểm tra 7 ảnh PNG sinh ra khớp với 18 sheet Stardew)
+     - Production Build: **Đạt** (`npm run build`)
+   - **Frontend (`Racehorse_Training_Management_System_MT_FE`):**
+     - Linter: **0 warnings, 0 errors** (`npm run lint` với `oxlint --deny-warnings`)
+     - Typecheck: **0 lỗi** (`npm run typecheck`)
+     - Playwright E2E: **12/12 tests pass** (`npx playwright test tests/e2e/simulator.spec.ts tests/e2e/i18n.spec.ts`)
+   - **Backend (`Racehorse_Training_Management_System_MT_BE`):**
+     - Unit tests: **51/51 test suites pass, 430/430 tests pass** (`npm run test:unit`)
+     - Typecheck: **0 lỗi** (`npm run typecheck`)
+     - Linter: **0 cảnh báo** (`npm run lint` với `--max-warnings=0`)
+     - Prettier: **100% khớp chuẩn** (`npx prettier --check "src/**/*.ts" "test/**/*.ts"`)
+

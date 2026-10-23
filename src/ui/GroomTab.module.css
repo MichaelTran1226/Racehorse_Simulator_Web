@@ -1,0 +1,331 @@
+/* Bảng danh bạ nhân sự & ca trực Nhà Ban Điều Hành / Groom (EquiFlow Simulator v3) */
+/* Thiết kế Tối giản (Minimalist) theo nguyên tắc Progressive Disclosure */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.summaryBanner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--wood-800, #3d2716);
+  color: var(--cream, #fdfbf7);
+  border: 1px solid var(--ink, #1f1a14);
+  font-size: 13px;
+  border-radius: 2px;
+}
+
+/* Lưới các chip nhân sự tinh gọn */
+.staffChipsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.staffChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--ink, #1f1a14);
+  box-shadow: 1px 1px 0 var(--ink, #1f1a14);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s ease;
+  user-select: none;
+}
+
+.staffChip:hover {
+  transform: translateY(-1px);
+  box-shadow: 2px 2px 0 var(--ink, #1f1a14);
+  background: var(--parchment-1, #fbf7ee);
+}
+
+.staffChipSelected {
+  background: #fff8e1 !important;
+  border: 2px solid var(--gold-dark, #b78103) !important;
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.8), 2px 2px 0 var(--ink, #1f1a14) !important;
+}
+
+.staffChipLocked {
+  border-left: 4px solid var(--danger, #d32f2f);
+  background: #fff0f0;
+}
+
+.staffChipPending {
+  border-left: 4px solid #f57c00;
+  background: #fffbf0;
+}
+
+.chipIcon {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.chipInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.chipName {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink, #1f1a14);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chipMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  margin-top: 1px;
+}
+
+.chipCode {
+  font-family: var(--font-pixel, monospace);
+  font-size: 11px;
+  color: var(--muted, #665c54);
+}
+
+.chipStatusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Panel Chi Tiết Mở Rộng khi Click (Progressive Disclosure) */
+.detailPanel {
+  margin-top: 4px;
+  padding: 12px 14px;
+  background: var(--parchment-1, #fbf7ee);
+  border: 2px solid var(--ink, #1f1a14);
+  box-shadow: 3px 3px 0 var(--ink, #1f1a14);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.detailHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px dashed var(--parchment-3, #d5c4a1);
+  padding-bottom: 8px;
+}
+
+.detailTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.detailAvatar {
+  width: 36px;
+  height: 36px;
+  background: var(--wood-900, #28180e);
+  border: 1px solid var(--ink, #1f1a14);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.detailNameRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.detailFullName {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink, #1f1a14);
+  margin: 0;
+}
+
+.detailRoleSub {
+  font-size: 12px;
+  color: var(--muted, #665c54);
+}
+
+.detailCloseBtn {
+  background: transparent;
+  border: 1px solid var(--ink, #1f1a14);
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--ink, #1f1a14);
+  transition: background 0.1s;
+}
+
+.detailCloseBtn:hover {
+  background: #e0d0b8;
+}
+
+/* Lưới thuộc tính chi tiết */
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 6px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.detailItemLabel {
+  font-size: 11px;
+  color: var(--muted, #7c6f64);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detailItemValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink, #1f1a14);
+}
+
+.horseSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.horseList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.horseChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: #efe3ce;
+  border: 1px solid var(--ink, #1f1a14);
+  font-size: 12px;
+  color: var(--ink, #1f1a14);
+  transition: all 0.1s ease;
+}
+
+.horseChip:hover {
+  background: #fdf5df;
+  border-color: var(--gold-dark, #b78103);
+  transform: translateY(-1px);
+}
+
+.detailNote {
+  font-size: 12px;
+  color: #4a3e35;
+  font-style: italic;
+  padding: 6px 8px;
+  background: rgba(0, 0, 0, 0.04);
+  border-left: 3px solid var(--gold-dark, #b78103);
+  line-height: 1.4;
+}
+
+.hintPrompt {
+  padding: 10px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted, #7c6f64);
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px dashed var(--parchment-3, #d5c4a1);
+}
+
+/* Huy hiệu trạng thái tài khoản */
+.badgeActive {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1b5e20;
+  background: #c8e6c9;
+  border: 1px solid #2e7d32;
+}
+
+.badgePending {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #e65100;
+  background: #ffe0b2;
+  border: 1px solid #f57c00;
+}
+
+.badgeInvited {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0d47a1;
+  background: #bbdefb;
+  border: 1px solid #1976d2;
+}
+
+.badgeLocked {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #b71c1c;
+  background: #ffcdd2;
+  border: 1px solid #c62828;
+}
+
+.badgeInactive {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #37474f;
+  background: #cfd8dc;
+  border: 1px solid #455a64;
+}

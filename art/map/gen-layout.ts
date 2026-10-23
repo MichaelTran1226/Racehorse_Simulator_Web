@@ -44,7 +44,7 @@ fillRect(dirt, 0, TRUCK_ROWS[0], W - 1, TRUCK_ROWS[1]); // đường xe hàng, 3
 fillRect(dirt, 1, 5, 78, 6);                            // đường trên
 fillRect(dirt, 12, 5, 13, 47);                          // đường dọc phía tây
 fillRect(dirt, 38, 5, 39, 18);                          // nhánh giữa chuồng ngựa và trạm y tế
-for (const x of [18, 30, 45, 56, 68]) fillRect(dirt, x, 18, x + 1, 18); // lối ra đường: kho, chuồng, y tế, nhà NV, sân tập
+for (const x of [18, 30, 45, 57, 68]) fillRect(dirt, x, 18, x + 1, 18); // lối ra đường: kho, chuồng, y tế, nhà NV, sân tập
 fillRect(dirt, 5, 7, 6, 8); fillRect(dirt, 5, 22, 6, 23); // cổng vườn trên / dưới
 fillRect(dirt, 62, 9, 77, 16);                          // sân cát huấn luyện
 stadiumRing(trackMask, 16, 25, 62, 44, 3);
@@ -83,7 +83,9 @@ building("stable","Khu chuồng","STALL",60,list=>{
   stand(list,crop("stable",0,0,64,96),34,17,"buildings",60);
 });
 building("vet","Phòng khám thú y","VET",60,list=>stand(list,crop("clinic",0,0,112,128),42,17,"buildings",60));
-decor(crop("spring-outdoors",64,512,80,80),53,17); // nhà nhân viên chăm sóc (mái xanh lá)
+building("groom-house", "Nhân viên", "GROOM", 60, (list) =>
+  stand(list, crop("houses", 16, 288, 144, 144), 52, 17, "buildings", 60),
+);
 
 // Đường đua: hàng rào gỗ ngoài, rào sắt trong, vườn giữa (cây đặt chừa dải giữa cho ngựa thả).
 fenceH(track,"fence-wood",26,53,24,"buildings",58);
@@ -128,7 +130,7 @@ decor(BARREL[0],75,10); decor(BARREL[1],76,10); decor(SIGN,63,10);
 [[70,10],[71,10],[76,14]].forEach(([x,y])=>decor(HAY,x,y));
 
 // Đèn, cây quanh dãy nhà và đường.
-[[14,18],[26,18],[41,18],[51,18],[59,18],[15,24],[63,24]].forEach(([x,y])=>decor(LAMP,x,y));
+[[14,18],[26,18],[41,18],[51,18],[61,18],[15,24],[63,24]].forEach(([x,y])=>decor(LAMP,x,y));
 perchedTree(placements,25,12,1); perchedTree(placements,50,15,0);
 // Rừng phía đông và nam (chừa sân gà phía đông).
 [[70,27],[75,30],[72,36],[78,33],[77,40],[68,45]].forEach(([x,y],i)=>(i<3?perchedTree:tree)(placements,x,y,i));
@@ -149,7 +151,7 @@ placements.sort((a,b)=>a.dest.y+a.src.h-b.dest.y-b.src.h);
 const anchors = {
   stableStalls: [{ x: 496, y: 286 }, { x: 528, y: 286 }, { x: 576, y: 276 }],
   supplyDoor: { x: 304, y: 284 },
-  houseDoor: { x: 904, y: 286 },
+  houseDoor: { x: 920, y: 286 },
   clinicDoor: { x: 728, y: 284 },
   /** Tâm cụm 4 công trình chính: màn chính mở ra ở đây. */
   mainFocus: { x: 584, y: 236 },

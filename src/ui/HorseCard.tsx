@@ -148,14 +148,17 @@ export function HorseCard({ horse: h, sprites, reported, onToggleLock, onClose }
       <section className={`${c.section} ${c.lockRow}`} data-locked={h.medicalLock}>
         <div>
           <h3 className={c.sectionTitle}>{h.medicalLock ? "Đang khóa y tế" : "Không khóa y tế"}</h3>
-          <p className={s.hint}>Khi khóa, ngựa không được đua hay tập nặng cho tới khi bác sĩ thú y gỡ khóa.</p>
+          <p className={s.hint}>
+            Khóa y tế chính thức do Bác sĩ thú y phê duyệt trên Main Web. Nút dưới đây chỉ dùng để giả lập thử nghiệm cục bộ.
+          </p>
         </div>
         <button
           type="button"
           className={`${h.medicalLock ? `${s.btn} ${s.primary}` : `${s.btn} ${s.danger}`} ${s.puffy}`}
           onClick={() => onToggleLock(h.id)}
+          title="Giả lập khóa cục bộ (chỉ áp dụng trên Simulator, không gửi lệnh khóa thật tới Backend)"
         >
-          {h.medicalLock ? "Gỡ khóa" : "Khóa y tế"}
+          {h.medicalLock ? "Giả lập gỡ khóa" : "Giả lập khóa"}
         </button>
       </section>
     </Popup>

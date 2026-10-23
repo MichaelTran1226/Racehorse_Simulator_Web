@@ -1,6 +1,7 @@
 // Bus sự kiện cục bộ mang đúng tên sự kiện SRS §8. Giai đoạn nối dữ liệu chỉ cần thay `publish`
 // bằng socket.emit / socket.on (Socket.IO) — giao diện không phải sửa.
 import { useSyncExternalStore } from "react";
+import { handleBusPublish } from "./socketTransport.ts";
 
 export type SimEvent =
   | "sim:device_status"
@@ -24,10 +25,22 @@ const MAX = 200;
 let entries: LogEntry[] = [];
 let seq = 0;
 const listeners = new Set<() => void>();
+export type BusListener = (entry: LogEntry) => void;
+const busSubscribers = new Set<BusListener>();
+
+export function onBusEvent(listener: BusListener): () => void {
+  busSubscribers.add(listener);
+  return () => busSubscribers.delete(listener);
+}
 
 export function publish(event: SimEvent, direction: LogEntry["direction"], payload: Record<string, unknown>): void {
-  entries = [{ id: ++seq, at: Date.now(), event, direction, payload }, ...entries].slice(0, MAX);
+  const entry: LogEntry = { id: ++seq, at: Date.now(), event, direction, payload };
+  entries = [entry, ...entries].slice(0, MAX);
   listeners.forEach((l) => l());
+  busSubscribers.forEach((l) => l(entry));
+  if (direction === "OUT") {
+    handleBusPublish(event, payload);
+  }
 }
 
 export function clearLog(): void {
@@ -40,6 +53,10 @@ function subscribe(l: () => void) {
   return () => listeners.delete(l);
 }
 
+export function getLog(): LogEntry[] {
+  return entries;
+}
+
 export function useLog(): LogEntry[] {
-  return useSyncExternalStore(subscribe, () => entries);
+  return useSyncExternalStore(subscribe, getLog);
 }

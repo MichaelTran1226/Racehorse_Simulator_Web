@@ -103,8 +103,8 @@ export const RIDER_PATH: Path = [{ x: 420, y: 708 }, { x: 860, y: 708 }]; // th�
 export const RIDER2_PATH: Path = [{ x: 420, y: 430 }, { x: 860, y: 430 }]; // thẳng bắc đường đua
 export const GROOM_PATH: Path = [{ x: 368, y: 298 }, { x: 560, y: 298 }]; // trước kho và chuồng
 export const VET_PATH: Path = [FARM_ANCHORS.clinicDoor, { x: 728, y: 316 }, { x: 830, y: 316 }];
-export const MANAGER_PATH: Path = [FARM_ANCHORS.houseDoor, { x: 904, y: 330 }, { x: 1040, y: 330 }];
-export const OWNER_PATH: Path = [FARM_ANCHORS.houseDoor, { x: 904, y: 330 }, { x: 800, y: 330 }];
+export const MANAGER_PATH: Path = [FARM_ANCHORS.houseDoor, { x: 920, y: 330 }, { x: 1040, y: 330 }];
+export const OWNER_PATH: Path = [FARM_ANCHORS.houseDoor, { x: 920, y: 330 }, { x: 800, y: 330 }];
 export const BARROW_PATH: Path = [FARM_ANCHORS.supplyDoor, { x: 304, y: 330 }, { x: 512, y: 330 }, { x: 512, y: 298 }];
 export const CART_PATH: Path = [{ x: 40, y: 104 }, { x: 1240, y: 104 }]; // đường ngang trên cùng
 
@@ -162,6 +162,66 @@ export function perchedBirds(time: number, state: AmbientSceneState): AmbientPos
     return { x: p.x, y: p.y, dir: flip ? 1 : -1, frame, row: kind.row, flip, active: true, sheet: "wild", size: 32 };
   });
 }
+export interface BirdFlightRoute {
+  readonly fromIdx: number;
+  readonly toIdx: number;
+  readonly kind: keyof typeof WILD_KINDS;
+  readonly phaseOffset: number;
+  readonly duration: number;
+  readonly cyclePeriod: number;
+  readonly arcHeight: number;
+}
+
+export const BIRD_FLIGHT_ROUTES: readonly BirdFlightRoute[] = [
+  // Chim sẻ bay từ cây tây-bắc (Perch 4) sang cây giữa bắc (Perch 5)
+  { fromIdx: 4, toIdx: 5, kind: "sparrow", phaseOffset: 0, duration: 4.5, cyclePeriod: 16, arcHeight: 38 },
+  // Chim xanh bay từ cây giữa bắc (Perch 5) sang cây đông cạnh nhà Groom (Perch 6)
+  { fromIdx: 5, toIdx: 6, kind: "bluebird", phaseOffset: 5.5, duration: 4.8, cyclePeriod: 18, arcHeight: 42 },
+  // Quạ bay lượn dọc theo rào nam đường đua (Perch 0 sang Perch 1)
+  { fromIdx: 0, toIdx: 1, kind: "crow", phaseOffset: 11, duration: 5.2, cyclePeriod: 22, arcHeight: 32 },
+] as const;
+
+/** Chim bay qua lại giữa các tán cây theo đường cong parabol nhấp nhô tuyệt đẹp. */
+export function getFlyingBirds(time: number, state: AmbientSceneState): AmbientPose[] {
+  if (state.reducedMotion) return [];
+
+  const flying: AmbientPose[] = [];
+  for (const route of BIRD_FLIGHT_ROUTES) {
+    const cycleT = (time + route.phaseOffset) % route.cyclePeriod;
+    if (cycleT >= route.duration) continue; // đang đậu trên cây, không trong pha bay
+
+    const fromPerch = FARM_ANCHORS.perches[route.fromIdx];
+    const toPerch = FARM_ANCHORS.perches[route.toIdx];
+    if (!fromPerch || !toPerch) continue;
+
+    const p = cycleT / route.duration; // 0..1
+    const x = fromPerch.x + (toPerch.x - fromPerch.x) * p;
+    // Đường cong parabol: bay vồng lên trời ở giữa chặng
+    const y = fromPerch.y + (toPerch.y - fromPerch.y) * p - Math.sin(Math.PI * p) * route.arcHeight;
+
+    const dir: 1 | -1 = toPerch.x >= fromPerch.x ? 1 : -1;
+    const kind = WILD_KINDS[route.kind];
+
+    // Khung hình vỗ cánh liên tục (cột 0..3 trong critters sheet)
+    const frame = state.simulationRunning ? Math.floor(time * 12) % 4 : 0;
+    const flip = dir !== kind.faces;
+
+    flying.push({
+      x: Math.round(x),
+      y: Math.round(y),
+      dir,
+      frame,
+      row: kind.row,
+      flip,
+      active: true,
+      sheet: "wild",
+      size: 32,
+    });
+  }
+
+  return flying;
+}
+
 const WILD_KIND: Record<WildId, keyof typeof WILD_KINDS> = {
   WILD_BLUEBIRD_1: "bluebird", WILD_BLUEBIRD_2: "bluebird", WILD_SPARROW_1: "sparrow", WILD_SPARROW_2: "sparrow", WILD_RABBIT: "rabbit", WILD_SQUIRREL: "squirrel",
 };
@@ -173,10 +233,10 @@ function wildCritter(id: WildId, time: number, running: boolean): AmbientPose {
   const kind = WILD_KINDS[WILD_KIND[id]];
   const t = time + WILD_PHASE[id];
   const w = walkPause(t, 2, 3);
-  const p = along(WILD_PATHS[id], w.walkedS * 12, true);
+  const p = along(WILD_PATHS[id], w.walkedS * 16, true);
   const moving = running && !w.paused;
   const frames: readonly number[] = moving ? kind.walk : kind.idle;
-  const frame = running ? frames[Math.floor(t * (moving ? 8 : 2)) % frames.length] : frames[0];
+  const frame = running ? frames[Math.floor(t * (moving ? 10 : 2.5)) % frames.length] : frames[0];
   return { x: p.x, y: p.y, dir: p.dir, frame, row: kind.row, flip: p.dir !== kind.faces, active: true, sheet: "wild", size: 32 };
 }
 
@@ -189,7 +249,7 @@ function critterWalk(path: Path, sheet: CritterSheet, size: 16 | 32, time: numbe
   const w = walkPause(time, walkS, pauseS);
   const p = along(path, w.walkedS * speed, true);
   const moving = running && !w.paused;
-  return { x: p.x, y: p.y, dir: p.dir, frame: moving ? Math.floor(time * 6) % 4 : 0, row: moving ? (p.dir > 0 ? 1 : 3) : 0, flip: false, active: true, sheet, size };
+  return { x: p.x, y: p.y, dir: p.dir, frame: moving ? Math.floor(time * 8) % 4 : 0, row: moving ? (p.dir > 0 ? 1 : 3) : 0, flip: false, active: true, sheet, size };
 }
 
 /** Chu kỳ "đi walkS giây rồi dừng tay pauseS giây": quãng đã đi không lùi khi dừng. */
@@ -385,3 +445,76 @@ export function ambientActorPose(
     }
   }
 }
+
+export interface SmokePuff {
+  readonly x: number;
+  readonly y: number;
+  readonly size: number;
+  readonly alpha: number;
+}
+
+export function getChimneySmokePuffs(time: number, reducedMotion: boolean): readonly SmokePuff[] {
+  const CHIMNEY_X = 955;
+  const CHIMNEY_Y = 148;
+  if (reducedMotion) {
+    return [{ x: CHIMNEY_X, y: CHIMNEY_Y - 4, size: 4, alpha: 0.45 }];
+  }
+  const PERIOD = 3.5;
+  const PUFFS = 5;
+  const list: SmokePuff[] = [];
+  for (let i = 0; i < PUFFS; i++) {
+    const t = (time + (i * PERIOD) / PUFFS) % PERIOD;
+    const p = t / PERIOD; // 0..1
+    const y = CHIMNEY_Y - p * 34;
+    const x = CHIMNEY_X + p * 8 + Math.sin(p * Math.PI * 2) * 3;
+    const size = Math.round(2 + p * 4);
+    const alpha = (1 - p) * 0.7;
+    list.push({ x: Math.round(x), y: Math.round(y), size, alpha });
+  }
+  return list;
+}
+
+export interface SpeechBubble {
+  readonly actorId: AmbientActorId;
+  readonly text: string;
+}
+
+export function getActiveSpeechBubbles(time: number): readonly SpeechBubble[] {
+  const bubbles: SpeechBubble[] = [];
+
+  // 1. Đối thoại giữa CHAT_A và CHAT_B (chu kỳ 20 giây)
+  const chatCycle = time % 20;
+  if (chatCycle >= 1 && chatCycle < 5) {
+    bubbles.push({ actorId: "CHAT_A", text: "Nghe nói đợt cỏ mới thơm lắm!" });
+  } else if (chatCycle >= 5.5 && chatCycle < 9.5) {
+    bubbles.push({ actorId: "CHAT_B", text: "Ừ, kho vừa nhập sáng nay đấy." });
+  } else if (chatCycle >= 11 && chatCycle < 15) {
+    bubbles.push({ actorId: "CHAT_A", text: "Chiều nay huấn luyện mấy giờ?" });
+  } else if (chatCycle >= 15.5 && chatCycle < 19.5) {
+    bubbles.push({ actorId: "CHAT_B", text: "Tầm 3 giờ là bắt đầu ra sân." });
+  }
+
+  // 2. Lời thoại của các nhân viên khác (chu kỳ lệch nhau)
+  const vetCycle = (time + 4) % 18;
+  if (vetCycle >= 0 && vetCycle < 4) {
+    bubbles.push({ actorId: "CLINIC_VET", text: "Nhịp tim các bé rất đều." });
+  }
+
+  const groomCycle = (time + 10) % 22;
+  if (groomCycle >= 0 && groomCycle < 4) {
+    bubbles.push({ actorId: "STABLE_GROOM", text: "Máng ăn đã sạch bong!" });
+  }
+
+  const groomingCycle = (time + 16) % 24;
+  if (groomingCycle >= 0 && groomingCycle < 4) {
+    bubbles.push({ actorId: "BARN_GROOMING", text: "Lông mượt thế này vào giải chắc thắng!" });
+  }
+
+  const coachCycle = (time + 7) % 16;
+  if (coachCycle >= 0 && coachCycle < 4) {
+    bubbles.push({ actorId: "LEFT_COACH", text: "Giữ vững nhịp kiệu nhé!" });
+  }
+
+  return bubbles;
+}
+

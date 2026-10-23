@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useCountUp } from "./useCountUp";
-import { FARM_OBJECTS, type FarmTarget } from "../hub/farmLayout";
+import { FARM_INTERACTIVE_OBJECTS, type FarmTarget } from "../hub/farmLayout";
 import { assignPaddockHorses, assignStableHorses } from "../hub/farmPopulation";
 import { stockLevel, SUPPLY_IDS, type Inventory, type SupplyId } from "../sim/inventory";
 import { SupplyPanel } from "./SupplyPanel";
 import { StallTab } from "./StallTab";
+import { initStalls } from "../sim/stallAllocation";
+import type { MockStall } from "../sim/mockData";
 import { VetZone } from "./VetZone";
+import { GroomTab } from "./GroomTab";
 import type { HorseProfile } from "../sim/engine";
 import type { Sprites } from "../render/sprites";
 import c from "./FarmHub.module.css";
@@ -53,9 +56,11 @@ export function FarmHub({ sprites, horses, reported, speed, speeds, onSpeed, onE
   const [supplyOpen, setSupplyOpen] = useState(false);
   const [listOpen, setListOpen] = useState(false);
   const [cardId, setCardId] = useState<string | null>(null);
+  const [stalls, setStalls] = useState<MockStall[]>(() => initStalls());
   const [stallOpen, setStallOpen] = useState(false);
   const [stallSel, setStallSel] = useState<string | null>(null);
   const [vetOpen, setVetOpen] = useState(false);
+  const [groomOpen, setGroomOpen] = useState(false);
   const card = horses.find((h) => h.id === cardId) ?? null;
   // Ngựa bãi thả và ngựa chuồng được phân bổ ổn định danh tính
   const paddock = useMemo(() => assignPaddockHorses(horses), [horses]);
@@ -89,7 +94,13 @@ export function FarmHub({ sprites, horses, reported, speed, speeds, onSpeed, onE
         hoveredId={hovered}
         onHover={setHovered}
         goTo={goTo}
-        onEnter={(target) => (target === "TRACK" ? onEnterTrack() : target === "STALL" ? setStallOpen(true) : target === "VET" ? setVetOpen(true) : setSupplyOpen(true))}
+        onEnter={(target) => {
+          if (target === "TRACK") onEnterTrack();
+          else if (target === "STALL") setStallOpen(true);
+          else if (target === "VET") setVetOpen(true);
+          else if (target === "GROOM") setGroomOpen(true);
+          else setSupplyOpen(true);
+        }}
         paddock={paddock}
         stableHorses={stableHorses}
         onHorse={openCard}
@@ -155,6 +166,12 @@ export function FarmHub({ sprites, horses, reported, speed, speeds, onSpeed, onE
           </span>
           <span className={c.bigLabel}>Kho</span>
         </button>
+        <button type="button" className={c.bigRound} onClick={() => setGroomOpen(true)} title="Nhân viên">
+          <span className={c.bigIcon} aria-hidden>
+            👥
+          </span>
+          <span className={c.bigLabel}>Nhân sự</span>
+        </button>
         <button
           type="button"
           className={c.bigRound}
@@ -180,12 +197,19 @@ export function FarmHub({ sprites, horses, reported, speed, speeds, onSpeed, onE
             onSelect={setStallSel}
             onIncident={onIncident}
             onOpenCard={openCard}
+            stalls={stalls}
+            onStallsChange={setStalls}
           />
         </Popup>
       )}
       {vetOpen && (
         <Popup title="Phòng khám thú y" onClose={() => setVetOpen(false)}>
           <VetZone horses={horses} sprites={sprites} reported={reported} onToggleLock={onToggleLock} onOpenCard={openCard} />
+        </Popup>
+      )}
+      {groomOpen && (
+        <Popup title="Nhân viên" onClose={() => setGroomOpen(false)}>
+          <GroomTab horses={horses} onOpenHorseCard={openCard} />
         </Popup>
       )}
       {listOpen && (
@@ -197,7 +221,7 @@ export function FarmHub({ sprites, horses, reported, speed, speeds, onSpeed, onE
 
       {/* Đường tắt bàn phím: ẩn, chỉ hiện khi được focus */}
       <nav className={c.skip} aria-label="Đi tới khu vực">
-        {FARM_OBJECTS.map((o) => (
+        {FARM_INTERACTIVE_OBJECTS.map((o) => (
           <button key={o.id} type="button" onFocus={() => setHovered(o.id)} onBlur={() => setHovered(null)} onClick={() => go(o.id)}>
             {o.name}
           </button>

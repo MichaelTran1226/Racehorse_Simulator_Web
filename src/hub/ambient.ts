@@ -4,6 +4,9 @@ import { FARM_ANCHORS, type Point } from "./farmLayout.ts";
 import { PADDOCK_SLOTS, paddockHorse } from "./paths.ts";
 import {
   ambientActorPose,
+  getActiveSpeechBubbles,
+  getChimneySmokePuffs,
+  getFlyingBirds,
   perchedBirds,
   type AmbientSceneState,
 } from "./ambientScene.ts";
@@ -102,7 +105,8 @@ export function drawFarmActors(
   // 7. Con vật Stardew (gà, vịt, chó, mèo) — khung vuông 16/32 px, vẽ 1:1, chân tại y
   const critters = [
     ...(["SV_CHICKEN_1", "SV_CHICKEN_2", "SV_CHICKEN_3", "SV_DUCK", "SV_DOG", "SV_CAT", "WILD_BLUEBIRD_1", "WILD_BLUEBIRD_2", "WILD_SPARROW_1", "WILD_SPARROW_2", "WILD_RABBIT", "WILD_SQUIRREL"] as const).map((id) => ambientActorPose(id, time, ambientState)),
-    ...perchedBirds(time, ambientState), // vẽ sau cùng: chim đậu trên tán cây
+    ...perchedBirds(time, ambientState), // chim đậu trên tán cây
+    ...getFlyingBirds(time, ambientState), // chim bay lượn vồng giữa các tán cây
   ];
   for (const p of critters) {
     if (!p.sheet || !p.size) continue;
@@ -118,6 +122,76 @@ export function drawFarmActors(
     ctx.drawImage(sheet, p.frame * s, (p.row ?? 0) * s, s, s, -s / 2, Math.round(p.y - s + 2), s, s);
     ctx.restore();
   }
+
+  // 8. Khói từ ống khói nhà nhân viên (Groom House)
+  drawChimneySmoke(ctx, time, ambientState.reducedMotion);
+
+  // 9. Khung chat bong bóng (speech bubbles) của NPC
+  drawSpeechBubbles(ctx, time, ambientState);
+}
+
+export function drawChimneySmoke(
+  ctx: CanvasRenderingContext2D,
+  time: number,
+  reducedMotion: boolean,
+): void {
+  const puffs = getChimneySmokePuffs(time, reducedMotion);
+  for (const puff of puffs) {
+    const r = puff.size;
+    const px = Math.round(puff.x - r / 2);
+    const py = Math.round(puff.y - r / 2);
+    ctx.fillStyle = `rgba(245, 248, 252, ${puff.alpha.toFixed(2)})`;
+    ctx.fillRect(px, py, r, r);
+    if (r >= 4) {
+      ctx.fillStyle = `rgba(215, 225, 235, ${(puff.alpha * 0.8).toFixed(2)})`;
+      ctx.fillRect(px + 1, py + 1, r - 2, r - 2);
+    }
+  }
+}
+
+export function drawSpeechBubbles(
+  ctx: CanvasRenderingContext2D,
+  time: number,
+  ambientState: AmbientSceneState,
+): void {
+  const bubbles = getActiveSpeechBubbles(time);
+  if (bubbles.length === 0) return;
+
+  ctx.save();
+  ctx.font = "12px VT323, monospace";
+  ctx.textBaseline = "middle";
+
+  for (const b of bubbles) {
+    const pose = ambientActorPose(b.actorId, time, ambientState);
+    if (!pose.active) continue;
+
+    const text = b.text;
+    const textWidth = ctx.measureText(text).width;
+    const paddingX = 6;
+    const bubbleWidth = Math.round(textWidth + paddingX * 2);
+    const bubbleHeight = 16;
+
+    const bubbleX = Math.round(pose.x - bubbleWidth / 2);
+    const bubbleY = Math.round(pose.y - 36);
+
+    ctx.fillStyle = "#261b17";
+    ctx.fillRect(bubbleX - 1, bubbleY - 1, bubbleWidth + 2, bubbleHeight + 2);
+
+    ctx.fillStyle = "#fffdf5";
+    ctx.fillRect(bubbleX, bubbleY, bubbleWidth, bubbleHeight);
+
+    const tailX = Math.round(pose.x);
+    ctx.fillStyle = "#261b17";
+    ctx.fillRect(tailX - 2, bubbleY + bubbleHeight, 4, 1);
+    ctx.fillRect(tailX - 1, bubbleY + bubbleHeight + 1, 2, 1);
+    ctx.fillStyle = "#fffdf5";
+    ctx.fillRect(tailX - 1, bubbleY + bubbleHeight, 2, 1);
+
+    ctx.fillStyle = "#261b17";
+    ctx.fillText(text, bubbleX + paddingX, bubbleY + bubbleHeight / 2);
+  }
+
+  ctx.restore();
 }
 
 /** Ban đêm: phủ tối + quầng đèn ở cửa sổ, chuồng, đường đua; đom đóm. Chỉ là lớp phủ lúc chạy, bố cục không đổi. */

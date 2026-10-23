@@ -4,6 +4,7 @@ import { test } from "node:test";
 import {
   ALLOWED_MAP_SHEETS,
   FARM_OBJECTS,
+  FARM_INTERACTIVE_OBJECTS,
   FARM_ANCHORS,
   FARM_PLACEMENTS,
   FARM_WORLD,
@@ -29,7 +30,7 @@ test("farm layout is a 1280 by 768 sprite-only world (≈2–3 screens at 2×)",
 });
 
 test("interactive farm objects have unique ids, valid targets and focus points", () => {
-  const validTargets = new Set(["STALL", "TRACK", "VET", "SUPPLY"]);
+  const validTargets = new Set(["STALL", "TRACK", "VET", "SUPPLY", "GROOM"]);
   assert.equal(new Set(FARM_OBJECTS.map((object) => object.id)).size, FARM_OBJECTS.length);
   assert.deepEqual(
     new Set(FARM_OBJECTS.map((object) => object.target)),
@@ -66,7 +67,7 @@ test("loose decor placements do not overlap reserved corridors or building bound
   assert.equal(validateDecorCorridors(), true);
   assert.ok(RESERVED_CORRIDORS.length >= 5);
   const objectIds = new Set(FARM_OBJECTS.map((o) => o.id));
-  assert.deepEqual(objectIds, new Set(["stable", "track", "barn", "vet"]));
+  assert.deepEqual(objectIds, new Set(["stable", "track", "barn", "vet", "groom-house"]));
   for (const placement of FARM_PLACEMENTS) {
     assert.ok(ALLOWED_MAP_SHEETS.has(placement.sheet));
   }
@@ -140,4 +141,22 @@ test("đường xe hàng chạy thẳng qua cửa kho, xuyên từ mép trái sa
   const barn = FARM_OBJECTS.find((o) => o.id === "barn")!;
   assert.ok(FARM_ANCHORS.supplyDoor.x > barn.bounds.x && FARM_ANCHORS.supplyDoor.x < barn.bounds.x + barn.bounds.w);
   assert.ok(road.y - (barn.bounds.y + barn.bounds.h) <= 16, "cửa kho nhìn thẳng ra đường");
+});
+
+test("groom-house is generated as an outlined object", () => {
+  const inObjects = FARM_OBJECTS.filter((o) => o.id === "groom-house");
+  const inInteractive = (FARM_INTERACTIVE_OBJECTS as any[]).filter((o) => o.id === "groom-house");
+
+  assert.equal(inObjects.length, 1, "exactly one matching object must exist in FARM_OBJECTS");
+  assert.equal(inInteractive.length, 1, "exactly one matching object must exist in FARM_INTERACTIVE_OBJECTS");
+
+  const groom = inObjects[0];
+  assert.equal(groom.name, "Nhân viên");
+  assert.equal(groom.target, "GROOM");
+  assert.equal(groom.placements.length, 1, "groom-house must have exactly 1 placement");
+
+  const placement = groom.placements[0];
+  assert.equal(placement.sheet, "sv-houses");
+  assert.deepEqual(placement.src, { x: 16, y: 288, w: 144, h: 144 });
+  assert.deepEqual(placement.dest, { x: 832, y: 144 });
 });

@@ -9633,21 +9633,6 @@
   {
    "sheet": "sv-spring-outdoors",
    "src": {
-    "x": 112,
-    "y": 176,
-    "w": 16,
-    "h": 16
-   },
-   "dest": {
-    "x": 960,
-    "y": 176
-   },
-   "layer": "decor",
-   "z": 40
-  },
-  {
-   "sheet": "sv-spring-outdoors",
-   "src": {
     "x": 0,
     "y": 176,
     "w": 16,
@@ -10375,21 +10360,6 @@
    },
    "dest": {
     "x": 144,
-    "y": 192
-   },
-   "layer": "decor",
-   "z": 40
-  },
-  {
-   "sheet": "sv-spring-outdoors",
-   "src": {
-    "x": 112,
-    "y": 176,
-    "w": 16,
-    "h": 16
-   },
-   "dest": {
-    "x": 880,
     "y": 192
    },
    "layer": "decor",
@@ -13188,21 +13158,6 @@
   {
    "sheet": "sv-spring-outdoors",
    "src": {
-    "x": 112,
-    "y": 160,
-    "w": 16,
-    "h": 16
-   },
-   "dest": {
-    "x": 928,
-    "y": 256
-   },
-   "layer": "decor",
-   "z": 40
-  },
-  {
-   "sheet": "sv-spring-outdoors",
-   "src": {
     "x": 0,
     "y": 176,
     "w": 16,
@@ -13544,21 +13499,6 @@
    },
    "layer": "paths",
    "z": 10
-  },
-  {
-   "sheet": "sv-spring-outdoors",
-   "src": {
-    "x": 64,
-    "y": 512,
-    "w": 80,
-    "h": 80
-   },
-   "dest": {
-    "x": 848,
-    "y": 208
-   },
-   "layer": "decor",
-   "z": 40
   },
   {
    "sheet": "sv-fence-wood",
@@ -13960,21 +13900,6 @@
    },
    "dest": {
     "x": 112,
-    "y": 272
-   },
-   "layer": "decor",
-   "z": 40
-  },
-  {
-   "sheet": "sv-spring-outdoors",
-   "src": {
-    "x": 112,
-    "y": 160,
-    "w": 16,
-    "h": 16
-   },
-   "dest": {
-    "x": 848,
     "y": 272
    },
    "layer": "decor",
@@ -14439,7 +14364,7 @@
     "h": 16
    },
    "dest": {
-    "x": 896,
+    "x": 912,
     "y": 288
    },
    "layer": "paths",
@@ -14454,7 +14379,7 @@
     "h": 16
    },
    "dest": {
-    "x": 912,
+    "x": 928,
     "y": 288
    },
    "layer": "paths",
@@ -14559,7 +14484,7 @@
     "h": 48
    },
    "dest": {
-    "x": 944,
+    "x": 976,
     "y": 256
    },
    "layer": "decor",
@@ -15769,7 +15694,7 @@
    "sheet": "sv-flooring",
    "src": {
     "x": 96,
-    "y": 80,
+    "y": 64,
     "w": 16,
     "h": 16
    },
@@ -15799,7 +15724,7 @@
    "sheet": "sv-flooring",
    "src": {
     "x": 96,
-    "y": 64,
+    "y": 80,
     "w": 16,
     "h": 16
    },
@@ -30627,6 +30552,39 @@
    ]
   },
   {
+   "id": "groom-house",
+   "name": "Nhân viên",
+   "target": "GROOM",
+   "z": 60,
+   "focus": {
+    "x": 904,
+    "y": 216
+   },
+   "bounds": {
+    "x": 832,
+    "y": 144,
+    "w": 144,
+    "h": 144
+   },
+   "placements": [
+    {
+     "sheet": "sv-houses",
+     "src": {
+      "x": 16,
+      "y": 288,
+      "w": 144,
+      "h": 144
+     },
+     "dest": {
+      "x": 832,
+      "y": 144
+     },
+     "layer": "buildings",
+     "z": 60
+    }
+   ]
+  },
+  {
    "id": "track",
    "name": "Đường đua",
    "target": "TRACK",
@@ -37340,7 +37298,7 @@
    "y": 284
   },
   "houseDoor": {
-   "x": 904,
+   "x": 920,
    "y": 286
   },
   "clinicDoor": {

@@ -1,0 +1,92 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 500px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.input,
+.select {
+  padding: 8px 10px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+}
+
+.input:focus,
+.select:focus {
+  border-color: #2563eb;
+}
+
+.errorBanner {
+  background: #ffdede;
+  border: 2px solid #d9534f;
+  color: #a94442;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+  border-top: 2px dashed rgba(60, 42, 33, 0.2);
+  padding-top: 12px;
+}
+
+.cancelBtn {
+  padding: 8px 14px;
+  background: #e5e7eb;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: var(--hud-pill-radius);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.saveBtn {
+  padding: 8px 16px;
+  background: #16a34a;
+  color: #ffffff;
+  border: 2px solid var(--ink);
+  border-radius: var(--hud-pill-radius);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--ink);
+}
+
+.saveBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
